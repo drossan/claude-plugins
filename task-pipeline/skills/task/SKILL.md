@@ -7,6 +7,8 @@ Eres el orquestador del flujo de trabajo del repo. A partir de las especificacio
 
 > **Convención asumida por este plugin** (ver el README del plugin): el repo organiza el trabajo en `.claude/plans/<estado>/<package>/`, `.claude/tasks/<estado>/<package>/`, `.claude/context/<package>/<task-id>.md`, specs en `.claude/specs/`, y tiene un `docs/guides/task-lifecycle.md` (flujo canónico) y un `HOW-TO-START-A-TASK.md` por package en `.claude/specs/<package>/`. Si el repo no sigue esta convención, primero ayuda a bootstrapearla (o avisa al usuario) antes de continuar.
 
+> **Plantillas (semillas)**: junto a este skill hay un directorio `templates/` (en `skills/task/templates/`). **Léelas con la tool Read** y materialízalas en el repo en vez de improvisar la estructura: `templates/task-lifecycle.md` → `docs/guides/`; `templates/HOW-TO-START-A-TASK.md` → `.claude/specs/<package>/` (rellena los bloques `ESPECÍFICO DEL PACKAGE`); `templates/plan.md` y `templates/task.md` → cada plan/tarea nuevos. No se cargan solas: tienes que abrirlas. Ver `templates/README.md` para el mapeo completo.
+
 ## Antes de nada — contexto
 
 Lee, en este orden: (1) `docs/guides/task-lifecycle.md` y (2) el `HOW-TO-START-A-TASK.md` del package objetivo. No dupliques esas reglas; este playbook solo orquesta.
@@ -29,7 +31,7 @@ Si hay duda de scope o de a qué package pertenece, pregunta con `AskUserQuestio
 
 - Entra en **plan mode** (`EnterPlanMode`).
 - Investiga el codebase en read-only lo necesario (usa la skill `Explore` para barridos amplios).
-- Redacta el plan siguiendo **la plantilla de plan de `task-lifecycle.md`**.
+- Redacta el plan siguiendo la plantilla **`templates/plan.md`** (junto a este skill; ábrela con Read).
 - Presenta el plan para aprobación con `ExitPlanMode`.
 
 ## Paso 3 — Escribir el plan en `pending/`
@@ -42,7 +44,7 @@ Invoca la skill **`grill-me`** sobre el plan. Itera hasta que sobreviva el inter
 
 ## Paso 5 — Descomponer en tareas pequeñas con Gherkin
 
-Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` con la plantilla de tarea, que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
+Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` desde la plantilla **`templates/task.md`** (junto a este skill; ábrela con Read), que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
 
 ### Gherkin = fuente de los tests
 
@@ -74,4 +76,4 @@ Cada tarea no se cierra hasta pasar el gate de **mutation testing** (Stryker, `b
 - **Checkpoints humanos**: no saltes `grill-me` ni la aprobación del plan.
 - **Commits deliberados**: `<task-id>: <conventional commit>` en la rama del plan.
 - **Una sola tarea `active` por plan** (comparten rama).
-- Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo (replica el de otro package) antes del handoff.
+- Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo desde `templates/HOW-TO-START-A-TASK.md` (junto a este skill; ábrela con Read y rellena los bloques `ESPECÍFICO DEL PACKAGE`) antes del handoff.

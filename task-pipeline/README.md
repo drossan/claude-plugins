@@ -35,6 +35,21 @@ docs/guides/task-lifecycle.md                  # flujo canónico (estados, plant
 
 Si un repo no sigue esta convención, `/task` ayuda a bootstrapearla o avisa antes de continuar.
 
+## Plantillas (`skills/task/templates/`)
+
+El plugin trae las **semillas** que `/task` materializa en el repo (no se inyectan en runtime; el skill las lee con `Read` y las copia al repo, donde luego viven):
+
+| Plantilla | Se materializa en |
+|---|---|
+| `skills/task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
+| `skills/task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
+| `skills/task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |
+| `skills/task/templates/task.md` | `.claude/tasks/pending/<package>/<task-id>.md` (por tarea; incluye `## Scenarios (Gherkin)`) |
+
+Detalle y placeholders en `skills/task/templates/README.md`. Esto cierra el bootstrap: `/task` copia desde estas plantillas en vez de "replicar el HOW-TO de otro package".
+
+> Viven **dentro** del skill `task` (no en la raíz del plugin) a propósito: `${CLAUDE_PLUGIN_ROOT}` no se expande en el cuerpo de un `SKILL.md`, así que el skill las referencia con ruta relativa (`templates/…`).
+
 ## Config específica del proyecto (no va en el plugin)
 
 - Lista de workspaces/packages.
