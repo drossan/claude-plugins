@@ -1,0 +1,8 @@
+{
+  "name": "task-pipeline",
+  "description": "Pipeline guiado de tarea/plan: plan mode -> plan en .claude/plans/pending -> grill-me -> descomposición en tareas Gherkin -> handoff TDD -> gate de mutation testing (Stryker). Reutilizable en cualquier repo que adopte la convención .claude/plans|tasks|specs|context.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Daniel Rosselló"
+  }
+}

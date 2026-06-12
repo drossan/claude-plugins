@@ -1,0 +1,14 @@
+{
+  "name": "local-plugins",
+  "description": "Marketplace personal de Daniel Rosselló. Plugins de flujo de trabajo para Claude Code.",
+  "owner": {
+    "name": "Daniel Rosselló"
+  },
+  "plugins": [
+    {
+      "name": "task-pipeline",
+      "source": "./task-pipeline",
+      "description": "Flujo de trabajo guiado: plan mode -> plan en pending -> grill-me -> tareas en Gherkin -> TDD -> gate de mutation testing. Skills /task, /mutation y grill-me."
+    }
+  ]
+}
