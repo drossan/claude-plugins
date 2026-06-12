@@ -133,12 +133,15 @@ Feature: <capacidad bajo esta tarea>
     When ...
     Then <error esperado, código, efecto>
 ```
-## Expected result
+## Provides
+<!-- Contrato hacia abajo: qué deja disponible para las tareas que dependen de esta
+     (su superficie/API/ficheros nuevos). NO un resumen de los `Then` del Gherkin.
+     Si nada depende de esta tarea, pon "—". -->
 ## Definition of Done
 - [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor  · solo si `features.tdd`
 - [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)  · solo si `features.tdd`
 - [ ] Todos los tests en verde
-- [ ] Spec y resultado esperado cumplidos
+- [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
@@ -155,17 +158,29 @@ La skill `/task` copia estas plantillas (sus ficheros completos `plan.md` /
 ## Crear un plan
 
 > La skill `/task` orquesta todo este flujo (plan mode → plan en `pending/` →
-> `grill-me` → tareas Gherkin → handoff TDD → gate de mutation). Los pasos de abajo
-> son lo que sigue, y lo que haces tú si lo conduces a mano.
+> `grill-me` → `design-review` → tareas Gherkin → `scenario-coverage` → handoff TDD
+> → gate de mutation). Los pasos de abajo son lo que sigue, y lo que haces tú si lo
+> conduces a mano.
 
 1. Redacta el plan con la plantilla.
 2. Corre la skill `grill-me` antes de aprobar para sacar huecos, supuestos ocultos
-   e ítems inviables. Itera hasta que el plan sobreviva al interrogatorio.
-3. Tras la aprobación del owner: deja el plan en `.claude/plans/pending/<package>/`,
+   e ítems inviables (rama por rama). Itera hasta que el plan sobreviva al interrogatorio.
+3. Corre la skill `design-review`: un subagente fresco revisa el plan COMO UN TODO
+   (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad).
+   Ajusta el plan con los hallazgos.
+4. Tras la aprobación del owner: deja el plan en `.claude/plans/pending/<package>/`,
    `status: pending`.
-4. Descompón en tareas. Cada tarea cabe en un commit lógico / una sesión.
-5. Rellena la sección **Tasks** del plan: lista ordenada y consciente de
+5. Descompón en tareas. Cada tarea cabe en un commit lógico / una sesión.
+6. Corre la skill `scenario-coverage`: un subagente QA fresco endurece los escenarios
+   Gherkin del set de tareas por dimensiones (fronteras, errores, estado, requisitos
+   ausentes…). Incorpora los huecos aceptados.
+7. Rellena la sección **Tasks** del plan: lista ordenada y consciente de
    dependencias.
+
+> `grill-me` (paso 2) y la aprobación (paso 4) son **no negociables**. `design-review`
+> y `scenario-coverage` (pasos 3 y 6) corren por defecto pero admiten un **salto solo en
+> planes triviales** (un fichero/área, sin superficie nueva ni decisión arquitectónica):
+> lo confirma el owner y se registra en el Plan change log. Nunca un salto silencioso.
 
 ## Arrancar un plan
 

@@ -47,10 +47,16 @@ Feature: <capacidad que aporta esta tarea>
     Then <error esperado, código, efecto>
 ```
 
-## Expected result
+## Provides
 
-<Estado final observable cuando la tarea está hecha: qué compila, qué responde,
-qué pueden hacer otros módulos. Comprobable desde fuera.>
+<!-- El contrato HACIA ABAJO: qué deja disponible esta tarea para las que dependen
+     de ella (sus `depends_on` apuntan aquí). La superficie NUEVA que otros consumen:
+     módulos/APIs/ficheros/capacidades. NO es un resumen de los `Then` del Gherkin
+     (el comportamiento ya vive ahí) — si esto sería eso, no escribas la sección.
+     Si nada aguas abajo depende de esta tarea, pon "—". -->
+
+<Qué pueden dar por hecho las tareas que dependen de esta: superficie/API/ficheros
+nuevos disponibles. El estado que habilita, no el comportamiento.>
 
 ## Definition of Done
 
@@ -61,7 +67,7 @@ qué pueden hacer otros módulos. Comprobable desde fuera.>
 - [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor  · (flag `features.tdd`)
 - [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)  · (flag `features.tdd`)
 - [ ] Todos los tests en verde
-- [ ] Spec y resultado esperado cumplidos
+- [ ] Spec cumplida; lo declarado en `Provides` queda realmente disponible para las tareas dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
 - [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):

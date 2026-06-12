@@ -37,7 +37,18 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
 
-> **No configurable**: `grill-me` y la aprobación del plan son checkpoints por diseño; ningún flag ni preset los desactiva.
+> **Checkpoints — qué se puede saltar y qué no**: `grill-me` y la aprobación del plan son **no negociables** (baratos y nucleares); ningún flag, preset ni "es que es pequeño" los desactiva. `design-review` (Paso 4.5) y `scenario-coverage` (Paso 5.5) corren **por defecto**, pero admiten un **salto proporcional** solo en planes triviales (regla abajo). El escape es proporcional al coste: solo las dos pasadas caras (subagente) lo tienen.
+
+### Salto en planes triviales (`design-review` / `scenario-coverage`)
+
+- **Default = ejecutar.** El salto es la excepción y **lo decide el usuario**, nunca tú en silencio: si tú decides que "es pequeño" para ahorrarte la pasada, has convertido la gate en su propio agujero. No lo hagas.
+- **Solo puedes OFRECER saltar** si el plan cumple **TODOS** estos criterios (si falla cualquiera, ni lo ofreces y ejecutas la pasada):
+  - toca un solo fichero/área;
+  - **no** crea superficie/API pública nueva (nada que iría en `Provides`);
+  - **no** hay decisión arquitectónica ni nada transversal;
+  - (solo para `scenario-coverage`) 1 tarea sin caminos de error/borde reales.
+- **Confirma con `AskUserQuestion`**, con la opción por defecto = **ejecutar la pasada**. No fuerces el salto con el framing.
+- **Registra el salto y su motivo en el Plan change log** (p. ej. *"`design-review` omitida: plan de un fichero, sin superficie nueva — aprobado por owner"*). Una gate saltada deja rastro; nunca desaparece en silencio.
 
 ## Paso 0 — ¿Plan nuevo o re-plan?
 
@@ -68,6 +79,10 @@ Al aprobar el usuario, escribe `.claude/plans/pending/<package>/<name-plan>.md` 
 
 Invoca la skill **`grill-me`** sobre el plan. Itera hasta que sobreviva el interrogatorio; registra cada decisión en el **Plan change log**. No avances hasta que el usuario lo dé por bueno.
 
+## Paso 4.5 — Revisión de diseño holística (checkpoint humano)
+
+`grill-me` resuelve las decisiones **rama por rama**; falta el zoom-out al conjunto. Antes de invocarla, aplica la regla de **salto en planes triviales** (ver arriba): por defecto se ejecuta; solo ofreces saltarla si el plan cumple todos los criterios, y el salto lo confirma y se loguea. Invoca la skill **`design-review`** sobre el plan refinado: lanza un **subagente fresco** (sin el sesgo de defender tu propio plan) que intenta tumbar el diseño como un todo —coherencia, tamaño correcto (infra- y **sobre**-ingeniería), mantenibilidad concreta, escalabilidad real y reversibilidad—. Presenta los hallazgos sin filtrar, decide los cambios con el usuario y regístralos en el **Plan change log**; si alteran scope/enfoque de forma material, re-preséntalos para aprobación. No avances hasta que el plan sobreviva o se ajuste.
+
 ## Paso 5 — Descomponer en tareas pequeñas con Gherkin
 
 Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` desde la plantilla **`templates/task.md`** (junto a este skill; ábrela con Read), que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
@@ -85,6 +100,10 @@ Feature: <capacidad de la tarea>
     Then <resultado observable y verificable>
 ```
 
+## Paso 5.5 — Endurecer escenarios (QA, subagente fresco)
+
+Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
+
 ## Paso 6 — Handoff al flujo TDD
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.
@@ -99,7 +118,7 @@ Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), 
 
 ## Reglas de la sesión
 
-- **Checkpoints humanos**: no saltes `grill-me` ni la aprobación del plan.
+- **Checkpoints humanos**: `grill-me` y la aprobación del plan **no se saltan nunca**. `design-review` y `scenario-coverage` solo con el salto en planes triviales (criterios + confirmación + log).
 - **Commits deliberados**: `<task-id>: <conventional commit>` en la rama del plan.
 - **Una sola tarea `active` por plan** (comparten rama).
 - Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo desde `templates/HOW-TO-START-A-TASK.md` (junto a este skill; ábrela con Read y rellena los bloques `ESPECÍFICO DEL PACKAGE`) antes del handoff. Atajo: `/task-init <package>` hace exactamente eso.

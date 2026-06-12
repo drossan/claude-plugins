@@ -4,6 +4,47 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.6.0] — 2026-06-12
+
+### Added
+- **Skill `design-review`**: revisión holística **adversaria** de un plan tras `grill-me`
+  (corre por defecto; con salto solo en planes triviales, ver abajo). La corre un **subagente
+  fresco** (Agent tool,
+  `general-purpose`) al que se le pasan rutas, no opiniones, y al que **no** se le adelanta
+  el veredicto deseado — así se ataca la raíz de la complacencia (presión social + sesgo de
+  confirmación sobre el plan propio), no el síntoma. Evalúa el plan COMO UN TODO en 5 ejes:
+  coherencia, tamaño correcto (infra- y **sobre**-ingeniería), mantenibilidad concreta,
+  escalabilidad real y reversibilidad; salida obligatoria = lista de cambios con porqué, o
+  enumerar qué se intentó romper y por qué resiste (un "me parece bien" no es válido).
+  Complementa a `grill-me` (que baja rama por rama) con el zoom-out que faltaba.
+- **Skill `scenario-coverage`**: endurecimiento QA de los escenarios Gherkin del set de tareas
+  vía **subagente fresco**, tras la descomposición (Paso 5.5). Recorre dimensiones (camino
+  feliz, fronteras/equivalencia, errores/fallos, estado/ciclo de vida, concurrencia, input
+  adversario, Spec implícita y **requisitos que ninguna tarea cubre**) con descarte explícito
+  por N/A — completitud por dimensiones, no por volumen. Tapa el hueco que el gate de mutation
+  NO puede (comportamiento que nunca se programó → sin mutante que lo delate) y abarata el
+  bucle de matar survivors al cierre.
+
+### Changed
+- `skills/task/SKILL.md`: nuevo **Paso 4.5** (invoca `design-review` entre `grill-me` y la
+  descomposición) y **Paso 5.5** (invoca `scenario-coverage` antes del handoff).
+- **Salto proporcional en planes triviales** para `design-review` y `scenario-coverage`: corren
+  por defecto, pero el orquestador puede **ofrecer** saltarlas solo si el plan es objetivamente
+  trivial (un fichero/área, sin superficie pública nueva, sin decisión arquitectónica; y 1 tarea
+  sin bordes para `scenario-coverage`). El salto **lo decide y confirma el usuario** (`AskUserQuestion`,
+  default = ejecutar) y se **registra en el Plan change log** — nunca un auto-skip silencioso del
+  modelo (sería el agujero que el flujo busca evitar). `grill-me` y la aprobación del plan siguen
+  siendo **no negociables**: el escape es proporcional al coste (solo las pasadas por subagente).
+- **Sección `## Provides` sustituye a `## Expected result`** en las plantillas `task.md` y
+  `task-lifecycle.md`: `Expected result` degeneraba en un parafraseo 1:1 de los `Then` del
+  Gherkin (duplicación → drift). `Provides` tiene un trabajo propio: el **contrato hacia abajo**
+  (qué deja disponible para las tareas `depends_on`), no un resumen del comportamiento. El
+  renombrado mata el modo de fallo por estructura (el heading ya no invita a parafrasear), no
+  por una guarda exhortativa. DoD actualizada en consecuencia.
+- `README.md` y `task-lifecycle.md` reflejan los nuevos pasos y la política de checkpoints:
+  **dos no negociables** (`grill-me` + aprobación) y **dos con salto en planes triviales**
+  (`design-review` + `scenario-coverage`).
+
 ## [0.5.0] — 2026-06-12
 
 ### Added

@@ -8,7 +8,7 @@
     {
       "name": "task-pipeline",
       "source": "./task-pipeline",
-      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grill-me -> tareas en Gherkin -> TDD -> gate de mutation testing. Skills /task-init, /task, /mutation y grill-me."
+      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grill-me -> design-review -> tareas en Gherkin -> scenario-coverage -> TDD -> gate de mutation testing. Skills /task-init, /task, /mutation, grill-me, design-review y scenario-coverage."
     }
   ]
 }

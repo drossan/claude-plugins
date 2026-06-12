@@ -4,13 +4,15 @@ Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
 
 ```
 /task "<specs>"  →  plan mode  →  plan en .claude/plans/pending/<package>/
-                 →  grill-me (refinar, checkpoint humano)
+                 →  grill-me (refinar rama a rama, checkpoint humano)
+                 →  design-review (zoom-out adversario vía subagente, checkpoint)
                  →  descomponer en tareas con escenarios Gherkin
+                 →  scenario-coverage (QA adversario de escenarios vía subagente)
                  →  handoff al flujo TDD (Red → Green → Refactor)
                  →  /mutation (gate de calidad de tests, Stryker break 80)
 ```
 
-Dos checkpoints humanos no negociables: **`grill-me`** y **aprobación del plan**. No es fire-and-forget, por diseño.
+Checkpoints humanos: **`grill-me`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
 
 ## Skills
 
@@ -18,7 +20,9 @@ Dos checkpoints humanos no negociables: **`grill-me`** y **aprobación del plan*
 |---|---|
 | `/task-init` | Bootstrapea la convención en el repo (esqueleto `.claude/…` + `task-lifecycle.md` + HOW-TO de un package). Úsalo una vez tras instalar. |
 | `/task` | Orquestador del pipeline completo (incl. caso re-plan de un plan activo). |
-| `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez. |
+| `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez (rama por rama). |
+| `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grill-me`. |
+| `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 
 ## Convención que asume el plugin
@@ -66,8 +70,9 @@ con Jest, npm, no-TS, etc.).
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 
-Los dos checkpoints humanos (`grill-me` y aprobación del plan) **no** son
-configurables: son no negociables por diseño.
+`grill-me` y la aprobación del plan **no** son configurables: no negociables por
+diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
+el opt-out en planes triviales (criterios + confirmación + log), no por flag de repo.
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/task` también avisa/ayuda si te la saltas.
 
