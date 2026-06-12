@@ -46,6 +46,16 @@ Antes de escribir nada, mira el repo en read-only:
 2. Lee `../task/templates/task-lifecycle.md` con **Read** y escríbela en
    `docs/guides/task-lifecycle.md` **solo si no existe**. Ajusta los comandos del
    runner si el repo no usa pnpm/Vitest.
+3. Lee `../task/templates/task-pipeline.yml` con **Read** y escríbela en
+   `.claude/task-pipeline.yml` **solo si no existe**. Es la config del repo (preset
+   `mode`, `stack`, features). **Rellénala con lo que detectaste en el Paso 0** en vez
+   de copiar los defaults a ciegas:
+   - `stack`: `language`, `package-manager`, `test-runner`, `mutation-tool` reales.
+   - `mode`: si **no hay runner de tests** o el repo es legacy sin harness, propón
+     `legacy` (TDD sobre lo que tocas, sin gate de mutation) o `docs-only` (solo
+     planes + docs) y **confírmalo con `AskUserQuestion`** antes de fijarlo. Si hay
+     stack de tests sano, deja `full`.
+   El usuario puede editarla luego. No la sobrescribas si ya existe.
 
 > El hook `SessionStart` del plugin auto-repara esta parte genérica en cada sesión
 > una vez el repo está adoptado. Tú la creas la primera vez.

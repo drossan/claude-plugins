@@ -8,6 +8,7 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 | Plantilla | Se materializa en | Cuándo |
 |---|---|---|
 | `task-lifecycle.md` | `docs/guides/task-lifecycle.md` | Bootstrap del repo (una vez). Flujo canónico: estados, ramas, gates, DoD. |
+| `task-pipeline.yml` | `.claude/task-pipeline.yml` | Bootstrap del repo (una vez). Config del repo: preset `mode` (full/legacy/docs-only), `stack` (runner/gestor/lenguaje) y `features` (tdd, documentación por capas, gate de mutation con umbral). `/task-init` rellena el stack detectado; el hook `SessionStart` la restaura. |
 | `HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` | Una vez por package. Gate de ejecución TDD del package. |
 | `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/task`). |
 | `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/task`). |
@@ -29,6 +30,6 @@ tarea no produce código testeable, se justifica ahí cómo se verifica.
 
 ## Supuestos del plugin
 
-El runner de tests es **Vitest + pnpm** y el gate de calidad es **Stryker**
-(`break: 80`). Si el repo usa otro stack, ajusta los comandos en las plantillas al
-materializarlas.
+Los **defaults** son **TypeScript + Vitest + pnpm + Stryker** (`break: 80`). Si el
+repo usa otro stack, decláralo en `stack:` de `.claude/task-pipeline.yml` (las skills
+eligen comandos con eso) y ajusta los comandos de las plantillas al materializarlas.

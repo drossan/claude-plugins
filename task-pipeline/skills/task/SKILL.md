@@ -11,7 +11,33 @@ Eres el orquestador del flujo de trabajo del repo. A partir de las especificacio
 
 ## Antes de nada — contexto
 
-Lee, en este orden: (1) `docs/guides/task-lifecycle.md` y (2) el `HOW-TO-START-A-TASK.md` del package objetivo. No dupliques esas reglas; este playbook solo orquesta.
+Lee, en este orden: (1) `docs/guides/task-lifecycle.md`, (2) el `HOW-TO-START-A-TASK.md` del package objetivo y (3) `.claude/task-pipeline.yml` (config de features del repo). No dupliques esas reglas; este playbook solo orquesta.
+
+### Config del repo (`.claude/task-pipeline.yml`)
+
+Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pipeline.yml` con **Read** y respétalo. **Resolución** (de menor a mayor prioridad): defaults internos (= preset `full`) → el preset de `mode:` → claves explícitas en `stack:`/`features:`. **Archivo, sección o clave ausente = se hereda del nivel anterior; sin archivo = todo `full`** (comportamiento histórico).
+
+**`mode:` (preset)** — fija los defaults de las features:
+
+| `mode` | `tdd` | `closing-documentation.*` | `mutation-gate` |
+|---|---|---|---|
+| `full` (default) | ON | ON | `80` |
+| `legacy` | ON | ON | OFF |
+| `docs-only` | OFF | ON | OFF |
+
+**`stack:`** — usa estos valores en vez de asumir pnpm/Vitest/Stryker. Adapta los comandos de test/lint/mutation al `package-manager` y `test-runner`; `language: other` significa que "doc en el código" no es TSDoc sino el equivalente del lenguaje (o N/A); `mutation-tool: none` desactiva de facto el gate aunque `mutation-gate` traiga número.
+
+**`features:`** (una clave explícita pisa al preset):
+
+| Flag | Valores | Si desactivado |
+|---|---|---|
+| `features.tdd` | `true`/`false` | La DoD **no** exige tests/TDD ni "1 test por escenario" (escape hatch para legacy sin harness / doc-only). |
+| `features.closing-documentation.tsdoc` | `true`/`false` | No exiges doc en el código en la DoD. |
+| `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
+| `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
+| `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+
+> **No configurable**: `grill-me` y la aprobación del plan son checkpoints por diseño; ningún flag ni preset los desactiva.
 
 ## Paso 0 — ¿Plan nuevo o re-plan?
 
@@ -48,7 +74,7 @@ Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude
 
 ### Gherkin = fuente de los tests
 
-Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre).
+Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre). Si `features.tdd` es `false`, los escenarios siguen siendo útiles como **spec de comportamiento** (criterio de aceptación), pero no se exige un test por cada uno.
 
 ```gherkin
 Feature: <capacidad de la tarea>
@@ -63,13 +89,13 @@ Feature: <capacidad de la tarea>
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.
 
-## Documentar todo (tres capas obligatorias)
+## Documentar todo (tres capas — configurables)
 
-Cada tarea documenta en tres capas (van en la DoD de cada task): (1) **TSDoc en el código** de todo símbolo público (al crearlo, no al final), (2) **doc técnica/contexto** (README/CLAUDE.md/specs/ADRs), (3) **histórico de la tarea** (session log en `.claude/context/<package>/<task-id>.md`). Docs de dev/usuario + changeset cuando aplique.
+Cada tarea documenta en tres capas, **cada una activable por flag** (default ON; ver la tabla de arriba): (1) **TSDoc en el código** de todo símbolo público (al crearlo, no al final) — `closing-documentation.tsdoc`; (2) **doc técnica/contexto** (README/CLAUDE.md/specs/ADRs) — `closing-documentation.technical-docs`; (3) **histórico de la tarea** (session log en `.claude/context/<package>/<task-id>.md`) — `closing-documentation.context-log`. Docs de dev/usuario + changeset cuando aplique. Una capa con flag `false` no entra en la DoD ni bloquea el cierre.
 
 ## Paso 7 — Gate de cierre por tarea: mutation testing
 
-Cada tarea no se cierra hasta pasar el gate de **mutation testing** (Stryker, `break: 80`). Ver la skill `/mutation`.
+Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), cada tarea no se cierra hasta pasar el gate de **mutation testing** con el umbral configurado (`true` = `break:80`; `<int>` = ese umbral). Ver la skill `/mutation`, que lee el mismo `stack`/umbral del YAML.
 
 ## Reglas de la sesión
 

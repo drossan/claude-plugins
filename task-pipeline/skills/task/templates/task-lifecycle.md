@@ -9,6 +9,38 @@ el **Registro de cambios** del plan afectado.
 > plantilla. Ajústalo a las particularidades del repo (lista de packages, runner
 > de tests, comandos) pero conserva el esqueleto: estados, ramas, gates y DoD.
 
+## Configuración del repo (`.claude/task-pipeline.yml`)
+
+Algunas fases del pipeline son **opcionales y configurables por repo** en
+`.claude/task-pipeline.yml`. Las skills lo leen y lo respetan. **Resolución**:
+defaults internos (= preset `full`) → preset de `mode:` → claves explícitas en
+`stack:`/`features:`. **Sin archivo → todo `full`** (comportamiento histórico).
+
+**`mode:`** fija los defaults de las features:
+
+| `mode` | `tdd` | docs | `mutation-gate` | Para |
+|---|---|---|---|---|
+| `full` (default) | ON | ON | `80` | repos con stack de tests sano |
+| `legacy` | ON | ON | OFF | legacy: testeas lo que tocas, pero no llegas a 80 |
+| `docs-only` | OFF | ON | OFF | solo orquestar planes + documentar |
+
+**`stack:`** (`language`, `package-manager`, `test-runner`, `mutation-tool`): las
+skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
+
+**`features:`** (una clave explícita pisa el preset):
+
+| Flag | Valores | Controla |
+|---|---|---|
+| `features.tdd` | `true`/`false` | Exigir tests/TDD (1 test por escenario) en la DoD. |
+| `features.closing-documentation.tsdoc` | `true`/`false` | Doc en el código en la DoD. |
+| `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
+| `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
+| `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
+
+Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
+el cierre. **Los dos checkpoints humanos (`grill-me` y la aprobación del plan) NO
+son configurables** — son por diseño.
+
 ## Layout de directorios
 
 ```
@@ -103,15 +135,19 @@ Feature: <capacidad bajo esta tarea>
 ```
 ## Expected result
 ## Definition of Done
-- [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor
-- [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)
+- [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor  · solo si `features.tdd`
+- [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)  · solo si `features.tdd`
 - [ ] Todos los tests en verde
 - [ ] Spec y resultado esperado cumplidos
 - [ ] Lint / format / typecheck OK
-- [ ] Gate de mutation testing superado (Stryker, `break: 80`)
-- [ ] Documentación — tres capas obligatorias (TSDoc + doc técnica + histórico)
+- [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
+- [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
+
+> Las líneas de TDD, gate de mutation y documentación se rigen por
+> `.claude/task-pipeline.yml` (preset `mode` + flags): una fase desactivada se omite
+> de la DoD. Sin el archivo (o en `full`), todas son obligatorias.
 
 La skill `/task` copia estas plantillas (sus ficheros completos `plan.md` /
 `task.md`) al crear cada plan/tarea. No las re-inventes por sesión.
@@ -158,7 +194,7 @@ La skill `/task` copia estas plantillas (sus ficheros completos `plan.md` /
 
 ## Trabajar una tarea
 
-- TDD obligatorio: test que falla primero, luego la implementación mínima, luego refactor.
+- TDD obligatorio (si `features.tdd`, default): test que falla primero, luego la implementación mínima, luego refactor. En `legacy`/`docs-only` con `tdd: false`, no se exige.
 - SOLID, Clean Code y los patrones que apliquen — no negociable.
 - **Documenta sobre la marcha**: todo símbolo público lleva **TSDoc** al escribirlo
   (no al final). La doc nunca es un afterthought.
@@ -172,16 +208,16 @@ particular:
 1. Todos los tests en verde (`pnpm --filter <pkg> test` o repo-wide `pnpm test`).
 2. Lint / format / typecheck OK (`pnpm lint`).
 3. **Gate de mutation testing superado** (Stryker, `break: 80`) sobre los ficheros
-   que tocó la tarea. Survivors por debajo del umbral = tests/aserciones que faltan
-   (a menudo un escenario Gherkin sin assert real) → refuerza los tests hasta
-   matarlos. Ver la skill `/mutation`.
-4. **Documentación actualizada** — tres capas obligatorias (siempre), más dev/usuario
-   donde aplique:
-   - **TSDoc en el código** (siempre): cada símbolo público con su comentario
-     (intención, params, returns, errores). No es "donde aplique".
-   - **Doc técnica / contexto** (siempre): README del package, `CLAUDE.md` del
-     workspace, `.claude/specs/`, ADRs para decisiones de arquitectura.
-   - **Histórico de la tarea** (siempre): el session log (paso 5).
+   que tocó la tarea — salvo que `features.mutation-gate` sea `false`. Survivors por
+   debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
+   assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
+4. **Documentación actualizada** — tres capas (cada una obligatoria salvo que su flag
+   en `features.closing-documentation.*` sea `false`), más dev/usuario donde aplique:
+   - **TSDoc en el código** (`tsdoc`): cada símbolo público con su comentario
+     (intención, params, returns, errores).
+   - **Doc técnica / contexto** (`technical-docs`): README del package, `CLAUDE.md`
+     del workspace, `.claude/specs/`, ADRs para decisiones de arquitectura.
+   - **Histórico de la tarea** (`context-log`): el session log (paso 5).
    - **Dev / usuario final** (donde aplique): onboarding, guías, scripts,
      `.env.example`, mensajes de error, entrada de `pnpm changeset`.
 

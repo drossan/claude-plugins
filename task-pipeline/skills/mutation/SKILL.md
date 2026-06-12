@@ -3,9 +3,16 @@ name: mutation
 description: Gate de mutation testing con Stryker para cerrar una tarea — corre sobre los ficheros que tocó la tarea, lee los survivors y refuerza los tests hasta superar el umbral (break 80). Úsalo en el cierre de cada tarea (DoD) o cuando el usuario pida comprobar la calidad de los tests. Opcional: pásale el package (p.ej. `/mutation storage`).
 ---
 
-Verificas que los tests de la tarea son **de calidad**, no solo que pasan: Stryker muta el código y comprueba que algún test falla por cada mutación. Un *survivor* = test que falta o assert vacío. El gate se supera con **mutation score ≥ 80** (`break: 80`).
+Verificas que los tests de la tarea son **de calidad**, no solo que pasan: Stryker muta el código y comprueba que algún test falla por cada mutación. Un *survivor* = test que falta o assert vacío. El gate se supera con **mutation score ≥ umbral** (`break`, por defecto `80`).
 
-Asume un repo con tests en **Vitest** y gestor **pnpm** (ajusta los comandos si el repo usa otro runner/gestor).
+## Paso 0 — Leer la config del repo
+
+Lee `.claude/task-pipeline.yml` con **Read** (si existe) y respétalo:
+
+- `features.mutation-gate` → `false` (o `stack.mutation-tool: none`): **no hay gate**; informa y sal sin correr nada. `true` → umbral `break:80`. `<int>` → ese umbral `break`.
+- `stack.test-runner` / `stack.package-manager` → elige runner y gestor reales (abajo se asume **Vitest + pnpm**; si difiere, ajusta el plugin del runner y los comandos: p.ej. `@stryker-mutator/jest-runner` + `"testRunner": "jest"`).
+
+Sin archivo, asume los defaults (`break:80`, Vitest + pnpm).
 
 ## Paso 1 — Package y ficheros tocados
 
@@ -35,7 +42,7 @@ pnpm --filter <pkg> add -D @stryker-mutator/core @stryker-mutator/vitest-runner
   "plugins": ["@stryker-mutator/vitest-runner"],
   "coverageAnalysis": "perTest",
   "mutate": ["src/**/*.ts", "!src/**/*.d.ts"],
-  "thresholds": { "break": 80 },
+  "thresholds": { "break": 80 },          // usa el umbral de features.mutation-gate si no es 80
   "reporters": ["clear-text", "progress"]
 }
 ```
@@ -54,7 +61,7 @@ cd <ruta-del-package>
 pnpm exec stryker run --mutate "<fichero1>,<fichero2>" 2>&1 | tail -40
 ```
 
-Con `thresholds.break: 80`, Stryker sale con código ≠ 0 si baja de 80 → el gate falla.
+Con `thresholds.break` al umbral configurado, Stryker sale con código ≠ 0 si baja de él → el gate falla.
 
 ## Paso 4 — Matar survivors (bucle TDD)
 

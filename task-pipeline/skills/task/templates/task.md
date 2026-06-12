@@ -54,14 +54,18 @@ qué pueden hacer otros módulos. Comprobable desde fuera.>
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor
-- [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)
+<!-- Las líneas marcadas (flag) solo aplican si su flag en .claude/task-pipeline.yml
+     no está desactivado (por preset `mode` o clave explícita). Default (o sin
+     archivo) = todas obligatorias. Si desactivas un flag en el repo, borra su línea
+     de esta DoD al materializar la tarea. -->
+- [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor  · (flag `features.tdd`)
+- [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)  · (flag `features.tdd`)
 - [ ] Todos los tests en verde
 - [ ] Spec y resultado esperado cumplidos
 - [ ] Lint / format / typecheck OK
-- [ ] Gate de mutation testing superado (Stryker, `break: 80`) — sin survivors por debajo del umbral
-- [ ] Documentación actualizada — tres capas obligatorias:
-  - [ ] **TSDoc en el código** — todo símbolo público (funciones, clases, tipos, puertos, errores) documentado con TSDoc, al crearlo (no al final)
-  - [ ] **Doc técnica (contexto)** — README / `CLAUDE.md` del package / `.claude/specs/` / ADRs donde aplique
-  - [ ] **Histórico de la tarea** — session log en `.claude/context/<package>/<task-id>.md` (qué se hizo + por qué)
+- [ ] Gate de mutation testing superado (Stryker, umbral `break`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
+- [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):
+  - [ ] **TSDoc en el código** — todo símbolo público (funciones, clases, tipos, puertos, errores) documentado con TSDoc, al crearlo (no al final)  · (flag `tsdoc`)
+  - [ ] **Doc técnica (contexto)** — README / `CLAUDE.md` del package / `.claude/specs/` / ADRs donde aplique  · (flag `technical-docs`)
+  - [ ] **Histórico de la tarea** — session log en `.claude/context/<package>/<task-id>.md` (qué se hizo + por qué)  · (flag `context-log`)
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique

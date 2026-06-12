@@ -19,13 +19,14 @@ set -eu
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 TEMPLATES="${CLAUDE_PLUGIN_ROOT:-}/skills/task/templates"
 LIFECYCLE="$PROJECT_DIR/docs/guides/task-lifecycle.md"
+FEATURES="$PROJECT_DIR/.claude/task-pipeline.yml"
 
 cd "$PROJECT_DIR" 2>/dev/null || exit 0
 
 # --- gate de adopción --------------------------------------------------------
 # El repo "usa task-pipeline" si ya existe alguno de estos marcadores.
 adopted=0
-for marker in .claude/plans .claude/tasks .claude/specs docs/guides/task-lifecycle.md; do
+for marker in .claude/plans .claude/tasks .claude/specs .claude/task-pipeline.yml docs/guides/task-lifecycle.md; do
   if [ -e "$marker" ]; then adopted=1; break; fi
 done
 [ "$adopted" -eq 1 ] || exit 0   # no adoptado → no-op silencioso
@@ -48,14 +49,23 @@ if [ ! -f "$LIFECYCLE" ] && [ -f "$TEMPLATES/task-lifecycle.md" ]; then
   cp "$TEMPLATES/task-lifecycle.md" "$LIFECYCLE" && restored_guide=1
 fi
 
+# --- asegurar la config de features (defaults) ------------------------------
+restored_features=0
+if [ ! -f "$FEATURES" ] && [ -f "$TEMPLATES/task-pipeline.yml" ]; then
+  cp "$TEMPLATES/task-pipeline.yml" "$FEATURES" && restored_features=1
+fi
+
 # --- reportar SOLO si hemos cambiado algo ------------------------------------
-if [ "$created" -eq 0 ] && [ "$restored_guide" -eq 0 ]; then
+if [ "$created" -eq 0 ] && [ "$restored_guide" -eq 0 ] && [ "$restored_features" -eq 0 ]; then
   exit 0   # todo en su sitio → silencio
 fi
 
 msg="task-pipeline: scaffolding genérico asegurado en este repo."
 if [ "$restored_guide" -eq 1 ]; then
   msg="$msg Restaurado docs/guides/task-lifecycle.md desde la plantilla del plugin."
+fi
+if [ "$restored_features" -eq 1 ]; then
+  msg="$msg Restaurado .claude/task-pipeline.yml (config de features, defaults ON) desde la plantilla del plugin."
 fi
 msg="$msg Para inicializar un package nuevo (su HOW-TO-START-A-TASK.md) usa /task-init <package>."
 

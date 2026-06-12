@@ -14,6 +14,12 @@
 
 > ## 🚦 GATE TDD — IMPERATIVO, NO NEGOCIABLE
 >
+> **Este gate asume el preset `full`** (defaults del plugin). Si `.claude/task-pipeline.yml`
+> baja el listón para este repo (`mode: legacy`/`docs-only`, `features.tdd: false`,
+> `mutation-gate` OFF o con otro umbral, capas de doc desactivadas), **respeta esa
+> config**: lo desactivado deja de ser obligatorio. Si editas el `mode`/flags, ajusta
+> también las exigencias de abajo en este HOW-TO.
+>
 > **Idea**: si el test falla **primero** (Red), tenemos la red de seguridad que
 > garantiza que la implementación posterior (Green) hace exactamente lo
 > especificado y que el refactor no rompe nada. Empezar por el código en vez de

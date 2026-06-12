@@ -31,8 +31,43 @@ El plugin NO impone estructura nueva; asume que el repo ya organiza el trabajo a
   tasks/<estado>/<package>/<task-id>.md
   context/<package>/<task-id>.md               # histórico de sesión (append-only)
   specs/<package>/HOW-TO-START-A-TASK.md        # gate de ejecución por package
+  task-pipeline.yml                             # config de features del repo (defaults ON)
 docs/guides/task-lifecycle.md                  # flujo canónico (estados, plantillas, DoD)
 ```
+
+## Configuración por repo (`.claude/task-pipeline.yml`)
+
+El pipeline se adapta al repo vía `.claude/task-pipeline.yml`. Las skills lo leen y
+lo respetan. **Resolución**: defaults internos (= preset `full`) → preset de `mode:`
+→ claves explícitas en `stack:`/`features:`. **Sin archivo → todo `full`** (el
+comportamiento histórico, así repos existentes no cambian). `/task-init` lo
+materializa rellenando el `stack` detectado, y el hook `SessionStart` lo restaura si
+se borra.
+
+**Preset (`mode`)** — para no acertar 5 flags sueltos:
+
+| `mode` | `tdd` | docs | `mutation-gate` | Para |
+|---|---|---|---|---|
+| `full` (default) | ON | ON | `80` | repos con stack de tests sano |
+| `legacy` | ON | ON | OFF | legacy: testeas lo que tocas, pero no llegas a 80 |
+| `docs-only` | OFF | ON | OFF | solo orquestar planes + documentar |
+
+**Stack (`stack`)** — `language`, `package-manager`, `test-runner`, `mutation-tool`:
+las skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker (cubre repos
+con Jest, npm, no-TS, etc.).
+
+**Flags (`features`)** — una clave explícita pisa el preset:
+
+| Flag | Valores | Qué controla |
+|---|---|---|
+| `features.tdd` | `true`/`false` | Exigir tests/TDD en la DoD (escape hatch para legacy sin harness). |
+| `features.closing-documentation.tsdoc` | `true`/`false` | Doc en el código. |
+| `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
+| `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
+| `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
+
+Los dos checkpoints humanos (`grill-me` y aprobación del plan) **no** son
+configurables: son no negociables por diseño.
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/task` también avisa/ayuda si te la saltas.
 
@@ -58,6 +93,7 @@ El plugin trae las **semillas** que `/task` materializa en el repo (no se inyect
 | Plantilla | Se materializa en |
 |---|---|
 | `skills/task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
+| `skills/task/templates/task-pipeline.yml` | `.claude/task-pipeline.yml` (config del repo: preset/stack/features, una vez) |
 | `skills/task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
 | `skills/task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |
 | `skills/task/templates/task.md` | `.claude/tasks/pending/<package>/<task-id>.md` (por tarea; incluye `## Scenarios (Gherkin)`) |
@@ -69,9 +105,9 @@ Detalle y placeholders en `skills/task/templates/README.md`. Esto cierra el boot
 ## Config específica del proyecto (no va en el plugin)
 
 - Lista de workspaces/packages.
-- `stryker.config.json` por package (runner, globs a mutar, umbral). El plugin trae la plantilla; el repo la materializa.
+- `stryker.config.json` por package (runner, globs a mutar, umbral). El plugin trae la plantilla; el repo la materializa. El umbral `break` sale de `features.mutation-gate`.
 - `task-lifecycle.md`, specs y HOW-TOs propios del repo.
-- Runner de tests (el plugin asume **Vitest + pnpm**; ajustar comandos si difiere).
+- Stack (runner/gestor/lenguaje): se declara en `stack:` de `.claude/task-pipeline.yml`. Por defecto el plugin asume **TypeScript + Vitest + pnpm + Stryker**; cámbialo ahí si difiere.
 
 ## Instalar en un proyecto
 
