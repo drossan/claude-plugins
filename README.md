@@ -17,7 +17,7 @@ Las skills quedan *namespaced* por el plugin: `/task-pipeline:task`, `/task-pipe
 Desde cualquier proyecto, añade este marketplace e instala el plugin:
 
 ```
-/plugin marketplace add danielrosse/claude-plugins
+/plugin marketplace add drossan/claude-plugins
 /plugin install task-pipeline@local-plugins
 ```
 
@@ -25,10 +25,10 @@ Desde cualquier proyecto, añade este marketplace e instala el plugin:
 - Como el repo es **público**, no necesitas clonarlo ni autenticarte: `marketplace add` lo descarga solo.
 - Equivalente por **CLI** (sin entrar a la sesión interactiva):
   ```bash
-  claude plugin marketplace add danielrosse/claude-plugins
+  claude plugin marketplace add drossan/claude-plugins
   claude plugin install task-pipeline@local-plugins
   ```
-- Anclar a una versión/rama (opcional): `/plugin marketplace add danielrosse/claude-plugins@v0.1.0`
+- Anclar a una versión/rama (opcional): `/plugin marketplace add drossan/claude-plugins@v0.1.0`
 - Actualizar tras un cambio publicado: `/plugin marketplace update local-plugins`
 - Listar / habilitar / deshabilitar: `/plugin list`, `/plugin enable task-pipeline`, `/plugin disable task-pipeline`
 
