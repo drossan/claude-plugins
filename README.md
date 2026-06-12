@@ -21,8 +21,28 @@ Desde cualquier proyecto, añade este marketplace e instala el plugin:
 /plugin install task-pipeline@local-plugins
 ```
 
+- Se instala **a nivel de usuario** (`~/.claude/plugins/`): una vez añadido en una máquina, está disponible en **todos los proyectos** de esa máquina; no hay que reinstalarlo por repo.
+- Como el repo es **público**, no necesitas clonarlo ni autenticarte: `marketplace add` lo descarga solo.
+- Equivalente por **CLI** (sin entrar a la sesión interactiva):
+  ```bash
+  claude plugin marketplace add danielrosse/claude-plugins
+  claude plugin install task-pipeline@local-plugins
+  ```
+- Anclar a una versión/rama (opcional): `/plugin marketplace add danielrosse/claude-plugins@v0.1.0`
 - Actualizar tras un cambio publicado: `/plugin marketplace update local-plugins`
 - Listar / habilitar / deshabilitar: `/plugin list`, `/plugin enable task-pipeline`, `/plugin disable task-pipeline`
+
+## Uso
+
+Una vez instalado, las skills se invocan **namespaced por el plugin**:
+
+```
+/task-pipeline:task "<specs de lo que quieres construir>"   # orquesta plan → grill-me → tareas → TDD → mutation
+/task-pipeline:mutation                                      # gate de mutation testing al cerrar una tarea
+/task-pipeline:grill-me                                      # interroga/refina un plan o diseño
+```
+
+> En un proyecto nuevo, `task` y `mutation` asumen la convención de trabajo (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, **pnpm + Vitest + Stryker**). `task` ayuda a bootstrapearla o avisa antes de seguir; `grill-me` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
 
 ### Desarrollo en local (sin GitHub)
 
