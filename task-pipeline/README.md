@@ -16,6 +16,7 @@ Dos checkpoints humanos no negociables: **`grill-me`** y **aprobación del plan*
 
 | Skill | Qué hace |
 |---|---|
+| `/task-init` | Bootstrapea la convención en el repo (esqueleto `.claude/…` + `task-lifecycle.md` + HOW-TO de un package). Úsalo una vez tras instalar. |
 | `/task` | Orquestador del pipeline completo (incl. caso re-plan de un plan activo). |
 | `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
@@ -33,7 +34,22 @@ El plugin NO impone estructura nueva; asume que el repo ya organiza el trabajo a
 docs/guides/task-lifecycle.md                  # flujo canónico (estados, plantillas, DoD)
 ```
 
-Si un repo no sigue esta convención, `/task` ayuda a bootstrapearla o avisa antes de continuar.
+Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/task` también avisa/ayuda si te la saltas.
+
+## Bootstrap del repo (tras instalar)
+
+Dos mecanismos, complementarios:
+
+- **`/task-init [<package>]`** (explícito, recomendado para arrancar): materializa la
+  parte genérica (esqueleto `.claude/…` + `docs/guides/task-lifecycle.md`) y, si le
+  pasas un package, su `HOW-TO-START-A-TASK.md` rellenando los bloques específicos.
+  Reemplaza el viejo `/task "inicia el proyecto…"` en lenguaje libre.
+- **Hook `SessionStart`** (automático, auto-reparable): en cada arranque/resume de
+  sesión, si el repo **ya está adoptado** (existe `.claude/plans|tasks|specs` o el
+  `task-lifecycle.md`), asegura el esqueleto y restaura `task-lifecycle.md` si se
+  borró. En repos **no adoptados** es un no-op silencioso (no ensucia proyectos
+  ajenos: el plugin es global). La adopción inicial siempre es explícita con
+  `/task-init`.
 
 ## Plantillas (`skills/task/templates/`)
 
