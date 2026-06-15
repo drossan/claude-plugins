@@ -4,6 +4,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.7.2] — 2026-06-15
+
+### Added
+- **Guía de presentación del flujo para el equipo** (`docs/flujo-del-pipeline.md`):
+  resumen narrativo del pipeline (los 7 pasos + checkpoints), tabla de las 6 skills,
+  las dos ideas clave (Gherkin como fuente 1:1 de los tests y los gates de coste
+  proporcional) y un **ejemplo end-to-end** ("rechazar email duplicado" en el package
+  `auth`) que recorre los pasos mostrando qué cambia cada gate (`grill-me`,
+  `design-review`, `scenario-coverage`, `/mutation`).
+- `README.md`: nota destacada que enlaza la nueva guía como punto de partida para
+  presentar el plugin al equipo.
+
+Solo documentación; sin cambios de comportamiento.
+
 ## [0.7.1] — 2026-06-15
 
 ### Changed
