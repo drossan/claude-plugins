@@ -4,6 +4,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.7.1] — 2026-06-15
+
+### Changed
+- **Doc al día con el estado real del plugin** (drift de índices, sin cambios de comportamiento):
+  - `templates/task-lifecycle.md`: su bloque `## Scenarios (Gherkin)` inline (la guía
+    canónica es **autocontenida**, no puede apuntar a la plantilla una vez materializada en
+    `docs/guides/`) recibe la **versión condensada** de las reglas de calidad de 0.7.0
+    (declarativo > imperativo, 1 comportamiento, disciplina G/W/T, `Scenario Outline`) +
+    ejemplo de `Scenario Outline`. Cierra el drift entre la guía y la semilla `task.md`.
+  - `README.md` (raíz/marketplace) estaba congelado en ~0.2.0: ahora la tabla de skills, la
+    lista *namespaced*, el árbol de estructura y la sección de portabilidad incluyen
+    `/task-init` (0.3.0), `design-review` y `scenario-coverage` (0.6.0), y reflejan que el
+    **stack ya no es una asunción rígida** sino config de `.claude/task-pipeline.yml` (0.5.0).
+  - `plugin.json`: `description` alineada con `marketplace.json` (incluye bootstrap,
+    design-review, scenario-coverage y config por repo).
+
 ## [0.7.0] — 2026-06-15
 
 ### Changed
