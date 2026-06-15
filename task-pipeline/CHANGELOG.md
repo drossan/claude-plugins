@@ -4,6 +4,28 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.7.0] — 2026-06-15
+
+### Changed
+- **Reglas de calidad Gherkin en `templates/task.md`**: la sección `## Scenarios (Gherkin)`
+  pasa de modelar solo la estructura G/W/T a fijar las recomendaciones oficiales/comunidad que
+  rigen su función (notación dev-only fuente 1:1 de tests TDD), en orden de impacto:
+  (1) **declarativo, no imperativo** — el `When` es acción de dominio, no pasos de UI/llamadas
+  internas (imperativo = test acoplado a la implementación que se rompe en cada refactor);
+  (2) **un escenario = un comportamiento** (falla por una sola razón); (3) **disciplina G/W/T**
+  con `And`/`But` para condiciones/resultados adicionales; (4) **`Scenario Outline` + `Examples`**
+  para fronteras/clases de equivalencia del MISMO comportamiento (engancha con la dimensión
+  "fronteras" de `scenario-coverage`). El bloque de ejemplo modela el `When` declarativo y un
+  `Scenario Outline` bien formado.
+- `skills/task/SKILL.md`: la subsección *"Gherkin = fuente de los tests"* referencia esas reglas
+  (sin duplicarlas — el playbook solo orquesta).
+
+### Notes
+- Decisión consciente: se omiten `Background`, `Rule:` y tags. No se ejecutan como Gherkin (se
+  traducen a tests nativos), así que tags no aportan y `Rule:` sobre-estructura a nivel de tarea;
+  `Background` se deja al autor que lo necesite. Las reglas son **convención, no gate**: la
+  adherencia depende de quien escribe (proporcional a un uso dev-only).
+
 ## [0.6.0] — 2026-06-12
 
 ### Added

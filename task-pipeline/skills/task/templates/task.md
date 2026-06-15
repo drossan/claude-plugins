@@ -29,6 +29,22 @@ Lista de bullets verificables, no prosa. Enlaza la(s) spec(s) del artefacto.>
 <!-- Cada escenario es la fuente 1:1 de un test TDD — el `Then` es el assert.
      Cubre el camino feliz Y los bordes/errores (el mutation testing del cierre
      los exige: un survivor suele ser un escenario sin assert real).
+
+     REGLAS (en orden de impacto en la calidad del test — respétalas):
+     1. Declarativo, NO imperativo. Describe QUÉ comportamiento, no CÓMO se invoca.
+        El `When` es una acción de dominio (`When reservo la hamaca "A-12"`), no una
+        secuencia de pasos internos, de UI o de clicks. Imperativo = test acoplado a
+        la implementación que se rompe en cada refactor sin que cambie el comportamiento.
+     2. Un escenario = un comportamiento. Si aparece When…Then…When…Then, son dos
+        escenarios. Cada uno debe poder fallar por UNA sola razón (un test, un motivo).
+     3. Disciplina Given/When/Then. Given = estado previo (en pasado); When = UNA
+        acción ejercitada; Then = resultado observable. No metas acciones en el Given
+        ni asserts en el When: enturbia qué se está probando. Para condiciones o
+        resultados adicionales usa `And`/`But`, no encadenes varias cosas en un paso.
+     4. Para variaciones del MISMO comportamiento (fronteras, clases de equivalencia,
+        off-by-one) usa `Scenario Outline` + `Examples`; no copies escenarios casi
+        iguales. (Conecta con la dimensión "fronteras" de scenario-coverage.)
+
      Si la tarea no produce código testeable (p.ej. bootstrap de tipos, doc-only),
      sustituye los escenarios por una nota que lo justifique y di cómo se verifica
      (p.ej. "verificación = compila / valida"). -->
@@ -38,13 +54,28 @@ Feature: <capacidad que aporta esta tarea>
 
   Scenario: <caso concreto del camino feliz>
     Given <precondición / estado>
-    When <acción>
+    When <acción de dominio — qué se hace, no cómo se invoca>
     Then <resultado observable y verificable>
 
   Scenario: <caso de error / borde>
     Given ...
     When ...
     Then <error esperado, código, efecto>
+
+  # Variaciones del MISMO comportamiento (fronteras / clases de equivalencia).
+  # OJO: aquí <entrada> y <esperado> NO son "huecos a rellenar" como los <...> de
+  # arriba — son la sintaxis real de Gherkin que referencia columnas de Examples.
+  # Mantenlas; rellena solo el resto del texto del paso.
+  Scenario Outline: <comportamiento> según <entrada>
+    Given <precondición>
+    When se ejercita con <entrada>
+    Then el resultado es <esperado>
+
+    Examples:
+      | entrada | esperado |
+      | vacío   | ...      |
+      | 1       | ...      |
+      | máx     | ...      |
 ```
 
 ## Provides
