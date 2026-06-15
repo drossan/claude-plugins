@@ -14,6 +14,8 @@ Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
 
 Checkpoints humanos: **`grill-me`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
 
+> 📖 ¿Presentando el pipeline al equipo? Empieza por [docs/flujo-del-pipeline.md](docs/flujo-del-pipeline.md) — resumen del flujo, las skills y las ideas clave, con un ejemplo end-to-end.
+
 ## Skills
 
 | Skill | Qué hace |
