@@ -5,7 +5,7 @@ se sigue y se cierra el trabajo en este repo. Esta guía es la **referencia
 canónica** para humanos y agentes. Cualquier desviación se motiva y se registra en
 el **Registro de cambios** del plan afectado.
 
-> Este fichero lo materializa la skill `/task` (plugin `task-pipeline`) desde su
+> Este fichero lo materializa la skill `/plan-task` (plugin `task-pipeline`) desde su
 > plantilla. Ajústalo a las particularidades del repo (lista de packages, runner
 > de tests, comandos) pero conserva el esqueleto: estados, ramas, gates y DoD.
 
@@ -175,12 +175,12 @@ Feature: <capacidad bajo esta tarea>
 > `.claude/task-pipeline.yml` (preset `mode` + flags): una fase desactivada se omite
 > de la DoD. Sin el archivo (o en `full`), todas son obligatorias.
 
-La skill `/task` copia estas plantillas (sus ficheros completos `plan.md` /
+La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 `task.md`) al crear cada plan/tarea. No las re-inventes por sesión.
 
 ## Crear un plan
 
-> La skill `/task` orquesta todo este flujo (plan mode → plan en `pending/` →
+> La skill `/plan-task` orquesta todo este flujo (plan mode → plan en `pending/` →
 > `grill-me` → `design-review` → tareas Gherkin → `scenario-coverage` → handoff TDD
 > → gate de mutation). Los pasos de abajo son lo que sigue, y lo que haces tú si lo
 > conduces a mano.

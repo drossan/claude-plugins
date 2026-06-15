@@ -1,10 +1,10 @@
 ---
 name: task-init
-description: Inicializa (bootstrapea) la convención del plugin task-pipeline en un repo — esqueleto .claude/plans|tasks|context|specs, docs/guides/task-lifecycle.md y, opcionalmente, el HOW-TO-START-A-TASK.md de un package. Úsalo UNA vez tras instalar el plugin, antes de tu primer `/task`. Ejemplos: `/task-init`, `/task-init api`.
+description: Inicializa (bootstrapea) la convención del plugin task-pipeline en un repo — esqueleto .claude/plans|tasks|context|specs, docs/guides/task-lifecycle.md y, opcionalmente, el HOW-TO-START-A-TASK.md de un package. Úsalo UNA vez tras instalar el plugin, antes de tu primer `/plan-task`. Ejemplos: `/task-init`, `/task-init api`.
 ---
 
 Eres el bootstrapper del flujo `task-pipeline`. Tu único trabajo es dejar el repo
-listo para que `/task "<specs>"` arranque sin tener que improvisar la estructura.
+listo para que `/plan-task "<specs>"` arranque sin tener que improvisar la estructura.
 Hay dos mitades:
 
 1. **Genérica** (siempre): el esqueleto de carpetas y la guía canónica del ciclo
@@ -13,12 +13,12 @@ Hay dos mitades:
    acuerdas con el usuario): el `HOW-TO-START-A-TASK.md` del package, que requiere
    rellenar bloques con criterio.
 
-> **Plantillas (semillas)**: viven en el skill hermano `task`, en
-> `skills/task/templates/` (mismo plugin). `${CLAUDE_PLUGIN_ROOT}` no se expande en
+> **Plantillas (semillas)**: viven en el skill hermano `plan-task`, en
+> `skills/plan-task/templates/` (mismo plugin). `${CLAUDE_PLUGIN_ROOT}` no se expande en
 > el cuerpo de un `SKILL.md`, así que localízalas con la tool **Read** por ruta
-> relativa al directorio de ESTE skill: `../task/templates/`. Si tienes la ruta
+> relativa al directorio de ESTE skill: `../plan-task/templates/`. Si tienes la ruta
 > absoluta de este skill (`.../task-pipeline/skills/task-init/`), las plantillas
-> están en `.../task-pipeline/skills/task/templates/`. **Léelas y materialízalas**;
+> están en `.../task-pipeline/skills/plan-task/templates/`. **Léelas y materialízalas**;
 > no improvises el contenido.
 
 > **Idempotente**: nunca pises un fichero que ya existe. Si un destino ya está,
@@ -43,10 +43,10 @@ Antes de escribir nada, mira el repo en read-only:
    `.claude/plans/{pending,active,completed,cancelled}/`,
    `.claude/tasks/{pending,active,completed,cancelled}/`,
    `.claude/context/`, `.claude/specs/`, `docs/guides/`.
-2. Lee `../task/templates/task-lifecycle.md` con **Read** y escríbela en
+2. Lee `../plan-task/templates/task-lifecycle.md` con **Read** y escríbela en
    `docs/guides/task-lifecycle.md` **solo si no existe**. Ajusta los comandos del
    runner si el repo no usa pnpm/Vitest.
-3. Lee `../task/templates/task-pipeline.yml` con **Read** y escríbela en
+3. Lee `../plan-task/templates/task-pipeline.yml` con **Read** y escríbela en
    `.claude/task-pipeline.yml` **solo si no existe**. Es la config del repo (preset
    `mode`, `stack`, features). **Rellénala con lo que detectaste en el Paso 0** en vez
    de copiar los defaults a ciegas:
@@ -65,7 +65,7 @@ Antes de escribir nada, mira el repo en read-only:
 Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su
 `.claude/specs/<package>/HOW-TO-START-A-TASK.md`:
 
-1. Lee `../task/templates/HOW-TO-START-A-TASK.md` con **Read**.
+1. Lee `../plan-task/templates/HOW-TO-START-A-TASK.md` con **Read**.
 2. Materialízalo en `.claude/specs/<package>/HOW-TO-START-A-TASK.md` rellenando los
    bloques marcados `ESPECÍFICO DEL PACKAGE`:
    - **Niveles de test por artefacto** (dominio/use cases → unit con mocks de
@@ -81,19 +81,19 @@ Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su
 
 Si no te pasan package, no inventes uno: deja la parte genérica lista y di al
 usuario que corra `/task-init <package>` cuando quiera inicializar uno (o que
-`/task` lo creará al vuelo en el primer plan de ese package).
+`/plan-task` lo creará al vuelo en el primer plan de ese package).
 
 ## Paso 3 — Reportar y handoff
 
 Reporta en pocas líneas: qué creaste, qué ya existía (respetado), y el package
 inicializado si lo hubo. Cierra indicando el siguiente paso:
 
-> Repo listo. Arranca trabajo nuevo con `/task "<tus especificaciones>"` — el
+> Repo listo. Arranca trabajo nuevo con `/plan-task "<tus especificaciones>"` — el
 > pipeline hará plan mode → plan en pending → `grill-me` → tareas Gherkin → TDD →
 > gate de mutation (`/mutation`).
 
 ## Qué NO hace este skill
 
-- **No** crea planes ni tareas (eso es `/task`).
+- **No** crea planes ni tareas (eso es `/plan-task`).
 - **No** corre `grill-me` ni entra en plan mode.
 - **No** instala Stryker (eso lo hace `/mutation` la primera vez en cada package).

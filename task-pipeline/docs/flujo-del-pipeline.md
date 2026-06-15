@@ -16,7 +16,7 @@ checkpoints humanos por diseño.
 ## El pipeline de un vistazo
 
 ```
-/task "<specs>"
+/plan-task "<specs>"
    │
    ├─ Paso 0  ¿Plan nuevo o re-plan de uno activo?
    ├─ Paso 1  Identificar package + nombre de plan
@@ -38,7 +38,7 @@ checkpoints humanos por diseño.
 | Skill | Rol |
 |---|---|
 | `/task-init` | **Bootstrap** del repo: crea el esqueleto `.claude/…`, el `task-lifecycle.md` y el HOW-TO de un package. Se usa **una vez** tras instalar. |
-| `/task` | **Orquestador** del pipeline completo (incluye el caso re-plan de un plan activo). |
+| `/plan-task` | **Orquestador** del pipeline completo (incluye el caso re-plan de un plan activo). |
 | `grill-me` | Interrogatorio que refina el plan **una pregunta a la vez** (rama por rama). |
 | `design-review` | Revisión **holística adversaria** del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad, reversibilidad. |
 | `scenario-coverage` | Endurecimiento **QA** de los escenarios Gherkin vía subagente fresco: busca huecos por dimensiones (fronteras, errores, estado, concurrencia, requisitos ausentes). |
@@ -108,7 +108,7 @@ docs/guides/task-lifecycle.md             # flujo canónico
 1. **Instalar**: `/plugin marketplace add ~/claude-plugins` →
    `/plugin install task-pipeline@local-plugins`
 2. **Bootstrap una vez**: `/task-init <package>`
-3. A partir de ahí: `/task "<lo que quieras hacer>"`
+3. A partir de ahí: `/plan-task "<lo que quieras hacer>"`
 
 Un hook `SessionStart` auto-repara el esqueleto si el repo ya está adoptado (y es
 no-op en repos ajenos: el plugin es global).

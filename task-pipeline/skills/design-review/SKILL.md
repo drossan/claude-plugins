@@ -11,7 +11,7 @@ Cierras el zoom-out que `grill-me` no hace. `grill-me` baja **rama por rama** re
 
 Identifica qué revisar:
 
-- **Dentro de `/task`**: el plan recién refinado en `.claude/plans/pending|active/<package>/<name-plan>.md` y su **Plan change log**.
+- **Dentro de `/plan-task`**: el plan recién refinado en `.claude/plans/pending|active/<package>/<name-plan>.md` y su **Plan change log**.
 - **Standalone**: el plan/diseño que indique el usuario; si es ambiguo, pregunta con `AskUserQuestion`.
 
 Localiza también las specs/HOW-TO relevantes (`.claude/specs/<package>/`) para que el revisor pueda contrastar contra el problema real.
@@ -57,4 +57,4 @@ Traslada al usuario los hallazgos del subagente **tal cual**, sin suavizarlos pa
 
 Con el usuario, decide qué cambios aplicar. Registra cada uno en el **Plan change log** del plan. Si los cambios alteran el **scope o el enfoque de forma material**, re-preséntalos para aprobación (misma regla que el re-plan). Si el plan necesita otra vuelta, repite desde el Paso 2.
 
-No avances (en `/task`: a descomponer en tareas) hasta que el plan haya **sobrevivido** a la review o se haya ajustado en consecuencia.
+No avances (en `/plan-task`: a descomponer en tareas) hasta que el plan haya **sobrevivido** a la review o se haya ajustado en consecuencia.

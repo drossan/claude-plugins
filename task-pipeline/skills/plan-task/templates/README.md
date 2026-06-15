@@ -1,6 +1,6 @@
 # Plantillas del plugin `task-pipeline`
 
-Estas son las **semillas** que la skill `/task` materializa en un repo que adopta
+Estas son las **semillas** que la skill `/plan-task` materializa en un repo que adopta
 la convención `.claude/plans|tasks|specs|context`. NO son ficheros que el plugin
 inyecte en contexto en runtime — son artefactos que se **copian al repo** la
 primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
@@ -10,12 +10,12 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 | `task-lifecycle.md` | `docs/guides/task-lifecycle.md` | Bootstrap del repo (una vez). Flujo canónico: estados, ramas, gates, DoD. |
 | `task-pipeline.yml` | `.claude/task-pipeline.yml` | Bootstrap del repo (una vez). Config del repo: preset `mode` (full/legacy/docs-only), `stack` (runner/gestor/lenguaje) y `features` (tdd, documentación por capas, gate de mutation con umbral). `/task-init` rellena el stack detectado; el hook `SessionStart` la restaura. |
 | `HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` | Una vez por package. Gate de ejecución TDD del package. |
-| `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/task`). |
-| `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/task`). |
+| `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/plan-task`). |
+| `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/plan-task`). |
 
-## Cómo las usa `/task`
+## Cómo las usa `/plan-task`
 
-- **Repo sin la convención** → `/task` ofrece bootstrapearla copiando
+- **Repo sin la convención** → `/plan-task` ofrece bootstrapearla copiando
   `task-lifecycle.md` a `docs/guides/` y el `HOW-TO-START-A-TASK.md` al package.
 - **Package sin su HOW-TO** → se crea desde `HOW-TO-START-A-TASK.md` (rellenando
   los bloques `ESPECÍFICO DEL PACKAGE`), en vez de "replicar el de otro package".
