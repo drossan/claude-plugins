@@ -1,6 +1,6 @@
 ---
 name: scenario-coverage
-description: Endurece los escenarios Gherkin de un set de tareas mediante un subagente QA fresco que busca comportamientos NO cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, lo que la Spec implica pero no fija) con descarte explícito. Úsala tras descomponer un plan en tareas (Paso 5 de `/task`), o cuando el usuario quiera una revisión QA de los escenarios de una o varias tareas.
+description: Endurece los escenarios Gherkin de un set de tareas mediante un subagente QA fresco que busca comportamientos NO cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, lo que la Spec implica pero no fija) con descarte explícito. Úsala tras descomponer un plan en tareas (Paso 5 de `/plan-task`), o cuando el usuario quiera una revisión QA de los escenarios de una o varias tareas.
 ---
 
 Cubres el hueco que **ningún gate posterior tapa**. El gate de mutation testing verifica la *calidad de los tests sobre el código que existe*, pero es ciego a los **requisitos que se olvidaron**: si un comportamiento nunca se programó, no hay mutante que lo delate. Aquí cazas esos huecos al planificar — y de paso abaratas el bucle de matar survivors al cierre, porque mejores escenarios = mejores tests de entrada.
@@ -11,7 +11,7 @@ Cubres el hueco que **ningún gate posterior tapa**. El gate de mutation testing
 
 ## Paso 1 — Reunir el material
 
-- **Dentro de `/task`**: todas las tareas recién creadas del plan (`.claude/tasks/pending|active/<package>/*.md`) y la(s) spec(s) en `.claude/specs/<package>/`.
+- **Dentro de `/plan-task`**: todas las tareas recién creadas del plan (`.claude/tasks/pending|active/<package>/*.md`) y la(s) spec(s) en `.claude/specs/<package>/`.
 - **Standalone**: la(s) tarea(s) que indique el usuario; si es ambiguo, pregunta con `AskUserQuestion`.
 
 Revisa el **set completo**, no tarea a tarea: así cazas huecos *dentro* de una tarea y huecos *entre* tareas (un comportamiento que **ninguna** tarea cubre).
@@ -56,4 +56,4 @@ descartaste con su porqué. Un "los escenarios están completos" sin recorrer la
 
 Traslada los huecos al usuario sin filtrarlos. Decidid juntos cuáles incorporar (algunos pueden ser fuera de scope → al plan, no a la tarea). Añade los escenarios aceptados a la sección `## Scenarios (Gherkin)` de la tarea correspondiente; si el hueco es un requisito que ninguna tarea cubre, puede implicar una **tarea nueva** (vuelve a la descomposición del plan).
 
-No avances (en `/task`: al handoff TDD) hasta que los escenarios reflejen las dimensiones relevantes o su descarte justificado.
+No avances (en `/plan-task`: al handoff TDD) hasta que los escenarios reflejen las dimensiones relevantes o su descarte justificado.

@@ -1,13 +1,13 @@
 ---
-name: task
-description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grill-me → tareas en Gherkin → handoff al flujo TDD → gate de mutation testing. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/task "quiero añadir X"`).
+name: plan-task
+description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grill-me → tareas en Gherkin → handoff al flujo TDD → gate de mutation testing. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/plan-task "quiero añadir X"`).
 ---
 
 Eres el orquestador del flujo de trabajo del repo. A partir de las especificaciones del usuario (`$ARGUMENTS`), conduces el pipeline hasta dejar las tareas listas para ejecutar en TDD. **No es 100% automático**: hay dos checkpoints humanos no negociables (refinado con `grill-me` y aprobación del plan). No los saltes.
 
 > **Convención asumida por este plugin** (ver el README del plugin): el repo organiza el trabajo en `.claude/plans/<estado>/<package>/`, `.claude/tasks/<estado>/<package>/`, `.claude/context/<package>/<task-id>.md`, specs en `.claude/specs/`, y tiene un `docs/guides/task-lifecycle.md` (flujo canónico) y un `HOW-TO-START-A-TASK.md` por package en `.claude/specs/<package>/`. Si el repo no sigue esta convención, primero bootstrapéala con la skill `/task-init` (o avisa al usuario) antes de continuar.
 
-> **Plantillas (semillas)**: junto a este skill hay un directorio `templates/` (en `skills/task/templates/`). **Léelas con la tool Read** y materialízalas en el repo en vez de improvisar la estructura: `templates/task-lifecycle.md` → `docs/guides/`; `templates/HOW-TO-START-A-TASK.md` → `.claude/specs/<package>/` (rellena los bloques `ESPECÍFICO DEL PACKAGE`); `templates/plan.md` y `templates/task.md` → cada plan/tarea nuevos. No se cargan solas: tienes que abrirlas. Ver `templates/README.md` para el mapeo completo.
+> **Plantillas (semillas)**: junto a este skill hay un directorio `templates/` (en `skills/plan-task/templates/`). **Léelas con la tool Read** y materialízalas en el repo en vez de improvisar la estructura: `templates/task-lifecycle.md` → `docs/guides/`; `templates/HOW-TO-START-A-TASK.md` → `.claude/specs/<package>/` (rellena los bloques `ESPECÍFICO DEL PACKAGE`); `templates/plan.md` y `templates/task.md` → cada plan/tarea nuevos. No se cargan solas: tienes que abrirlas. Ver `templates/README.md` para el mapeo completo.
 
 ## Antes de nada — contexto
 

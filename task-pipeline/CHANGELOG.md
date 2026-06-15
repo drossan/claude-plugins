@@ -4,6 +4,40 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.8.0] — 2026-06-15
+
+### Changed
+- **BREAKING — renombrada la skill `task` → `plan-task`** (se invoca con `/plan-task "<specs>"`).
+  Motivo: las versiones recientes de Claude Code incorporan un subsistema propio de *background
+  tasks* con el comando `/tasks`. Como `task` es **prefijo** de `tasks`, al escribir `/task` el
+  CLI lo resolvía al builtin (abría el panel "Background — No tasks currently running") en vez de
+  a la skill, que solo seguía siendo invocable con namespace (`/task-pipeline:task`). El nuevo
+  nombre no colisiona con ningún builtin, así que `/plan-task` funciona directo.
+  - Renombrado el directorio `skills/task/` → `skills/plan-task/` (las plantillas viven dentro,
+    en `skills/plan-task/templates/`).
+  - Actualizadas todas las referencias en `task-init`, `design-review`, `scenario-coverage`, las
+    plantillas (`task-lifecycle.md`, `HOW-TO-START-A-TASK.md`, `templates/README.md`), el `README`
+    del plugin y `docs/flujo-del-pipeline.md`.
+  - **Sin cambios** en los nombres del flujo (`.claude/tasks/`, `task.md`, `task-lifecycle.md`,
+    `task-pipeline.yml`, `task-init`, `task-pipeline`): solo cambia el nombre de la skill orquestadora.
+
+### Migration
+- Donde antes usabas `/task "<specs>"` (o `/task-pipeline:task`), ahora usa `/plan-task "<specs>"`.
+
+## [0.7.2] — 2026-06-15
+
+### Added
+- **Guía de presentación del flujo para el equipo** (`docs/flujo-del-pipeline.md`):
+  resumen narrativo del pipeline (los 7 pasos + checkpoints), tabla de las 6 skills,
+  las dos ideas clave (Gherkin como fuente 1:1 de los tests y los gates de coste
+  proporcional) y un **ejemplo end-to-end** ("rechazar email duplicado" en el package
+  `auth`) que recorre los pasos mostrando qué cambia cada gate (`grill-me`,
+  `design-review`, `scenario-coverage`, `/mutation`).
+- `README.md`: nota destacada que enlaza la nueva guía como punto de partida para
+  presentar el plugin al equipo.
+
+Solo documentación; sin cambios de comportamiento.
+
 ## [0.7.1] — 2026-06-15
 
 ### Changed
