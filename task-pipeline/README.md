@@ -22,7 +22,7 @@ Checkpoints humanos: **`grill-me`** y **aprobación del plan** son **no negociab
 |---|---|
 | `/task-init` | Bootstrapea la convención en el repo (esqueleto `.claude/…` + `task-lifecycle.md` + HOW-TO de un package). Úsalo una vez tras instalar. |
 | `/plan-task` | Orquestador del pipeline completo (incl. caso re-plan de un plan activo). |
-| `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez (rama por rama). |
+| `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez (rama por rama). **Skill de terceros** (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)). |
 | `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grill-me`. |
 | `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |

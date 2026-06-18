@@ -4,6 +4,19 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.8.1] — 2026-06-18
+
+### Added
+- **Licencia MIT del repositorio** (`LICENSE`, en la raíz del marketplace): el repo
+  público no declaraba licencia (= "todos los derechos reservados"), lo que impedía
+  reusarlo legalmente. Copyright (c) 2026 Daniel Rosselló.
+- **Atribución de la skill `grill-me`** (`THIRD-PARTY-NOTICES.md`): es una skill de
+  terceros, de **Matt Pocock** ([`mattpocock/skills`](https://github.com/mattpocock/skills),
+  MIT). Se reproduce su aviso de copyright + permiso como exige la MIT, se añade un
+  crédito (comentario no invasivo) en `skills/grill-me/SKILL.md` y notas en ambos README.
+
+Solo documentación/legal; sin cambios de comportamiento.
+
 ## [0.8.0] — 2026-06-15
 
 ### Changed
