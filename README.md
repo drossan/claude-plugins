@@ -87,7 +87,7 @@ claude-plugins/
 
 ## Portabilidad de las skills
 
-- **`grill-me`** — genérica, funciona en cualquier repo.
+- **`grill-me`** — genérica, funciona en cualquier repo. *Skill de terceros* (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)); ver [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 - **`design-review`** y **`scenario-coverage`** — lanzan un subagente fresco sobre rutas que les pasas; funcionan en cualquier repo, aunque dan su mejor resultado dentro del flujo de `/plan-task`.
 - **`task-init`**, **`plan-task`** y **`mutation`** — asumen la convención de trabajo (`.claude/plans|tasks|specs|context`, `docs/guides/task-lifecycle.md`). `/task-init` la materializa; `plan-task` y `mutation` la usan. El **stack** ya no es una asunción rígida: se declara en `.claude/task-pipeline.yml` (`stack:` — por defecto **pnpm + Vitest + Stryker**), igual que el preset (`full`/`legacy`/`docs-only`) y las features. Ver el detalle en [`task-pipeline/README.md`](task-pipeline/README.md).
 
@@ -100,3 +100,12 @@ Cada plugin declara su `version` en `task-pipeline/.claude-plugin/plugin.json`; 
 ```bash
 claude plugin validate .
 ```
+
+## Licencia
+
+Este proyecto se publica bajo licencia **MIT** (ver [`LICENSE`](LICENSE)).
+
+Incluye software de terceros con su propia licencia; el detalle y los avisos de
+copyright están en [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md). En
+concreto, la skill `grill-me` es de **Matt Pocock**
+([`mattpocock/skills`](https://github.com/mattpocock/skills), MIT).

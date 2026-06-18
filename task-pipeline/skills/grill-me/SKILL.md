@@ -8,3 +8,9 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
+
+<!--
+Atribución: skill basada en "grill-me" de Matt Pocock (https://github.com/mattpocock/skills),
+licencia MIT — Copyright (c) 2026 Matt Pocock. Ver THIRD-PARTY-NOTICES.md en la raíz del repo.
+-->
+
