@@ -51,10 +51,13 @@ La versión vive en `task-pipeline/.claude-plugin/plugin.json` (es la que resuel
   `name` + `description`; el cuerpo son **instrucciones que Claude sigue**, no código ejecutable. Una skill
   no puede cambiar su propio modelo — solo las fases que lanzan **subagente** (`design-review`,
   `scenario-coverage`, `fact-checker`) son ruteables vía la sección `models:` del YAML.
-- **Las 8 skills** (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`,
-  `scenario-coverage`, `fact-checker`) orquestan un pipeline: `/plan-task` es el orquestador; el flujo
-  canónico completo está en `docs/guides/task-lifecycle.md`. Frontera clave: **`task-init`** bootstrapea
-  un repo desde cero; **`doctor`** realinea un repo **ya adoptado** con la versión actual del plugin.
+- **Las 9 skills** (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`,
+  `scenario-coverage`, `fact-checker`, `pipeline-usage`): las 8 primeras orquestan/soportan un pipeline
+  (`/plan-task` es el orquestador; el flujo canónico completo está en `docs/guides/task-lifecycle.md`);
+  **`pipeline-usage`** es analítica de uso **on-demand** (tokens/modelo/tiempo por fase y subagente), no
+  una fase del pipeline. Frontera clave: **`task-init`** bootstrapea un repo desde cero; **`doctor`**
+  realinea un repo **ya adoptado** con la versión actual del plugin. Además, el modo **caveman**
+  (`features.caveman`, opt-in default off) comprime el output vía hook `UserPromptSubmit`.
 - **Hook `SessionStart` → `hooks/bootstrap.sh`**: en repos **ya adoptados** asegura el esqueleto y restaura
   ficheros materializados si faltan (`task-lifecycle.md`, `task-pipeline.yml`, `honesty-rules.md`). En
   repos **no adoptados es un no-op silencioso** — el plugin es global, no debe ensuciar repos ajenos.

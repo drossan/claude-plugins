@@ -32,4 +32,18 @@ Stack `none`: verificación por inspección + `claude plugin validate .` + barri
 **Decisión:** corregí la semántica del escenario original (features.caveman opt-in →
 ausencia no es drift duro; doctor la ofrece, no la exige) para no nagear repos consumidores.
 Ficheros: plugin.json, CHANGELOG.md, README.md, doctor/SKILL.md, marketplace.json. Tiempo
-real: ~25 min. Commit pendiente (autorizado).
+real: ~25 min.
+
+## 2026-07-16 — Follow-up: consistencia de docs (a pregunta del owner)
+
+Al preguntar el owner "¿la documentación está al día?", un barrido detectó **drift que
+había pasado por alto** en la DoD de doc técnica de esta tarea: tres docs que enumeran el
+**catálogo de skills** no incluían `pipeline-usage`:
+- `CLAUDE.md` (repo): "Las **8** skills" → corregido a **9** + `pipeline-usage` + nota caveman.
+- `README.md` (raíz): tabla de plugin, lista *namespaced* y bloque "Uso" → añadido
+  `/pipeline-usage` (+ mención analytics/caveman en la descripción).
+- `task-pipeline/docs/flujo-del-pipeline.md`: heading "Las 8 skills" → "Las skills", fila
+  `/pipeline-usage` en la tabla, y nota de `features.caveman` en la sección de config.
+Verificado: los 4 docs de catálogo mencionan `pipeline-usage`; anclas de caveman resuelven;
+sin conteos "8 skills" vivos (los restantes son session logs históricos). Honestidad: mi
+cierre inicial de la 012 dijo "docs al día" sin haber barrido estos tres — corregido.
