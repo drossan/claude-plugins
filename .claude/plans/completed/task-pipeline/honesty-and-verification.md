@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-honesty-and-verification
 package: task-pipeline
-status: active          # pending | active | completed | cancelled
+status: completed          # pending | active | completed | cancelled
 branch: plan/task-pipeline/honesty-and-verification
 created: 2026-07-16
 updated: 2026-07-16
@@ -97,7 +97,7 @@ ni impone **disciplina anti-alucinación / anti-slop**. El owner aporta tres pie
 - [x] `task-pipeline-005` (P1) — Skill `fact-checker` (molde design-review) + `models.fact-checker` (config repo + template + cabeceras)  · depends_on: —
 - [x] `task-pipeline-006` (P2) — Gate en la DoD (HOW-TO + task-lifecycle + cierre `plan-task`) + frontera con `doctor`  · depends_on: 005
 - [x] `task-pipeline-007` (P3) — `honesty-rules.md` + `@import` opt-in (task-init sugiere / doctor reporta / bootstrap restaura) + no-duplicación en `specs/general/coding-standards.md`  · depends_on: —
-- [ ] `task-pipeline-008` (P4) — Registro de `fact-checker` en metadatos/READMEs/flujo + release (bump + CHANGELOG Added/Migration)  · depends_on: 005, 006, 007
+- [x] `task-pipeline-008` (P4) — Registro de `fact-checker` en metadatos/READMEs/flujo + release (bump + CHANGELOG Added/Migration)  · depends_on: 005, 006, 007
 
 ## Registro de cambios del plan
 
@@ -133,3 +133,19 @@ ni impone **disciplina anti-alucinación / anti-slop**. El owner aporta tres pie
     Cierra el hueco transversal (los cambios en plantillas no llegan a repos ya materializados).
   - **SC-C** — `coding-standards.md` **user-owned**: `task-init` lo materializa, pero NO lo restaura
     `bootstrap` ni lo vigila `doctor` (como las otras specs generales); solo `honesty-rules.md` se gestiona.
+- 2026-07-16: **plan COMPLETADO** (005–008 en `done`). Release **0.10.0** (bump + CHANGELOG Added/Migration).
+  Cada tarea se cerró dogfoodeando el propio gate de `fact-checker` (subagente independiente): 006→8/8,
+  007→8/8 (con re-ejecución de fixtures del hook), 008→8/8, todo VERIFICADO.
+  - **Retro (estimate vs actual)**: 005 2h→1h · 006 1.5h→0.75h · 007 2.5h→1h · 008 1h→0.5h. Total 7h→3.25h.
+    Consistente sub-estimación: el trabajo era Markdown/config sobre patrones ya establecidos (molde
+    design-review, patrón doctor, `cp` de bootstrap), sin código ejecutable → más rápido de lo estimado.
+  - **Decisión de alcance transversal (006/007)**: se entregaron **plantillas + comportamiento**, sin
+    hand-materializar en este repo (`docs/guides/task-lifecycle.md`, `.claude/honesty-rules.md`,
+    `.claude/specs/general/coding-standards.md`). La propagación a repos ya adoptados —incluido este— es,
+    por diseño (SC-B), trabajo de `doctor`/`bootstrap`. Consecuencia buscada: este repo es el fixture de
+    los checks de `doctor` (gate ausente + honesty-rules ausente).
+  - **Sorpresa/dependencia**: la referencia a `0.10.0` nació en 006 (doctor cat. 5) antes del bump real en
+    008 — acoplamiento entre tareas resuelto fijando 0.10.0 desde el escenario 9.
+  - **PENDIENTE (diferido por el owner)**: abrir el PR. El plan **stackea** sobre
+    `plan/task-pipeline/grilling-and-model-routing` (0.9.0, PR #6 sin mergear) → el destino/base del PR
+    depende de cómo se resuelva #6.

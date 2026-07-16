@@ -4,6 +4,41 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.10.0] — 2026-07-16
+
+### Added
+- **Skill `fact-checker`** (`/task-pipeline:fact-checker`): gate de cierre que **verifica las afirmaciones
+  factuales** de una sesión (código, tests, librerías, imports) lanzando un **subagente fresco** de solo
+  lectura + Bash — nunca escribe código; salida VERIFICADO / INCORRECTO / NO VERIFICABLE. Mismo molde que
+  `design-review`/`scenario-coverage`. Frontera con `/doctor`: `fact-checker` verifica **veracidad de
+  afirmaciones**; `doctor` verifica **drift de convención**.
+- **`models.fact-checker`** en `.claude/task-pipeline.yml`: tercera fase con subagente **ruteable** (default
+  `inherit`; el template la trae comentada). `/doctor` la contempla al proponer/actualizar `models:`.
+- **Gate de cierre `fact-checker` en la DoD** (`HOW-TO-START-A-TASK.md` + `task-lifecycle.md` +
+  `plan-task`): **tras** el gate de `mutation` y **antes** de commit/resumen, se verifican las afirmaciones
+  de la sesión. Es **no-negociable** (sin flag, como `grilling`/aprobación): `INCORRECTO` **bloquea** el
+  cierre; `NO VERIFICABLE` es un aviso a reconocer; `VERIFICADO` pasa.
+- **Reglas de honestidad materializables** (`.claude/honesty-rules.md` + plantilla): disciplina
+  anti-alucinación/anti-slop pensada para leerse **cada turno** vía `@import` **opt-in**. `task-init`
+  **sugiere** el `@import`; `doctor` lo **reporta** si falta; `bootstrap.sh` **restaura el fichero** — nunca
+  se auto-edita el `CLAUDE.md` (invariante del plugin).
+- **No-duplicación** como coding-standard: `.claude/specs/general/coding-standards.md` (plantilla
+  materializable, **user-owned**), no como honesty-rule.
+- **`/doctor` extendido**: en repos ya adoptados detecta el **gate de `fact-checker` ausente** en la DoD de
+  cierre materializada y el **`honesty-rules.md` ausente / sin `@import`**, y ofrece materializar / sugerir
+  (repo-owned, diff + aprobación).
+
+### Migration
+- **`fact-checker` es un gate de cierre no-negociable**: no hay flag que lo desactive (no existe
+  `features.fact-check`) y aplica en cualquier `mode`/preset. La skill **no** se auto-invoca "antes de cada
+  commit" (la plataforma no lo permite): la orquesta la DoD de cierre.
+- **Para "leer cada turno" las reglas de honestidad**, añade `@.claude/honesty-rules.md` a tu `CLAUDE.md`
+  (raíz y/o de workspace). Es **opt-in**: `task-init` lo sugiere y `doctor` lo reporta si falta, pero ningún
+  artefacto del plugin edita tu `CLAUDE.md`.
+- En repos **ya adoptados antes de 0.10.0**, corre **`/doctor`**: te ofrecerá añadir el gate de
+  `fact-checker` a la DoD de cierre materializada y materializar `.claude/honesty-rules.md` (con diff +
+  aprobación). `coding-standards.md` y las demás specs generales siguen siendo user-owned (no se vigilan).
+
 ## [0.9.0] — 2026-07-16
 
 ### Changed

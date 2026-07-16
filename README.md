@@ -8,9 +8,9 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 | Plugin | Skills | Para qué sirve |
 |---|---|---|
-| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
+| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage`, `fact-checker` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker) → gate de cierre `fact-checker` (verifica las afirmaciones de la sesión). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
 
-Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`.
+Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`, `/task-pipeline:fact-checker`.
 
 ## Instalar
 
@@ -44,6 +44,7 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 /task-pipeline:design-review                                   # review holística adversaria del plan (subagente fresco)
 /task-pipeline:scenario-coverage                               # endurece QA de los escenarios Gherkin (subagente fresco)
 /task-pipeline:doctor                                          # diagnostica/alinea un repo ya adoptado (verifica → fix con aprobación)
+/task-pipeline:fact-checker                                    # gate de cierre: verifica las afirmaciones de la sesión (VERIFICADO/INCORRECTO/NO VERIFICABLE)
 ```
 
 > En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grilling` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
@@ -86,13 +87,14 @@ claude-plugins/
         ├── doctor/SKILL.md
         ├── grilling/SKILL.md
         ├── design-review/SKILL.md
-        └── scenario-coverage/SKILL.md
+        ├── scenario-coverage/SKILL.md
+        └── fact-checker/SKILL.md
 ```
 
 ## Portabilidad de las skills
 
 - **`grilling`** — genérica, funciona en cualquier repo. *Skill de terceros* (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)); ver [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
-- **`design-review`** y **`scenario-coverage`** — lanzan un subagente fresco sobre rutas que les pasas; funcionan en cualquier repo, aunque dan su mejor resultado dentro del flujo de `/plan-task`.
+- **`design-review`**, **`scenario-coverage`** y **`fact-checker`** — lanzan un subagente fresco sobre rutas/afirmaciones que les pasas; funcionan en cualquier repo, aunque dan su mejor resultado dentro del flujo (`fact-checker` como gate de cierre invocado por la DoD, no auto-ejecutado).
 - **`task-init`**, **`plan-task`**, **`mutation`** y **`doctor`** — asumen la convención de trabajo (`.claude/plans|tasks|specs|context`, `docs/guides/task-lifecycle.md`). `/task-init` la materializa (bootstrap desde cero); `plan-task` y `mutation` la usan; **`/doctor`** verifica y realinea un repo **ya adoptado** con la versión actual del plugin (tras actualizarlo). El **stack** ya no es una asunción rígida: se declara en `.claude/task-pipeline.yml` (`stack:` — por defecto **pnpm + Vitest + Stryker**), igual que el preset (`full`/`legacy`/`docs-only`) y las features. Ver el detalle en [`task-pipeline/README.md`](task-pipeline/README.md).
 
 ## Versionado
