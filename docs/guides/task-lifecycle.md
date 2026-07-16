@@ -42,7 +42,7 @@ el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) 
 son configurables** — son por diseño.
 
 La sección `models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
+`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
 en el README del plugin.
 
 ## Layout de directorios
@@ -148,6 +148,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
+- [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````

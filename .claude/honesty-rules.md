@@ -28,4 +28,3 @@
 
 - «**No lo sé**» o «**Necesito verificar primero**» es **mejor** que una suposición presentada como hecho.
   La confianza fingida es exactamente el fallo que estas reglas existen para evitar.
-</content>
