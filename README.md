@@ -8,9 +8,9 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 | Plugin | Skills | Para qué sirve |
 |---|---|---|
-| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `grilling`, `design-review`, `scenario-coverage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
+| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
 
-Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`.
+Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`.
 
 ## Instalar
 
@@ -43,6 +43,7 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 /task-pipeline:grilling                                        # interroga/refina un plan o diseño
 /task-pipeline:design-review                                   # review holística adversaria del plan (subagente fresco)
 /task-pipeline:scenario-coverage                               # endurece QA de los escenarios Gherkin (subagente fresco)
+/task-pipeline:doctor                                          # diagnostica/alinea un repo ya adoptado (verifica → fix con aprobación)
 ```
 
 > En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grilling` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
@@ -82,6 +83,7 @@ claude-plugins/
         ├── task-init/SKILL.md
         ├── plan-task/SKILL.md    # + templates/ (semillas materializables)
         ├── mutation/SKILL.md
+        ├── doctor/SKILL.md
         ├── grilling/SKILL.md
         ├── design-review/SKILL.md
         └── scenario-coverage/SKILL.md

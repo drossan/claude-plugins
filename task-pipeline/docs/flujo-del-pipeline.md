@@ -33,7 +33,7 @@ checkpoints humanos por diseño.
               + aprobación del plan 🔒 checkpoint humano (no negociable)
 ```
 
-## Las 6 skills
+## Las 7 skills
 
 | Skill | Rol |
 |---|---|
@@ -43,6 +43,7 @@ checkpoints humanos por diseño.
 | `design-review` | Revisión **holística adversaria** del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad, reversibilidad. |
 | `scenario-coverage` | Endurecimiento **QA** de los escenarios Gherkin vía subagente fresco: busca huecos por dimensiones (fronteras, errores, estado, concurrencia, requisitos ausentes). |
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
+| `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
 
 ## Las dos ideas clave
 
