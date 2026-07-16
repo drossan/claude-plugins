@@ -154,7 +154,7 @@ hooks cada turno) y forzó un **re-scope**. Lo esencial que cambió:
 > todas. Descomposición con Gherkin definitivo tras `scenario-coverage`.
 
 - [x] `task-pipeline-009` (P1) — Skill **`pipeline-usage`** on-demand: agrega el/los transcript(s) con python3; total de sesión + por-fase best-effort (claves tal cual) + por-subagente; **degradación ruidosa**; snapshot opcional en `.claude/analytics/sessions/`; gitignorear `.claude/analytics/` en este repo; docs README  · depends_on: —  ✅ done (fact-checker OK)
-- [ ] `task-pipeline-010` (P2) — Flag **`features.caveman`** (`off|lite|full`, default off): repo YAML (dogfood `lite`) + template (comentado) + docs (junto a features existentes, sin categoría nueva)  · depends_on: —
+- [x] `task-pipeline-010` (P2) — Flag **`features.caveman`** (`off|lite|full`, default off): repo YAML (dogfood `lite`) + template (comentado) + docs (junto a features existentes, sin categoría nueva)  · depends_on: —  ✅ done (fact-checker OK)
 - [ ] `task-pipeline-011` (P2) — Hook **`UserPromptSubmit`** caveman-lite: gate barato (adopción+flag) en Bash 3.2; inyecta directiva mínima; **backoff determinista** por tail del transcript (fase checkpoint → no inyecta); `hooks.json`  · depends_on: task-pipeline-010
 - [ ] `task-pipeline-012` (P3) — Cierre: `/doctor` report-only del flag/hook de caveman + README (`pipeline-usage` + caveman) + bump `plugin.json` (0.11.0) + CHANGELOG + `plugin validate`  · depends_on: task-pipeline-009, task-pipeline-011
 
