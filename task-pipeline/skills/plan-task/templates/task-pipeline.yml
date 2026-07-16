@@ -1,8 +1,9 @@
 # task-pipeline — configuración del repo
 #
 # Las skills del plugin (/plan-task, /mutation, /task-init) LEEN este archivo y lo
-# respetan. No hay parser: el modelo lo interpreta. Edítalo para adaptar el
-# pipeline a ESTE repo (stack, qué fases son obligatorias, etc.).
+# respetan; además, design-review y scenario-coverage leen su fase en `models:`.
+# No hay parser: el modelo lo interpreta. Edítalo para adaptar el pipeline a ESTE
+# repo (stack, qué fases son obligatorias, etc.).
 #
 # RESOLUCIÓN (de menor a mayor prioridad):
 #   1. Defaults internos (equivalen al preset `full`).
@@ -47,3 +48,17 @@ features:
   #   true   → gate con umbral break:80 (default).
   #   <int>  → gate con ese umbral break (p.ej. 50 para ir subiendo el listón en legacy).
   mutation-gate: 80
+
+# ── Modelos por fase (subagentes) ─────────────────────────────────────────────
+# Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review` y
+# `scenario-coverage`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan
+# el modelo de la sesión y NO se rutan (limitación de plataforma — el porqué en el
+# README del plugin → "Routing de modelo por fase").
+#   clave ausente / `inherit`              → modelo de la sesión (no se fuerza nada)
+#   alias o id de modelo (p.ej. `opus`)    → se pasa como `model` al lanzar el subagente
+#   valor inválido (typo / id inexistente) → aviso + inherit (no se lanza roto)
+#   clave para una fase inline             → se ignora (esa fase hereda la sesión)
+# Comentado a propósito: el TEMPLATE no impone modelos a repos consumidores (inherit).
+# models:
+#   design-review: opus
+#   scenario-coverage: sonnet

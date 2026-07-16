@@ -91,6 +91,10 @@ prioridad): `defaults (full)` → preset `mode:` → claves explícitas en
 `stack:` (`language` / `package-manager` / `test-runner` / `mutation-tool`) hace
 que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker.
 
+`models:` fija el modelo de las fases con subagente (`design-review`,
+`scenario-coverage`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
+en el README del plugin.
+
 ## Estructura que asume en el repo
 
 ```

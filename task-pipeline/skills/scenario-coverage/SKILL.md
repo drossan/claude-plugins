@@ -18,7 +18,15 @@ Revisa el **set completo**, no tarea a tarea: así cazas huecos *dentro* de una 
 
 ## Paso 2 — Lanzar el subagente QA (Agent tool)
 
-Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`). Pásale rutas (que lea tareas y specs con `Read`) y permítele explorar el codebase en **read-only**. No debe editar nada.
+**Modelo del subagente (config-driven).** Antes de lanzarlo, lee `models.scenario-coverage` en `.claude/task-pipeline.yml` (no hay parser: lo interpretas con `Read`):
+
+- clave **ausente** o `inherit` → **no** pases `model`: el subagente hereda el modelo de la sesión;
+- **alias/id de modelo válido** (p.ej. `sonnet`) → pásalo como `model` a la Agent tool;
+- **valor inválido** (typo / id inexistente) → **avisa** al usuario y cae a inherit (no lances el subagente con un `model` roto).
+
+(Las fases inline no se rutan; ver el README del plugin → "Routing de modelo por fase".)
+
+Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`, y `model` solo si `models.scenario-coverage` trae un valor válido). Pásale rutas (que lea tareas y specs con `Read`) y permítele explorar el codebase en **read-only**. No debe editar nada.
 
 Prompt EXACTO para el subagente (sustituye `<RUTAS_TAREAS>` y `<RUTAS_SPECS>`):
 

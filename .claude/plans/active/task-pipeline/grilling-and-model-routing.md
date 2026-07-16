@@ -93,7 +93,7 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
 <Descompuestas en Gherkin en `.claude/tasks/pending/task-pipeline/`. Se endurecen con `scenario-coverage`.>
 
 - [x] `task-pipeline-001` (P1) — Parte A: rename `grill-me`→`grilling` + sync + propagación + atribución + **fix `bootstrap.sh` y drift `/task`**  · depends_on: —
-- [ ] `task-pipeline-002` (P2) — Parte B: `models:` (config repo + template) + design-review/scenario-coverage + plan-task + **doc-once**  · depends_on: task-pipeline-001
+- [x] `task-pipeline-002` (P2) — Parte B: `models:` (config repo + template) + design-review/scenario-coverage + plan-task + **doc-once**  · depends_on: task-pipeline-001
 - [ ] `task-pipeline-003` (P3) — Parte C: skill `doctor` (verifica → fix interactivo) + registro en metadatos/READMEs  · depends_on: task-pipeline-001, task-pipeline-002
 - [ ] `task-pipeline-004` (P4) — Release 0.9.0 (bump `plugin.json` + CHANGELOG Changed/Added/Migration)  · depends_on: 001, 002, 003
 
@@ -135,3 +135,8 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
   upstream + atribución), propagación en 20 ficheros, fix `bootstrap.sh:20` y drift `/task`→`/plan-task`
   en cabeceras YAML + guía repo. Verificación (cmp verbatim, barrido reforzado limpio, hook en 3 repos
   de prueba, JSON válidos) en `.claude/context/task-pipeline/task-pipeline-001.md`.
+- 2026-07-16: **task-pipeline-002 done** — sección `models:` (repo: `design-review: opus`,
+  scenario-coverage inherit, sin `mutation`; template comentado); `design-review`/`scenario-coverage`
+  leen `models.<fase>` en su Paso 2 (inválido→aviso+inherit, inline→ignorado); cabeceras YAML con los
+  nuevos lectores; limitación documentada UNA vez (README del plugin) + 3 referencias navegables.
+  Verificación por inspección + PyYAML en `.claude/context/task-pipeline/task-pipeline-002.md`.

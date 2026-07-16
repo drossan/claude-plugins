@@ -18,7 +18,15 @@ Localiza también las specs/HOW-TO relevantes (`.claude/specs/<package>/`) para 
 
 ## Paso 2 — Lanzar el subagente adversario (Agent tool)
 
-Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`). Pásale **rutas, no opiniones**: que lea el plan, el change log y las specs con `Read`, y que pueda explorar el codebase en **read-only**. **No** debe editar nada ni se le adelanta el veredicto deseado.
+**Modelo del subagente (config-driven).** Antes de lanzarlo, lee `models.design-review` en `.claude/task-pipeline.yml` (no hay parser: lo interpretas con `Read`):
+
+- clave **ausente** o `inherit` → **no** pases `model`: el subagente hereda el modelo de la sesión;
+- **alias/id de modelo válido** (p.ej. `opus`) → pásalo como `model` a la Agent tool;
+- **valor inválido** (typo / id inexistente) → **avisa** al usuario y cae a inherit (no lances el subagente con un `model` roto).
+
+(Las fases inline no se rutan; ver el README del plugin → "Routing de modelo por fase".)
+
+Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`, y `model` solo si `models.design-review` trae un valor válido). Pásale **rutas, no opiniones**: que lea el plan, el change log y las specs con `Read`, y que pueda explorar el codebase en **read-only**. **No** debe editar nada ni se le adelanta el veredicto deseado.
 
 Prompt EXACTO para el subagente (sustituye `<RUTA_PLAN>` y `<RUTAS_SPECS>`):
 

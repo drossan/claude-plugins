@@ -47,6 +47,8 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 
 > En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grilling` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
 
+> **Modelo por fase (opcional)**: puedes fijar el modelo de `design-review`/`scenario-coverage` en la sección `models:` de `.claude/task-pipeline.yml`. Ver [Routing de modelo por fase](task-pipeline/README.md#routing-de-modelo-por-fase-models) en el README del plugin.
+
 ### Desarrollo en local (sin GitHub)
 
 Probar el plugin tal cual está en disco, con recarga en caliente:

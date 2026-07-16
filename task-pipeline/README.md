@@ -78,6 +78,25 @@ el opt-out en planes triviales (criterios + confirmación + log), no por flag de
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/plan-task` también avisa/ayuda si te la saltas.
 
+## Routing de modelo por fase (`models:`)
+
+Las fases que lanzan un **subagente** (`design-review`, `scenario-coverage`) pueden correr con un modelo distinto al de tu sesión. Se configura en la sección `models:` de `.claude/task-pipeline.yml`:
+
+```yaml
+models:
+  design-review: opus        # alias o id de modelo
+  # scenario-coverage:       # ausente / inherit → hereda la sesión
+```
+
+- **Clave ausente o `inherit`** → la fase hereda el modelo de la sesión (no se fuerza nada).
+- **Alias o id de modelo** → se pasa como `model` al lanzar el subagente (Agent tool).
+- **Valor inválido** (typo / id inexistente) → la skill **avisa** y cae a inherit; nunca lanza un subagente con un `model` roto.
+- **Clave para una fase inline** → se ignora (esa fase hereda la sesión).
+
+**Limitación de plataforma.** Solo las fases con **subagente** se pueden rutar, porque el modelo se fija por invocación de la Agent tool. Las fases **inline** —`grilling`, `mutation` y el propio `/plan-task`— corren en la sesión actual y **heredan su modelo**: no hay forma robusta de cambiárselo desde una skill, ni existe un "modelo óptimo" automático que el pipeline pueda elegir por ti (verificado contra `code.claude.com/docs`). Si quieres una fase inline en otro modelo, cambia el modelo de la sesión.
+
+> El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
+
 ## Bootstrap del repo (tras instalar)
 
 Dos mecanismos, complementarios:
