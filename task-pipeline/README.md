@@ -29,6 +29,7 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, gate/reglas de honestidad ausentes) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
+| `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
 
 ## Convención que asume el plugin
 
@@ -100,6 +101,23 @@ models:
 **Limitación de plataforma.** Solo las fases con **subagente** se pueden rutar, porque el modelo se fija por invocación de la Agent tool. Las fases **inline** —`grilling`, `mutation` y el propio `/plan-task`— corren en la sesión actual y **heredan su modelo**: no hay forma robusta de cambiárselo desde una skill, ni existe un "modelo óptimo" automático que el pipeline pueda elegir por ti (verificado contra `code.claude.com/docs`). Si quieres una fase inline en otro modelo, cambia el modelo de la sesión.
 
 > El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
+
+## Analítica de uso (`/pipeline-usage`)
+
+Skill **on-demand y read-only** que reporta el consumo de la sesión: tokens
+(input/output/cache), modelo, duración y desglose **por fase** y **por subagente**,
+leyendo el transcript. **No** añade hooks ni recolección automática — invocarla es el
+opt-in, y el coste solo se paga cuando pides el informe.
+
+- **Honestidad**: el formato del transcript es **interno/no soportado** (puede cambiar
+  entre versiones). El **titular es el total de sesión**; el por-fase suele ser
+  minoritario (el grueso del gasto no lleva fase) y se marca **best-effort e
+  incompleto**. Nunca presenta un número que no pueda garantizar; si falta `python3`, el
+  esquema no cuadra o hay líneas corruptas, **lo dice**.
+- **Privacidad**: solo lee **métricas** (tokens/modelo/tiempo/fase), nunca el texto de
+  los mensajes. El snapshot opcional vive en `.claude/analytics/sessions/<id>.json`.
+- **Repos consumidores**: añade `.claude/analytics/` a **tu** `.gitignore` (métricas
+  per-usuario). El plugin **no** toca tu `.gitignore` (invariante).
 
 ## Bootstrap del repo (tras instalar)
 
