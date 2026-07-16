@@ -49,6 +49,15 @@ features:
   #   <int>  → gate con ese umbral break (p.ej. 50 para ir subiendo el listón en legacy).
   mutation-gate: 80
 
+  # Modo caveman (comportamiento opt-in, default off). Comprime el OUTPUT del hilo
+  # principal para ahorrar tokens; lo lee el hook UserPromptSubmit (caveman.sh), que se
+  # auto-inhibe en los checkpoints (grilling/design-review/scenario-coverage/fact-checker).
+  # NO forma parte de ningún preset (mode: full NO lo enciende). Valores canónicos:
+  #   off  → desactivado (default)   ·   lite → compresión ligera   ·   full → compresión mayor
+  # Cualquier otro valor (mayúsculas, espacios, comentado, desconocido) → off (fail-safe).
+  # Comentado a propósito: el TEMPLATE no impone coste/comportamiento a repos consumidores.
+  # caveman: off
+
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
 # `scenario-coverage` y `fact-checker`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan

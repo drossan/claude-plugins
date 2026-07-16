@@ -8,9 +8,9 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 | Plugin | Skills | Para qué sirve |
 |---|---|---|
-| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage`, `fact-checker` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker) → gate de cierre `fact-checker` (verifica las afirmaciones de la sesión). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
+| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage`, `fact-checker`, `/pipeline-usage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker) → gate de cierre `fact-checker` (verifica las afirmaciones de la sesión). Incluye `/pipeline-usage` (analítica de uso on-demand: tokens/modelo/tiempo por fase) y el modo opcional caveman (compresión de output opt-in). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
 
-Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`, `/task-pipeline:fact-checker`.
+Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`, `/task-pipeline:fact-checker`, `/task-pipeline:pipeline-usage`.
 
 ## Instalar
 
@@ -45,6 +45,7 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 /task-pipeline:scenario-coverage                               # endurece QA de los escenarios Gherkin (subagente fresco)
 /task-pipeline:doctor                                          # diagnostica/alinea un repo ya adoptado (verifica → fix con aprobación)
 /task-pipeline:fact-checker                                    # gate de cierre: verifica las afirmaciones de la sesión (VERIFICADO/INCORRECTO/NO VERIFICABLE)
+/task-pipeline:pipeline-usage                                  # analítica de uso on-demand (tokens/modelo/tiempo por fase y subagente)
 ```
 
 > En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grilling` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).

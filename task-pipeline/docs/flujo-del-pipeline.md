@@ -35,7 +35,7 @@ checkpoints humanos por diseño.
               + aprobación del plan 🔒 checkpoint humano (no negociable)
 ```
 
-## Las 8 skills
+## Las skills
 
 | Skill | Rol |
 |---|---|
@@ -47,6 +47,7 @@ checkpoints humanos por diseño.
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
 | `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
 | `fact-checker` | **Gate de cierre** (no fase de plan): verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía subagente fresco → VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD al cerrar cada tarea (tras `/mutation`), no se auto-ejecuta. Frontera con `/doctor`: veracidad de afirmaciones vs drift de convención. |
+| `/pipeline-usage` | **Analítica de uso** on-demand (read-only): tokens/modelo/tiempo, desglose **por fase** y **por subagente** de la sesión, leyendo el transcript. Best-effort (formato interno no soportado; titular = total de sesión). **No** es una fase del pipeline: invocarla es el opt-in. |
 
 ## Las dos ideas clave
 
@@ -100,6 +101,10 @@ que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker.
 `models:` fija el modelo de las fases con subagente (`design-review`,
 `scenario-coverage`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
 en el README del plugin.
+
+`features.caveman` (`off` default / `lite` / `full`) activa el **modo caveman**:
+comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en los
+checkpoints. Opt-in, no forma parte de ningún preset. Ver [Modo caveman](../README.md#modo-caveman-featurescaveman).
 
 ## Estructura que asume en el repo
 

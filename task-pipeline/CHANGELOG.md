@@ -4,6 +4,44 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.11.0] — 2026-07-16
+
+### Added
+- **Skill `/pipeline-usage`** (`/task-pipeline:pipeline-usage`): analítica de uso **on-demand
+  y read-only**. Agrega el transcript de la sesión con python3 y presenta **total de sesión**
+  (input/output/cache, titular input+output), **desglose por fase** (design-review, grilling,
+  plan-task… por `attributionSkill`, mostrado verbatim) con su % de gasto atribuido, y
+  **por-subagente** (con modelo). **No** añade hooks: invocarla es el opt-in. Snapshot opcional
+  en `.claude/analytics/sessions/<id>.json` (solo métricas, nunca contenido de mensajes).
+- **Flag `features.caveman`** (`off`(default)`|lite|full`) + **hook `UserPromptSubmit`**
+  (`hooks/caveman.sh`): **modo caveman** opt-in que comprime el output del hilo principal para
+  ahorrar tokens, con **backoff determinista** en los checkpoints (`grilling`/`design-review`/
+  `scenario-coverage`/`fact-checker`, leídos del tail del transcript). Código/comandos/errores/
+  paths van byte a byte; conserva las salvedades de honestidad. Bash 3.2, sin python/jq, no-op
+  barato en repos no adoptados / flag off. **No** forma parte de ningún preset. Afecta solo al
+  hilo principal (no a subagentes).
+- **`/doctor`**: consciente del flag opt-in `features.caveman` (su ausencia **no** es drift:
+  puede ofrecerlo comentado como nicety, como `models:`); el hook `caveman.sh` es plugin-owned
+  (solo-reporte).
+
+### Notas de diseño
+- **La analítica es on-demand (sin colector por hooks)** por decisión de la `design-review`:
+  un hook parseando el transcript cada turno era O(n²) por sesión, con coste en repos ajenos y
+  mal encaje con la arquitectura (skills model-driven). El formato del transcript es **interno/
+  no soportado** (Anthropic recomienda no parsearlo): `/pipeline-usage` es **best-effort** —
+  titular = total de sesión, avisa cuando las cifras pueden estar incompletas, y nunca presenta
+  un derivado como dato exacto.
+- **No** se añadió flag `features.analytics` ni una categoría "opt-in behaviors": la skill es
+  opt-in por invocación (menos superficie pública de config).
+- El **ROI de caveman** no es medible por el propio pipeline (informes por sesión, sin A/B):
+  se documenta explícitamente para no afirmar un ahorro no verificable.
+
+### Migration
+- `pipeline-usage` no requiere configuración: se instala con el plugin y se invoca a demanda.
+  Si activas el snapshot, añade `.claude/analytics/` a tu `.gitignore` (el plugin no lo toca).
+- `features.caveman` es **opt-in y default off**: los repos existentes no cambian de
+  comportamiento. El template lo trae **comentado**. Actívalo con `lite`/`full` si lo quieres.
+
 ## [0.10.0] — 2026-07-16
 
 ### Added

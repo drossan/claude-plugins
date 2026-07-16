@@ -1,1 +1,4 @@
 .DS_Store
+
+# Métricas per-usuario de la skill /pipeline-usage (no es artefacto del repo).
+.claude/analytics/
