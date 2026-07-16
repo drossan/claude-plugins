@@ -75,7 +75,7 @@ con Jest, npm, no-TS, etc.).
 | `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
-| `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. |
+| `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
 
 `grilling` y la aprobación del plan **no** son configurables: no negociables por
 diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
@@ -119,6 +119,26 @@ opt-in, y el coste solo se paga cuando pides el informe.
   los mensajes. El snapshot opcional vive en `.claude/analytics/sessions/<id>.json`.
 - **Repos consumidores**: añade `.claude/analytics/` a **tu** `.gitignore` (métricas
   per-usuario). El plugin **no** toca tu `.gitignore` (invariante).
+
+## Modo caveman (`features.caveman`)
+
+Comportamiento **opt-in** (default `off`) que comprime el **output del hilo principal**
+para ahorrar tokens. Se activa con `features.caveman: lite|full` en
+`.claude/task-pipeline.yml`; lo aplica el hook `UserPromptSubmit` (`hooks/caveman.sh`),
+que inyecta una directiva mínima de compresión.
+
+- **`lite`**: elimina relleno y cortesías, gramática legible. **`full`**: prosa
+  telegráfica, fragmentos. En ambos, **código, comandos, errores, rutas y cifras van byte
+  a byte** (nunca se comprimen), y las salvedades de incertidumbre («no verificado») se
+  conservan (coherencia con `honesty-rules.md`).
+- **Backoff determinista en checkpoints**: el hook lee la fase activa del transcript y
+  **no** inyecta durante `grilling`/`design-review`/`scenario-coverage`/`fact-checker`
+  (donde la claridad manda). No depende del juicio del modelo.
+- **Limitación**: afecta solo al **hilo principal**, no al output de los subagentes.
+- **ROI honesto**: en flujos con mucho tool-use el ahorro real es modesto (input y tokens
+  de herramientas dominan). El pipeline **no puede medir por sí solo** el efecto de caveman
+  (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
+  probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
 
 ## Bootstrap del repo (tras instalar)
 

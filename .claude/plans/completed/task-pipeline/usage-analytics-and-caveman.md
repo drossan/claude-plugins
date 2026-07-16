@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-usage-analytics-and-caveman
 package: task-pipeline
-status: active           # pending | active | completed | cancelled
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/usage-analytics-and-caveman
 created: 2026-07-16
 updated: 2026-07-16
@@ -156,7 +156,7 @@ hooks cada turno) y forzó un **re-scope**. Lo esencial que cambió:
 - [x] `task-pipeline-009` (P1) — Skill **`pipeline-usage`** on-demand: agrega el/los transcript(s) con python3; total de sesión + por-fase best-effort (claves tal cual) + por-subagente; **degradación ruidosa**; snapshot opcional en `.claude/analytics/sessions/`; gitignorear `.claude/analytics/` en este repo; docs README  · depends_on: —  ✅ done (fact-checker OK)
 - [x] `task-pipeline-010` (P2) — Flag **`features.caveman`** (`off|lite|full`, default off): repo YAML (dogfood `lite`) + template (comentado) + docs (junto a features existentes, sin categoría nueva)  · depends_on: —  ✅ done (fact-checker OK)
 - [x] `task-pipeline-011` (P2) — Hook **`UserPromptSubmit`** caveman-lite: gate barato (adopción+flag) en Bash 3.2; inyecta directiva mínima; **backoff determinista** por tail del transcript (fase checkpoint → no inyecta); `hooks.json`  · depends_on: task-pipeline-010  ✅ done (15 casos verificados, fact-checker OK)
-- [ ] `task-pipeline-012` (P3) — Cierre: `/doctor` report-only del flag/hook de caveman + README (`pipeline-usage` + caveman) + bump `plugin.json` (0.11.0) + CHANGELOG + `plugin validate`  · depends_on: task-pipeline-009, task-pipeline-011
+- [x] `task-pipeline-012` (P3) — Cierre: `/doctor` report-only del flag/hook de caveman + README (`pipeline-usage` + caveman) + bump `plugin.json` (0.11.0) + CHANGELOG + `plugin validate`  · depends_on: task-pipeline-009, task-pipeline-011  ✅ done (validate OK, fact-checker OK)
 
 ## Registro de cambios del plan
 - 2026-07-16: creado. Decisiones previas del owner: un plan combinado; caveman =
@@ -187,3 +187,16 @@ hooks cada turno) y forzó un **re-scope**. Lo esencial que cambió:
   + aviso de gitignore al consumidor, % atribuido bajo, session_id/sessionId, caveman ×
   honesty-rules. Corrección de propiedad en `/doctor` (012): el hook es **plugin-owned**
   (solo-reporte), solo el flag es repo-owned. Sin tareas nuevas (todo cabe en 009–012).
+- 2026-07-16: **plan COMPLETADO** (009–012 done, cada una con fact-checker OK). Release
+  `0.11.0`, `claude plugin validate .` ✔. Retro:
+  - *Estimación vs real*: estimado 3–4 sesiones; real ~1 sesión (misma sesión del plan,
+    opción 2 del handoff). El re-scope de `design-review` (de 6 a 4 tareas, analytics
+    on-demand) abarató mucho la ejecución.
+  - *Sorpresas*: (1) `attributionSkill` con prefijo `task-pipeline:` (lo cazó
+    `scenario-coverage`; habría roto el backoff en silencio). (2) FS case-insensitive de
+    macOS hizo colisionar los fixtures `lite`/`LITE` — el "fallo" del hook era del test.
+    Lección: nombrar fixtures sin colisión de mayúsculas.
+  - *Qué funcionó*: verificar la agregación/hook contra datos reales (no "debería"); los
+    checkpoints atraparon un re-scope arquitectónico y un bug de corrección antes de codear.
+  - *Follow-up*: el `HOW-TO-START-A-TASK.md` del package aún referencia la rama del plan
+    anterior (`grilling-and-model-routing`) — drift menor para el próximo plan.

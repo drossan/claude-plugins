@@ -8,7 +8,7 @@
     {
       "name": "task-pipeline",
       "source": "./task-pipeline",
-      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grilling -> design-review -> tareas en Gherkin -> scenario-coverage -> TDD -> gate de mutation testing -> gate de cierre fact-checker (verifica afirmaciones). Skills /task-init, /plan-task, /mutation, /doctor, /fact-checker, grilling, design-review y scenario-coverage."
+      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grilling -> design-review -> tareas en Gherkin -> scenario-coverage -> TDD -> gate de mutation testing -> gate de cierre fact-checker (verifica afirmaciones). Skills /task-init, /plan-task, /mutation, /doctor, /fact-checker, /pipeline-usage, grilling, design-review y scenario-coverage. Analítica de uso on-demand y modo caveman opcional."
     }
   ]
 }

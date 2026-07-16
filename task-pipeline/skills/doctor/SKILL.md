@@ -44,6 +44,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    proponer/actualizar `models:`, contempla las **fases con subagente ruteables** (`design-review`,
    `scenario-coverage`, `fact-checker`) y su presencia en la cabecera de lectores. **Nota**: una clave de
    fase concreta ausente (p.ej. `models.fact-checker`) **no** es drift — el default es inherit.
+   Igual con el flag opt-in **`features.caveman`** (`off`|`lite`|`full`, desde 0.11.0): su
+   ausencia **no** es drift (default `off`, como cualquier comportamiento opt-in); doctor
+   puede **ofrecer** añadirlo comentado como nicety, pero **nunca** lo reporta como problema
+   bloqueante. El hook `caveman.sh` que lo consume es **plugin-owned** (solo-reporte).
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:

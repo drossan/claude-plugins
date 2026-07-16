@@ -2,11 +2,11 @@
 id: task-pipeline-012
 package: task-pipeline
 plan: usage-analytics-and-caveman
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-009, task-pipeline-011]
 estimate: 2h
-actual:
+actual: ~25 min
 created: 2026-07-16
 updated: 2026-07-16
 ---
@@ -48,10 +48,13 @@ comportamiento nuevo; alinea coherencia + release.
 ```gherkin
 Feature: Coherencia del plugin y publicación
 
-  Scenario: doctor separa lo repo-owned (flag) de lo plugin-owned (hook)
+  # Corrección de semántica: features.caveman es opt-in (default off), como models:.
+  # Su AUSENCIA NO es drift duro (nagearía cada repo); doctor la OFRECE comentada.
+  Scenario: doctor trata caveman como opt-in, no como drift duro
     Given un repo adoptado sin features.caveman en su task-pipeline.yml
     When corro /doctor
-    Then reporta el flag ausente como drift repo-owned (report-only, sin aplicar sin aprobación)
+    Then NO se reporta como drift bloqueante (su ausencia = default off, no rompe nada)
+    And doctor puede ofrecer añadir la clave comentada (nicety, como models:), con diff + aprobación
     And si menciona el hook caveman lo marca plugin-owned (solo-reporte: actualizar el plugin), no drift del repo
 
   Scenario: doctor no inventa drift en un repo sano
