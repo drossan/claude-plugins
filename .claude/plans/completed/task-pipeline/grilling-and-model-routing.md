@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-grilling-and-model-routing
 package: task-pipeline
-status: active          # pending | active | completed | cancelled
+status: completed          # pending | active | completed | cancelled
 branch: plan/task-pipeline/grilling-and-model-routing
 created: 2026-07-16
 updated: 2026-07-16
@@ -149,3 +149,17 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
 - 2026-07-16: **task-pipeline-004 done** — release 0.9.0: `plugin.json` a `0.9.0` + entrada CHANGELOG
   `## [0.9.0]` (Changed BREAKING + Added + Migration), historial ≤0.8.1 intacto, notas verificadas contra
   lo entregado. Detalle en `.claude/context/task-pipeline/task-pipeline-004.md`.
+- 2026-07-16: **PLAN COMPLETED**. Las 4 tareas cerradas y verificadas; plan a `completed`; PR a `main`.
+
+## Nota retro
+
+- **Estimación vs real**: 8h estimadas (2+2+3+1) → ~6h reales (1.5+1.25+2+0.75). Calibración: las tareas
+  de Markdown/config se sobrestimaron ~25%; `doctor` (la más densa) fue la más ajustada.
+- **Sorpresas / dependencias no vistas**:
+  - Todo el andamiaje de dogfooding (`.claude/…`, `docs/guides/…`) estaba **untracked**; se decidió
+    (owner) commitearlo con el baseline drift para que los fixes salieran como diffs.
+  - El proxy RTK reescribe `head`/`cat`/`diff` insertando resúmenes → falseó una verificación de
+    verbatim; se resolvió usando `rtk proxy` y `cmp`/`curl` para comparaciones byte a byte.
+  - El barrido `/task` requería excluir el falso positivo `templates/task.md` (nombre de fichero).
+- **Qué haría distinto**: fijar desde el inicio la convención de verificación exacta (evitar `head`/`cat`
+  a través del proxy). El resto del flujo (una tarea → un commit, verificación por escenario) funcionó.
