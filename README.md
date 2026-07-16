@@ -93,7 +93,7 @@ claude-plugins/
 
 - **`grilling`** — genérica, funciona en cualquier repo. *Skill de terceros* (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)); ver [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 - **`design-review`** y **`scenario-coverage`** — lanzan un subagente fresco sobre rutas que les pasas; funcionan en cualquier repo, aunque dan su mejor resultado dentro del flujo de `/plan-task`.
-- **`task-init`**, **`plan-task`** y **`mutation`** — asumen la convención de trabajo (`.claude/plans|tasks|specs|context`, `docs/guides/task-lifecycle.md`). `/task-init` la materializa; `plan-task` y `mutation` la usan. El **stack** ya no es una asunción rígida: se declara en `.claude/task-pipeline.yml` (`stack:` — por defecto **pnpm + Vitest + Stryker**), igual que el preset (`full`/`legacy`/`docs-only`) y las features. Ver el detalle en [`task-pipeline/README.md`](task-pipeline/README.md).
+- **`task-init`**, **`plan-task`**, **`mutation`** y **`doctor`** — asumen la convención de trabajo (`.claude/plans|tasks|specs|context`, `docs/guides/task-lifecycle.md`). `/task-init` la materializa (bootstrap desde cero); `plan-task` y `mutation` la usan; **`/doctor`** verifica y realinea un repo **ya adoptado** con la versión actual del plugin (tras actualizarlo). El **stack** ya no es una asunción rígida: se declara en `.claude/task-pipeline.yml` (`stack:` — por defecto **pnpm + Vitest + Stryker**), igual que el preset (`full`/`legacy`/`docs-only`) y las features. Ver el detalle en [`task-pipeline/README.md`](task-pipeline/README.md).
 
 ## Versionado
 
