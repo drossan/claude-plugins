@@ -36,7 +36,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`, specs/HOW-TO).
 2. **Secciones de config esperadas ausentes** — en `.claude/task-pipeline.yml`: p.ej. falta la sección
    `models:` (routing de modelo por fase, ver README del plugin → "Routing de modelo por fase"). Su
-   ausencia no rompe nada (todo hereda la sesión), pero conviene ofrecer añadirla comentada.
+   ausencia no rompe nada (todo hereda la sesión), pero conviene ofrecer añadirla comentada. Al
+   proponer/actualizar `models:`, contempla las **fases con subagente ruteables** (`design-review`,
+   `scenario-coverage`, `fact-checker`) y su presencia en la cabecera de lectores. **Nota**: una clave de
+   fase concreta ausente (p.ej. `models.fact-checker`) **no** es drift — el default es inherit.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
