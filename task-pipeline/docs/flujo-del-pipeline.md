@@ -23,7 +23,7 @@ checkpoints humanos por diseño.
    ├─ Paso 2  Plan mode → draft del plan (research read-only)
    ├─ Paso 3  Escribir plan en .claude/plans/pending/<package>/
    │
-   ├─ Paso 4    grill-me ........... 🔒 checkpoint humano (no negociable)
+   ├─ Paso 4    grilling ........... 🔒 checkpoint humano (no negociable)
    ├─ Paso 4.5  design-review ...... subagente adversario (zoom-out al diseño)
    ├─ Paso 5    Descomponer en tareas con escenarios Gherkin
    ├─ Paso 5.5  scenario-coverage .. subagente QA (cobertura de escenarios)
@@ -33,16 +33,17 @@ checkpoints humanos por diseño.
               + aprobación del plan 🔒 checkpoint humano (no negociable)
 ```
 
-## Las 6 skills
+## Las 7 skills
 
 | Skill | Rol |
 |---|---|
 | `/task-init` | **Bootstrap** del repo: crea el esqueleto `.claude/…`, el `task-lifecycle.md` y el HOW-TO de un package. Se usa **una vez** tras instalar. |
 | `/plan-task` | **Orquestador** del pipeline completo (incluye el caso re-plan de un plan activo). |
-| `grill-me` | Interrogatorio que refina el plan **una pregunta a la vez** (rama por rama). |
+| `grilling` | Interrogatorio que refina el plan **una pregunta a la vez** (rama por rama). |
 | `design-review` | Revisión **holística adversaria** del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad, reversibilidad. |
 | `scenario-coverage` | Endurecimiento **QA** de los escenarios Gherkin vía subagente fresco: busca huecos por dimensiones (fronteras, errores, estado, concurrencia, requisitos ausentes). |
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
+| `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
 
 ## Las dos ideas clave
 
@@ -68,7 +69,7 @@ Feature: <capacidad de la tarea>
 
 ### 2. Gates con coste proporcional
 
-- 🔒 **No negociables** (baratos y nucleares): `grill-me` y la **aprobación del
+- 🔒 **No negociables** (baratos y nucleares): `grilling` y la **aprobación del
   plan**. Ningún flag, preset ni "es que es pequeño" los desactiva.
 - ⚙️ **Por defecto ON, salto solo en planes triviales**: `design-review` y
   `scenario-coverage` (las dos pasadas caras por subagente). El salto **lo decide
@@ -90,6 +91,10 @@ prioridad): `defaults (full)` → preset `mode:` → claves explícitas en
 
 `stack:` (`language` / `package-manager` / `test-runner` / `mutation-tool`) hace
 que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker.
+
+`models:` fija el modelo de las fases con subagente (`design-review`,
+`scenario-coverage`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
+en el README del plugin.
 
 ## Estructura que asume en el repo
 
@@ -131,7 +136,7 @@ read-only (dónde vive el registro, qué valida hoy) y redacta el plan desde
 `.claude/plans/pending/auth/reject-duplicate-email.md`
 (`status: pending`, `branch: plan/auth/reject-duplicate-email`).
 
-**Paso 4 — `grill-me` 🔒.** Una pregunta a la vez:
+**Paso 4 — `grilling` 🔒.** Una pregunta a la vez:
 *¿case-insensitive? ¿qué status HTTP? ¿condición de carrera entre check e insert?*
 Cada decisión se registra en el **Plan change log**. La carrera obliga a apoyarse
 en el índice único de BD, no solo en un check previo → el plan se ajusta.

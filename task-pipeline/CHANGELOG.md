@@ -4,6 +4,42 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.9.0] — 2026-07-16
+
+### Changed
+- **BREAKING — renombrada la skill/comando `grill-me` → `grilling`** (se invoca con
+  `/task-pipeline:grilling`). Motivo: paridad con upstream, que renombró la skill y reescribió su texto
+  (adaptación MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)).
+  - Renombrado el directorio `skills/grill-me/` → `skills/grilling/`; su `SKILL.md` adopta **verbatim**
+    el `name`, la `description` y el cuerpo de upstream (`skills/productivity/grilling/SKILL.md`), con la
+    atribución actualizada.
+  - Propagado el identificador en todas las referencias vivas (skills, plantillas, ambos README,
+    metadatos y la guía del repo).
+- **Fix de drift del rename 0.8.0** (regresiones detectadas en `design-review`/`scenario-coverage`):
+  - `hooks/bootstrap.sh`: la ruta de plantillas apuntaba a `skills/task/templates` (inexistente desde
+    0.8.0) → corregida a `skills/plan-task/templates`; la auto-reparación del hook `SessionStart` vuelve
+    a funcionar.
+  - Comando viejo `/task` → `/plan-task` en las cabeceras de `.claude/task-pipeline.yml` y de su
+    plantilla, y en `docs/guides/task-lifecycle.md`.
+
+### Added
+- **Routing de modelo por fase (`models:` en `.claude/task-pipeline.yml`)** para las fases con
+  **subagente** (`design-review`, `scenario-coverage`): fija su modelo por invocación de la Agent tool.
+  Clave ausente/`inherit` = hereda la sesión; valor inválido = aviso + inherit; clave para una fase
+  inline = ignorada. El template trae la sección **comentada** (no impone modelos a repos consumidores).
+  La limitación (las fases inline heredan la sesión; no hay auto-óptimo) se documenta una vez en el
+  README del plugin → "Routing de modelo por fase".
+- **Skill `/doctor`**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin —
+  verificación read-only y, después, fix interactivo por problema (diff + aprobación). Frontera con
+  `/task-init` (que bootstrapea desde cero).
+
+### Migration
+- `/task-pipeline:grill-me` → `/task-pipeline:grilling`. El disparador en **lenguaje natural** "grill me"
+  sigue invocando la skill (la `description` adoptada de upstream incluye "any 'grill' trigger phrases").
+- `models:` es **opcional**: sin la sección, todas las fases heredan el modelo de la sesión
+  (comportamiento actual). Para pinear una fase con subagente, añádela a `.claude/task-pipeline.yml`;
+  `/doctor` puede proponerte añadir la sección (comentada) si falta.
+
 ## [0.8.1] — 2026-06-18
 
 ### Added

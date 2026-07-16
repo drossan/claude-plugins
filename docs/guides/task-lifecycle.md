@@ -41,6 +41,10 @@ Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
 son configurables** — son por diseño.
 
+La sección `models:` fija el modelo de las fases con subagente (`design-review`,
+`scenario-coverage`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
+en el README del plugin.
+
 ## Layout de directorios
 
 ```
@@ -119,42 +123,19 @@ updated: YYYY-MM-DD
 ## Scenarios (Gherkin)
 <!-- Cada escenario es la fuente 1:1 de un test TDD — el `Then` es el assert.
      Cubre camino feliz Y bordes/errores (el mutation testing los exige). Si la
-     tarea no produce código testeable, justifícalo aquí y di cómo se verifica.
-
-     REGLAS (en orden de impacto en la calidad del test):
-     1. Declarativo, NO imperativo: el `When` es acción de dominio (qué se hace),
-        no pasos de UI/clicks/llamadas internas. Imperativo = test acoplado a la
-        implementación que se rompe en cada refactor.
-     2. Un escenario = un comportamiento: si hay When…Then…When…Then, son dos.
-        Cada uno falla por UNA sola razón.
-     3. Disciplina G/W/T: Given = estado previo; When = UNA acción; Then = resultado
-        observable. Condiciones/resultados extra con `And`/`But`, no encadenando pasos.
-     4. Variaciones del MISMO comportamiento (fronteras, off-by-one) → `Scenario
-        Outline` + `Examples`, no copiar escenarios casi iguales. -->
+     tarea no produce código testeable, justifícalo aquí y di cómo se verifica. -->
 ```gherkin
 Feature: <capacidad bajo esta tarea>
 
   Scenario: <caso concreto>
     Given <precondición>
-    When <acción de dominio — qué se hace, no cómo se invoca>
+    When <acción>
     Then <resultado observable y verificable>
 
   Scenario: <error / borde>
     Given ...
     When ...
     Then <error esperado, código, efecto>
-
-  # Fronteras / clases de equivalencia del mismo comportamiento.
-  # <entrada>/<esperado> son sintaxis real de Gherkin (columnas de Examples), no huecos.
-  Scenario Outline: <comportamiento> según <entrada>
-    Given <precondición>
-    When se ejercita con <entrada>
-    Then el resultado es <esperado>
-
-    Examples:
-      | entrada | esperado |
-      | vacío   | ...      |
-      | máx     | ...      |
 ```
 ## Provides
 <!-- Contrato hacia abajo: qué deja disponible para las tareas que dependen de esta

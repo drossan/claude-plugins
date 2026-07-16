@@ -1,9 +1,9 @@
 ---
 name: design-review
-description: Revisión holística adversaria de un plan/diseño mediante un subagente fresco que intenta TUMBAR el conjunto (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad) antes de descomponerlo en tareas. Úsala tras cerrar `grill-me`, o cuando el usuario quiera una review de diseño "paso atrás" sobre cualquier plan ya decidido.
+description: Revisión holística adversaria de un plan/diseño mediante un subagente fresco que intenta TUMBAR el conjunto (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad) antes de descomponerlo en tareas. Úsala tras cerrar `grilling`, o cuando el usuario quiera una review de diseño "paso atrás" sobre cualquier plan ya decidido.
 ---
 
-Cierras el zoom-out que `grill-me` no hace. `grill-me` baja **rama por rama** resolviendo cada decisión local; aquí subes y miras el **plan COMO UN TODO**: ¿las piezas encajan?, ¿es del tamaño correcto?, ¿sobrevive al tiempo?
+Cierras el zoom-out que `grilling` no hace. `grilling` baja **rama por rama** resolviendo cada decisión local; aquí subes y miras el **plan COMO UN TODO**: ¿las piezas encajan?, ¿es del tamaño correcto?, ¿sobrevive al tiempo?
 
 **Por qué un subagente y no tú**: la complacencia nace de la presión social acumulada en la conversación y del sesgo de confirmación sobre tu propio plan. Si revisas tú, dirás "todo idóneo". Por eso esta review **la corre un agente fresco sin rapport**, al que no le cuentas que el plan es tuyo ni que al usuario le gusta. Esa es toda la garantía del mecanismo: no la diluyas haciéndola tú.
 
@@ -18,7 +18,15 @@ Localiza también las specs/HOW-TO relevantes (`.claude/specs/<package>/`) para 
 
 ## Paso 2 — Lanzar el subagente adversario (Agent tool)
 
-Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`). Pásale **rutas, no opiniones**: que lea el plan, el change log y las specs con `Read`, y que pueda explorar el codebase en **read-only**. **No** debe editar nada ni se le adelanta el veredicto deseado.
+**Modelo del subagente (config-driven).** Antes de lanzarlo, lee `models.design-review` en `.claude/task-pipeline.yml` (no hay parser: lo interpretas con `Read`):
+
+- clave **ausente** o `inherit` → **no** pases `model`: el subagente hereda el modelo de la sesión;
+- **alias/id de modelo válido** (p.ej. `opus`) → pásalo como `model` a la Agent tool;
+- **valor inválido** (typo / id inexistente) → **avisa** al usuario y cae a inherit (no lances el subagente con un `model` roto).
+
+(Las fases inline no se rutan; ver el README del plugin → "Routing de modelo por fase".)
+
+Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`, y `model` solo si `models.design-review` trae un valor válido). Pásale **rutas, no opiniones**: que lea el plan, el change log y las specs con `Read`, y que pueda explorar el codebase en **read-only**. **No** debe editar nada ni se le adelanta el veredicto deseado.
 
 Prompt EXACTO para el subagente (sustituye `<RUTA_PLAN>` y `<RUTAS_SPECS>`):
 

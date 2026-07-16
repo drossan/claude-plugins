@@ -24,11 +24,18 @@ mode: full
 
 # ── Stack del repo ────────────────────────────────────────────────────────────
 # Las skills usan esto para elegir comandos en vez de asumir pnpm/Vitest/Stryker.
+#
+# OJO: este repo es el SOURCE del propio plugin task-pipeline — sus entregables son
+# skills en Markdown y hooks en Bash, no hay harness de tests JS/TS todavía. El stack
+# refleja esa realidad. Con `mode: full`, los ítems de TDD y gate de mutation de la DoD
+# no tienen herramienta que correr hasta que se añada un harness (p.ej. bats para los
+# hooks). Cuando llegues al cierre de una tarea: o añades harness, o relajas las
+# features (tdd / mutation-gate) o el preset (legacy / docs-only) según el caso.
 stack:
-  language: typescript        # typescript | javascript | other
-  package-manager: pnpm       # pnpm | npm | yarn | none
-  test-runner: vitest         # vitest | jest | node | none
-  mutation-tool: stryker      # stryker | none
+  language: other             # typescript | javascript | other  → Markdown + Bash
+  package-manager: none       # pnpm | npm | yarn | none
+  test-runner: none           # vitest | jest | node | none
+  mutation-tool: none         # stryker | none
 
 # ── Features ──────────────────────────────────────────────────────────────────
 features:
@@ -58,7 +65,6 @@ features:
 #   alias o id de modelo (p.ej. `opus`)    → se pasa como `model` al lanzar el subagente
 #   valor inválido (typo / id inexistente) → aviso + inherit (no se lanza roto)
 #   clave para una fase inline             → se ignora (esa fase hereda la sesión)
-# Comentado a propósito: el TEMPLATE no impone modelos a repos consumidores (inherit).
-# models:
-#   design-review: opus
-#   scenario-coverage: sonnet
+models:
+  design-review: opus        # este repo es el source del plugin: review adversaria en el mejor modelo
+  # scenario-coverage:       # inherit (ausente) → hereda el modelo de la sesión

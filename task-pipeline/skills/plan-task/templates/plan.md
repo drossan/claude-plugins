@@ -32,7 +32,7 @@ hace falta este trabajo.>
 ## Recursos externos
 
 <Docs del proyecto, specs aplicables, referencias técnicas, decisiones de
-`grill-me` consolidadas (con fecha).>
+`grilling` consolidadas (con fecha).>
 
 ## Estimación global
 
@@ -58,5 +58,5 @@ hace falta este trabajo.>
 ## Registro de cambios del plan
 
 - YYYY-MM-DD: creado.
-- YYYY-MM-DD: refinado con `grill-me` (<n> preguntas, <n> decisiones).
+- YYYY-MM-DD: refinado con `grilling` (<n> preguntas, <n> decisiones).
 <!-- Toda re-planificación in-place se registra aquí: qué cambió y por qué. -->

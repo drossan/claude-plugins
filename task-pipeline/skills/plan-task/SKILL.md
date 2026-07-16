@@ -1,9 +1,9 @@
 ---
 name: plan-task
-description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grill-me → tareas en Gherkin → handoff al flujo TDD → gate de mutation testing. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/plan-task "quiero añadir X"`).
+description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grilling → tareas en Gherkin → handoff al flujo TDD → gate de mutation testing. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/plan-task "quiero añadir X"`).
 ---
 
-Eres el orquestador del flujo de trabajo del repo. A partir de las especificaciones del usuario (`$ARGUMENTS`), conduces el pipeline hasta dejar las tareas listas para ejecutar en TDD. **No es 100% automático**: hay dos checkpoints humanos no negociables (refinado con `grill-me` y aprobación del plan). No los saltes.
+Eres el orquestador del flujo de trabajo del repo. A partir de las especificaciones del usuario (`$ARGUMENTS`), conduces el pipeline hasta dejar las tareas listas para ejecutar en TDD. **No es 100% automático**: hay dos checkpoints humanos no negociables (refinado con `grilling` y aprobación del plan). No los saltes.
 
 > **Convención asumida por este plugin** (ver el README del plugin): el repo organiza el trabajo en `.claude/plans/<estado>/<package>/`, `.claude/tasks/<estado>/<package>/`, `.claude/context/<package>/<task-id>.md`, specs en `.claude/specs/`, y tiene un `docs/guides/task-lifecycle.md` (flujo canónico) y un `HOW-TO-START-A-TASK.md` por package en `.claude/specs/<package>/`. Si el repo no sigue esta convención, primero bootstrapéala con la skill `/task-init` (o avisa al usuario) antes de continuar.
 
@@ -37,7 +37,9 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
 
-> **Checkpoints — qué se puede saltar y qué no**: `grill-me` y la aprobación del plan son **no negociables** (baratos y nucleares); ningún flag, preset ni "es que es pequeño" los desactiva. `design-review` (Paso 4.5) y `scenario-coverage` (Paso 5.5) corren **por defecto**, pero admiten un **salto proporcional** solo en planes triviales (regla abajo). El escape es proporcional al coste: solo las dos pasadas caras (subagente) lo tienen.
+**`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
+
+> **Checkpoints — qué se puede saltar y qué no**: `grilling` y la aprobación del plan son **no negociables** (baratos y nucleares); ningún flag, preset ni "es que es pequeño" los desactiva. `design-review` (Paso 4.5) y `scenario-coverage` (Paso 5.5) corren **por defecto**, pero admiten un **salto proporcional** solo en planes triviales (regla abajo). El escape es proporcional al coste: solo las dos pasadas caras (subagente) lo tienen.
 
 ### Salto en planes triviales (`design-review` / `scenario-coverage`)
 
@@ -54,7 +56,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 
 Antes de crear nada, comprueba si **ya existe un plan activo** (`.claude/plans/active/<package>/`) que cubra el scope pedido:
 
-- **Sí lo cubre** → NO crees un plan nuevo (pisaría la rama). **Re-planifica in-place**: ajusta/añade/redefine tareas del plan activo, registra cada cambio en su **Plan change log**, y refina con `grill-me`. Presenta los cambios para aprobación antes de aplicarlos.
+- **Sí lo cubre** → NO crees un plan nuevo (pisaría la rama). **Re-planifica in-place**: ajusta/añade/redefine tareas del plan activo, registra cada cambio en su **Plan change log**, y refina con `grilling`. Presenta los cambios para aprobación antes de aplicarlos.
 - **No lo cubre** → sigue con el flujo de plan nuevo (pasos 1-5).
 
 Si hay duda de scope o de a qué package pertenece, pregunta con `AskUserQuestion`.
@@ -75,13 +77,13 @@ Si hay duda de scope o de a qué package pertenece, pregunta con `AskUserQuestio
 
 Al aprobar el usuario, escribe `.claude/plans/pending/<package>/<name-plan>.md` con el frontmatter de la plantilla (`status: pending`, `branch: plan/<package>/<name-plan>`, fechas).
 
-## Paso 4 — Refinar con grill-me (checkpoint humano)
+## Paso 4 — Refinar con grilling (checkpoint humano)
 
-Invoca la skill **`grill-me`** sobre el plan. Itera hasta que sobreviva el interrogatorio; registra cada decisión en el **Plan change log**. No avances hasta que el usuario lo dé por bueno.
+Invoca la skill **`grilling`** sobre el plan. Itera hasta que sobreviva el interrogatorio; registra cada decisión en el **Plan change log**. No avances hasta que el usuario lo dé por bueno.
 
 ## Paso 4.5 — Revisión de diseño holística (checkpoint humano)
 
-`grill-me` resuelve las decisiones **rama por rama**; falta el zoom-out al conjunto. Antes de invocarla, aplica la regla de **salto en planes triviales** (ver arriba): por defecto se ejecuta; solo ofreces saltarla si el plan cumple todos los criterios, y el salto lo confirma y se loguea. Invoca la skill **`design-review`** sobre el plan refinado: lanza un **subagente fresco** (sin el sesgo de defender tu propio plan) que intenta tumbar el diseño como un todo —coherencia, tamaño correcto (infra- y **sobre**-ingeniería), mantenibilidad concreta, escalabilidad real y reversibilidad—. Presenta los hallazgos sin filtrar, decide los cambios con el usuario y regístralos en el **Plan change log**; si alteran scope/enfoque de forma material, re-preséntalos para aprobación. No avances hasta que el plan sobreviva o se ajuste.
+`grilling` resuelve las decisiones **rama por rama**; falta el zoom-out al conjunto. Antes de invocarla, aplica la regla de **salto en planes triviales** (ver arriba): por defecto se ejecuta; solo ofreces saltarla si el plan cumple todos los criterios, y el salto lo confirma y se loguea. Invoca la skill **`design-review`** sobre el plan refinado: lanza un **subagente fresco** (sin el sesgo de defender tu propio plan) que intenta tumbar el diseño como un todo —coherencia, tamaño correcto (infra- y **sobre**-ingeniería), mantenibilidad concreta, escalabilidad real y reversibilidad—. Presenta los hallazgos sin filtrar, decide los cambios con el usuario y regístralos en el **Plan change log**; si alteran scope/enfoque de forma material, re-preséntalos para aprobación. No avances hasta que el plan sobreviva o se ajuste.
 
 ## Paso 5 — Descomponer en tareas pequeñas con Gherkin
 
@@ -118,7 +120,7 @@ Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), 
 
 ## Reglas de la sesión
 
-- **Checkpoints humanos**: `grill-me` y la aprobación del plan **no se saltan nunca**. `design-review` y `scenario-coverage` solo con el salto en planes triviales (criterios + confirmación + log).
+- **Checkpoints humanos**: `grilling` y la aprobación del plan **no se saltan nunca**. `design-review` y `scenario-coverage` solo con el salto en planes triviales (criterios + confirmación + log).
 - **Commits deliberados**: `<task-id>: <conventional commit>` en la rama del plan.
 - **Una sola tarea `active` por plan** (comparten rama).
 - Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo desde `templates/HOW-TO-START-A-TASK.md` (junto a este skill; ábrela con Read y rellena los bloques `ESPECÍFICO DEL PACKAGE`) antes del handoff. Atajo: `/task-init <package>` hace exactamente eso.

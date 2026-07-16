@@ -89,11 +89,11 @@ Reporta en pocas líneas: qué creaste, qué ya existía (respetado), y el packa
 inicializado si lo hubo. Cierra indicando el siguiente paso:
 
 > Repo listo. Arranca trabajo nuevo con `/plan-task "<tus especificaciones>"` — el
-> pipeline hará plan mode → plan en pending → `grill-me` → tareas Gherkin → TDD →
+> pipeline hará plan mode → plan en pending → `grilling` → tareas Gherkin → TDD →
 > gate de mutation (`/mutation`).
 
 ## Qué NO hace este skill
 
 - **No** crea planes ni tareas (eso es `/plan-task`).
-- **No** corre `grill-me` ni entra en plan mode.
+- **No** corre `grilling` ni entra en plan mode.
 - **No** instala Stryker (eso lo hace `/mutation` la primera vez en cada package).
