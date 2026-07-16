@@ -9,7 +9,7 @@ updated: 2026-07-16
 
 # Disciplina de honestidad y verificación (fact-checker + reglas + no-duplicación)
 
-> Plan refinado con `grilling` (5 decisiones, abajo). Pendiente: `design-review` → descomposición
+> Refinado con `grilling` (D1–D5) y `design-review` (R1–R3 + endurecimientos). Pendiente: descomposición
 > Gherkin → `scenario-coverage`. Stack sobre `plan/task-pipeline/grilling-and-model-routing` (0.9.0, PR #6).
 
 ## Contexto y problema
@@ -17,91 +17,119 @@ updated: 2026-07-16
 Los gates actuales cubren **planificación** (`grilling`, `design-review`, `scenario-coverage`) y
 **calidad de tests** (`mutation`). Ninguno verifica la **veracidad de las afirmaciones** que Claude hace
 al ejecutar/cerrar ("los tests pasan", "la función X hace Y", "la lib Z soporta W", "este import existe"),
-ni impone **disciplina anti-alucinación / anti-slop** proactiva. Una afirmación falsa en el resumen final
-o antes de un commit no la caza nada. El owner aporta tres piezas (Camino A: agent + orquestación). Extiende
-la release 0.9.0 (PR #6 sin mergear; depende de la convención `models:` y del patrón de registro de `doctor`).
+ni impone **disciplina anti-alucinación / anti-slop**. El owner aporta tres piezas. Extiende la release
+0.9.0 (PR #6 sin mergear; depende de la convención `models:` y del patrón de registro de `doctor`).
 
 ## Objetivos
 
-1. **Subagente `fact-checker`** (primer artefacto `agents/` del plugin) como gate de fase de cierre.
-   - *Criterio*: existe `agents/fact-checker.md` (tools read-only + Bash; nunca escribe código; salida
-     VERIFICADO/INCORRECTO/NO VERIFICABLE); `description` honesta (nudge, no promete auto-invocación);
-     modelo config-driven (`models.fact-checker`, default `sonnet`); registrado en READMEs + metadatos.
-2. **Reglas de honestidad "leer cada turno"** vía `CLAUDE.md` + `@import` (nativo).
-   - *Criterio*: `.claude/honesty-rules.md` materializado + `@import` desde el `CLAUDE.md` del repo; leído
-     cada turno de forma nativa.
-3. **Regla de no-duplicación de código** (salvo aprobación del usuario), en el mismo artefacto de reglas.
-   - *Criterio*: la regla figura en `honesty-rules.md`.
-4. **Gate config-driven**: flag `features.fact-check` (default ON) + orquestación en DoD/HOW-TO/plan-task.
-   - *Criterio*: la DoD del HOW-TO y el cierre de `plan-task` mandan invocar `fact-checker` antes de
-     commit/resumen salvo `features.fact-check: false`.
-5. **Ciclo de vida integrado**: `task-init` materializa; `doctor` verifica; `bootstrap.sh` restaura.
-   - *Criterio*: las tres skills/hook gestionan el nuevo artefacto de reglas como el resto de la convención.
-6. **Release** (tentativo 0.10.0, minor) con Added + Migration.
+1. **Skill `fact-checker`** (mismo molde que `design-review`/`scenario-coverage`) como gate de cierre.
+   - *Criterio*: `skills/fact-checker/SKILL.md` lee `models.fact-checker` y lanza `general-purpose` con
+     prompt EXACTO inline; tools de solo-lectura + Bash; **nunca escribe código**; salida
+     VERIFICADO/INCORRECTO/NO VERIFICABLE; `description` honesta (no promete auto-invocación).
+2. **Gate orquestado en la DoD** (NO flag): antes de commit y del resumen final.
+   - *Criterio*: la DoD del HOW-TO + `task-lifecycle` + cierre de `plan-task` mandan invocar `fact-checker`
+     antes de commit/resumen; es no-negociable (barato+nuclear, como `grilling`/aprobación). Sin
+     `features.fact-check`.
+3. **Reglas de honestidad "leer cada turno"** vía `@import` **opt-in** (sin invadir el `CLAUDE.md`).
+   - *Criterio*: `.claude/honesty-rules.md` materializado; `task-init` **sugiere** el `@import` (no lo
+     escribe); `doctor` **reporta** si falta (no lo añade); `bootstrap.sh` restaura solo el fichero. El
+     `CLAUDE.md` del usuario nunca se auto-edita (invariante del plugin intacta).
+4. **Regla de no-duplicación** de código como **coding-standard**, no honesty-rule.
+   - *Criterio*: vive en `.claude/specs/general/coding-standards.md` (donde el HOW-TO ya apunta), no en
+     `honesty-rules.md`.
+5. **Modelo de `fact-checker` config-driven**, default **inherit** (coherente con los otros gates).
+   - *Criterio*: `models.fact-checker` en config repo (comentado/inherit) + template comentado; ausente =
+     hereda sesión. Si el owner quiere `sonnet` por barato, es valor explícito, no default oculto.
+6. **Registro + release**: `fact-checker` en READMEs/metadatos/flujo (patrón `doctor`) + bump (tentativo
+   0.10.0) + CHANGELOG (Added + Migration). Incluye una frase de **frontera `fact-checker` ↔ `doctor`**.
 
 ## Alcance y fuera de alcance
 
 ### Dentro
-- `agents/fact-checker.md` (nuevo directorio `agents/` en el plugin).
-- Orquestación del gate en `templates/HOW-TO-START-A-TASK.md` (DoD) + cierre de `plan-task`; flag
-  `features.fact-check` en config repo + template + lectura en `plan-task`.
-- Artefacto `honesty-rules.md` (reglas de honestidad + no-duplicación) + mecanismo `@import`.
-- Extender `task-init` (materializa reglas + @import), `doctor` (verifica), `bootstrap.sh` (restaura).
-- Registro de `fact-checker` en ambos README + `plugin.json`/`marketplace.json` + `flujo-del-pipeline.md`.
+- `skills/fact-checker/SKILL.md` (skill, NO `agents/`).
+- `models.fact-checker` en config repo + template + cabeceras yml (lectores) — como `models.<fase>` de 0.9.0.
+- Gate en la DoD de `templates/HOW-TO-START-A-TASK.md` + `templates/task-lifecycle.md` + cierre de `plan-task`.
+- `.claude/honesty-rules.md` (reglas de honestidad) + `@import` **opt-in** (task-init sugiere, doctor
+  reporta, bootstrap restaura el fichero).
+- No-duplicación en `.claude/specs/general/coding-standards.md`.
+- Registro de `fact-checker` en ambos README + `plugin.json`/`marketplace.json` + `flujo-del-pipeline.md`;
+  frase de frontera con `doctor`.
 - Release (bump + CHANGELOG).
 
 ### Fuera
-- Cambiar el comportamiento de los gates existentes.
+- **`agents/`** (descartado en R1: skill es coherente y la auto-delegación no se usa).
+- **Auto-editar el `CLAUDE.md`** del usuario (R2) y hook de aviso en commit (D3).
+- **Flag `features.fact-check`** (R3: gate no-negociable en la DoD).
 - Harness de tests (stack sigue `none`); `fact-checker` "corre tests" solo aplica en repos consumidores.
-- Auto-invocación "mágica" del subagente (imposible por plataforma) y hook de aviso en commit (descartado
-  en D3).
 
 ## Recursos externos
 
 - Contenido base de `fact-checker` y reglas de honestidad: aportados por el owner.
-- Precedentes en el repo: registro de `doctor`; convención `models:` (task-002); materialización vía
-  plantillas + hook (`task-init`, `bootstrap.sh`).
-- Plataforma verificada (agents/subagentes/hooks/`@import` de CLAUDE.md): `code.claude.com/docs`.
+- Precedentes: patrón de gate-subagente (`skills/design-review/SKILL.md`, `scenario-coverage/SKILL.md`);
+  registro de `doctor`; convención `models:` (task-002); invariante "no tocar `CLAUDE.md` del usuario"
+  (`task-init/SKILL.md:79`, `doctor/SKILL.md`); `cp`-only en `bootstrap.sh`; specs en
+  `HOW-TO-START-A-TASK.md` (tabla, apunta a `specs/general/coding-standards.md`).
+- Plataforma verificada: `code.claude.com/docs`.
 
 ## Estimación global
 
-- **Tareas**: ~4 (se fija tras `design-review` + descomposición).
+- **Tareas**: 4 (ver abajo). Se endurecen con `scenario-coverage`.
 - **Esfuerzo**: 1–2 sesiones (Markdown/config; sin código ejecutable).
-- **Recursos**: owner (checkpoints) + subagentes design-review/scenario-coverage.
+- **Recursos**: owner (checkpoints) + subagentes.
 
 ## Criterios de calidad y verificación
 
 > Stack `none`: TDD/mutation = **N/A**. Verificación por inspección / `grep` / `bash -n` / fixtures /
-> correr el hook y el flujo en repos de prueba (sano / con drift / sin CLAUDE.md).
+> correr el hook y el flujo en repos de prueba (sano / con drift / con y sin CLAUDE.md).
 
-- `agents/fact-checker.md` con frontmatter válido; `description` honesta; modelo config-driven.
-- `features.fact-check` en config repo + template (comentado/def ON) y leído por `plan-task`/HOW-TO.
-- `honesty-rules.md` + `@import` materializados por `task-init`, verificados por `doctor`, restaurados
-  por `bootstrap.sh` (idempotente; no sobrescribe un CLAUDE.md existente sin cuidado).
-- `fact-checker` registrado en las superficies documentales (como `doctor`).
-- Metadatos coherentes; CHANGELOG con Added + Migration.
+- `skills/fact-checker/SKILL.md`: frontmatter válido; lee `models.fact-checker`; `description` honesta;
+  molde coherente con los otros dos gates de subagente.
+- Gate en la DoD (HOW-TO + lifecycle + plan-task cierre); sin flag; frontera con `doctor` explícita.
+- `honesty-rules.md` materializado; `@import` **opt-in** (task-init sugiere / doctor reporta / bootstrap
+  restaura fichero); `CLAUDE.md` NUNCA auto-editado. no-duplicación en `specs/general/coding-standards.md`.
+- `models.fact-checker` default inherit (config repo comentado; template comentado; cabeceras con lectores).
+- `fact-checker` registrado en las superficies documentales; CHANGELOG con Added + Migration.
 
 ## Tasks
 
-<Descomposición pendiente (`plan-task` Paso 5) + endurecimiento (`scenario-coverage`). Tentativa:>
+<Descomposición pendiente de endurecer con `scenario-coverage`.>
 
-- [ ] `task-pipeline-005` (P1) — `agents/fact-checker.md` (agente + description honesta + modelo config-driven)  · depends_on: —
-- [ ] `task-pipeline-006` (P2) — Orquestación del gate: `features.fact-check` + DoD/HOW-TO + cierre `plan-task`  · depends_on: 005
-- [ ] `task-pipeline-007` (P3) — Reglas (`honesty-rules.md` + no-duplicación) + `@import` + integración `task-init`/`doctor`/`bootstrap.sh`  · depends_on: —
-- [ ] `task-pipeline-008` (P4) — Registro de `fact-checker` en metadatos/READMEs + release (bump + CHANGELOG)  · depends_on: 005, 006, 007
+- [ ] `task-pipeline-005` (P1) — Skill `fact-checker` (molde design-review) + `models.fact-checker` (config repo + template + cabeceras)  · depends_on: —
+- [ ] `task-pipeline-006` (P2) — Gate en la DoD (HOW-TO + task-lifecycle + cierre `plan-task`) + frontera con `doctor`  · depends_on: 005
+- [ ] `task-pipeline-007` (P3) — `honesty-rules.md` + `@import` opt-in (task-init sugiere / doctor reporta / bootstrap restaura) + no-duplicación en `specs/general/coding-standards.md`  · depends_on: —
+- [ ] `task-pipeline-008` (P4) — Registro de `fact-checker` en metadatos/READMEs/flujo + release (bump + CHANGELOG Added/Migration)  · depends_on: 005, 006, 007
 
 ## Registro de cambios del plan
 
 - 2026-07-16: creado (borrador aprobado en plan mode).
-- 2026-07-16: refinado con `grilling` (5 decisiones):
-  - **D1** — mecanismo "leer cada turno" = `CLAUDE.md` + `@import` de `honesty-rules.md` (nativo, sin
-    coste por turno). Alternativas (hook UserPromptSubmit / SessionStart) descartadas.
-  - **D2** — modelo de `fact-checker` **config-driven** (`models.fact-checker`), default `sonnet` en
-    frontmatter (verificar es barato; resolución: param por invocación > frontmatter > sesión). Difiere a
-    propósito del default inherit de design-review/scenario-coverage.
-  - **D3** — enforcement por **DoD/orquestación** + flag `features.fact-check` (default ON). Sin hook
-    (un hook no puede invocar el subagente y el plugin evita determinismo).
-  - **D4** — secuenciado = **stack** sobre `plan/task-pipeline/grilling-and-model-routing` (no esperar al
-    merge de #6).
-  - **D5** — **integración completa** del ciclo de vida del artefacto de reglas: `task-init` materializa +
-    @import, `doctor` verifica, `bootstrap.sh` restaura.
+- 2026-07-16: refinado con `grilling` (5 decisiones): **D1** mecanismo "cada turno" = `CLAUDE.md`+`@import`;
+  **D2** modelo config-driven default sonnet; **D3** enforcement DoD + flag `features.fact-check`;
+  **D4** stack sobre grilling-and-model-routing; **D5** integración completa task-init/doctor/bootstrap.
+- 2026-07-16: **`design-review`** (subagente fresco, `model: opus`). El plan NO aguantó tal cual; hallazgos
+  y resolución del owner:
+  - **R1 (aceptado)** `fact-checker` → **skill**, no `agents/` (revierte Camino A): la auto-delegación no
+    se usa (D3), un agent solo añadía coste + un 2º patrón de subagente. Molde `design-review`.
+  - **R2 (aceptado, con matiz)** NO auto-editar el `CLAUDE.md` del usuario (rompería la invariante del
+    plugin). Se conserva "cada turno" vía `@import` **opt-in**: materializar `honesty-rules.md`,
+    `task-init` **sugiere** el @import, `doctor` **reporta** si falta, `bootstrap` restaura solo el
+    fichero. (Corrige D1/D5.)
+  - **R3 (aceptado)** dropear `features.fact-check`: gate barato+nuclear = **no configurable** por la
+    propia lógica del plugin; entra en la DoD como `grilling`/aprobación. (Corrige D3.)
+  - **(aceptado)** `models.fact-checker` default **inherit** (no una 3ª semántica). (Corrige D2.)
+  - **(aceptado)** no-duplicación es un **coding-standard** → `specs/general/coding-standards.md`, no en
+    `honesty-rules.md` ni leído cada turno.
+  - **(aceptado)** añadir frase de **frontera `fact-checker` ↔ `doctor`** (se solapan en read-only).
+  - **(no bloquea)** el plan se mantiene ÚNICO: la asimetría de riesgo que motivaba separarlo desaparece
+    al hacer el `@import` opt-in (no invasivo). Tareas bien separadas por concern.
+- 2026-07-16: **`scenario-coverage`** (subagente QA fresco) sobre las 4 tareas. Incorporados:
+  endurecimientos por dimensión en 005 (modelo inválido, YAML malformado, 0/mixto de afirmaciones,
+  "tests pasan" sin runner→NO VERIFICABLE, "confía en mí", read-only sin afirmaciones propias), 007
+  (repo no adoptado→no-op, ficheros ya existentes no se pisan, CLAUDE.md inexistente) y 008 (conteo/
+  diagrama de flujo, frontera con doctor, prosa sin auto-invocación). Decisiones del owner:
+  - **SC-A** — al cierre: `INCORRECTO` bloquea; `NO VERIFICABLE` = aviso a reconocer (no bloquea);
+    `VERIFICADO` pasa. Orden: fact-checker tras `mutation`. (Task 006.)
+  - **SC-B** — extender `doctor` (repartido en 005/006/007) para que en repos YA adoptados detecte el
+    gate de fact-checker ausente, `honesty-rules.md` ausente y contemple `fact-checker` en `models:`.
+    Cierra el hueco transversal (los cambios en plantillas no llegan a repos ya materializados).
+  - **SC-C** — `coding-standards.md` **user-owned**: `task-init` lo materializa, pero NO lo restaura
+    `bootstrap` ni lo vigila `doctor` (como las otras specs generales); solo `honesty-rules.md` se gestiona.
