@@ -121,6 +121,8 @@ El plugin trae las **semillas** que `/plan-task` materializa en el repo (no se i
 |---|---|
 | `skills/plan-task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
 | `skills/plan-task/templates/task-pipeline.yml` | `.claude/task-pipeline.yml` (config del repo: preset/stack/features, una vez) |
+| `skills/plan-task/templates/honesty-rules.md` | `.claude/honesty-rules.md` (reglas de honestidad; `@import` opt-in al `CLAUDE.md`, una vez) |
+| `skills/plan-task/templates/coding-standards.md` | `.claude/specs/general/coding-standards.md` (no-duplicación; user-owned, una vez) |
 | `skills/plan-task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
 | `skills/plan-task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |
 | `skills/plan-task/templates/task.md` | `.claude/tasks/pending/<package>/<task-id>.md` (por tarea; incluye `## Scenarios (Gherkin)`) |

@@ -20,6 +20,7 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 TEMPLATES="${CLAUDE_PLUGIN_ROOT:-}/skills/plan-task/templates"
 LIFECYCLE="$PROJECT_DIR/docs/guides/task-lifecycle.md"
 FEATURES="$PROJECT_DIR/.claude/task-pipeline.yml"
+HONESTY="$PROJECT_DIR/.claude/honesty-rules.md"
 
 cd "$PROJECT_DIR" 2>/dev/null || exit 0
 
@@ -55,8 +56,18 @@ if [ ! -f "$FEATURES" ] && [ -f "$TEMPLATES/task-pipeline.yml" ]; then
   cp "$TEMPLATES/task-pipeline.yml" "$FEATURES" && restored_features=1
 fi
 
+# --- asegurar las reglas de honestidad (NUNCA tocamos el CLAUDE.md) ----------
+# Solo restauramos el FICHERO. Que se lean cada turno depende de un @import en el
+# CLAUDE.md, que es decisión OPT-IN del usuario: este hook jamás edita el CLAUDE.md
+# (invariante del plugin). coding-standards.md es user-owned y NO se restaura aquí
+# (igual que testing.md/error-handling.md/security.md/git-workflow.md): solo honesty-rules.md.
+restored_honesty=0
+if [ ! -f "$HONESTY" ] && [ -f "$TEMPLATES/honesty-rules.md" ]; then
+  cp "$TEMPLATES/honesty-rules.md" "$HONESTY" && restored_honesty=1
+fi
+
 # --- reportar SOLO si hemos cambiado algo ------------------------------------
-if [ "$created" -eq 0 ] && [ "$restored_guide" -eq 0 ] && [ "$restored_features" -eq 0 ]; then
+if [ "$created" -eq 0 ] && [ "$restored_guide" -eq 0 ] && [ "$restored_features" -eq 0 ] && [ "$restored_honesty" -eq 0 ]; then
   exit 0   # todo en su sitio → silencio
 fi
 
@@ -66,6 +77,9 @@ if [ "$restored_guide" -eq 1 ]; then
 fi
 if [ "$restored_features" -eq 1 ]; then
   msg="$msg Restaurado .claude/task-pipeline.yml (config de features, defaults ON) desde la plantilla del plugin."
+fi
+if [ "$restored_honesty" -eq 1 ]; then
+  msg="$msg Restaurado .claude/honesty-rules.md desde la plantilla del plugin (el @import a tu CLAUDE.md es opt-in; el hook no lo añade)."
 fi
 msg="$msg Para inicializar un package nuevo (su HOW-TO-START-A-TASK.md) usa /task-init <package>."
 

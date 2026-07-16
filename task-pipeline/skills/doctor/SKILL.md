@@ -57,6 +57,17 @@ artefacto del plugin — ver "Propiedad" abajo).
    mencionan** el gate, repórtalo (repo-owned): en Fase 2 ofrece añadir la línea / re-materializar la
    sección desde la plantilla actual (`../plan-task/templates/`), con diff + aprobación. Es un gate
    no-negociable: **no** busques ni propongas un flag para desactivarlo — no existe.
+6. **Reglas de honestidad ausentes o sin `@import`** (repo-owned, opt-in) — dos comprobaciones
+   independientes:
+   - Si `.claude/honesty-rules.md` **falta**, repórtalo y ofrece **materializarlo** desde la plantilla
+     (`../plan-task/templates/honesty-rules.md`) en Fase 2 (diff + aprobación).
+   - Si el fichero existe pero el `CLAUDE.md` (raíz o de workspace) **no lo `@importa`**
+     (`@.claude/honesty-rules.md`), repórtalo y **SUGIERE** añadir la línea — pero **no** edites el
+     `CLAUDE.md` (invariante: nunca tocas su prosa/config; el `@import` es opt-in del usuario). Si el repo
+     **no tiene** `CLAUDE.md`, no lo crees: solo nota que el `@import` es opt-in.
+   **No** vigiles `.claude/specs/general/coding-standards.md` ni las otras specs generales
+   (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y su ausencia
+   **no es drift**.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -109,7 +120,8 @@ Fixes seguros típicos (repo-owned, mecánicos): actualizar un identificador des
 una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`;
 añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o re-materializar la sección
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
-auto-edición).
+auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
+`CLAUDE.md` **no** se aplica: solo se sugiere).
 
 ## Idempotencia
 
@@ -125,3 +137,5 @@ entre ejecuciones: la verdad es el repo.
 - **No edita el plugin** (hooks, SKILLs, plantillas del plugin): eso es solo-reporte + actualizar el plugin.
 - **No toca** el CHANGELOG ni la atribución (menciones históricas legítimas).
 - **No sobrescribe** prosa que el usuario personalizó: la reporta como aviso.
+- **No edita el `CLAUDE.md`** del usuario: sugiere el `@import` de `honesty-rules.md`, nunca lo añade.
+- **No vigila** `coding-standards.md` ni las demás specs generales user-owned: su ausencia no es drift.
