@@ -8,6 +8,10 @@ Alineas un repo **ya adoptado** con la versión actual del plugin. Frontera clar
 repo existente** y corrige el drift acumulado tras actualizar el plugin. `doctor` **no inicializa** nada
 en un repo virgen.
 
+> **Frontera con `fact-checker`**: `doctor` verifica el **drift de convención** de un repo adoptado
+> (identificadores, estructura, secciones de config y de la DoD); `fact-checker` verifica la **veracidad
+> de las afirmaciones** de una sesión. No se solapan, aunque ambas sean read-only.
+
 El flujo tiene **dos fases** y una regla que no se rompe: **Fase 1 no edita nada; Fase 2 no edita nada
 sin tu aprobación explícita, y siempre te enseña el diff ANTES de pedírtela.** Nada se auto-edita a ciegas.
 
@@ -45,6 +49,14 @@ artefacto del plugin — ver "Propiedad" abajo).
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
    `.claude/plans/{pending,active,completed,cancelled}`, `.claude/tasks/{…}`, `.claude/context`,
    `.claude/specs`, `docs/guides`.
+5. **Gate de cierre `fact-checker` ausente en la DoD materializada** (drift de plantilla) — desde
+   **0.10.0** el cierre de tarea incluye el gate no-negociable de `fact-checker` (verificar las
+   afirmaciones factuales de la sesión antes de commit/resumen). Si el repo materializó
+   `docs/guides/task-lifecycle.md` (sección "Cerrar una tarea") o algún
+   `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (bloque de cierre) **antes** de 0.10.0 y **no
+   mencionan** el gate, repórtalo (repo-owned): en Fase 2 ofrece añadir la línea / re-materializar la
+   sección desde la plantilla actual (`../plan-task/templates/`), con diff + aprobación. Es un gate
+   no-negociable: **no** busques ni propongas un flag para desactivarlo — no existe.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -94,7 +106,10 @@ Recorre **todos** los problemas accionables, **uno por uno**, sin saltarte ningu
    siguiente problema. No dejes el fichero a medias.
 
 Fixes seguros típicos (repo-owned, mecánicos): actualizar un identificador desfasado al actual; añadir
-una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`.
+una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`;
+añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o re-materializar la sección
+desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
+auto-edición).
 
 ## Idempotencia
 

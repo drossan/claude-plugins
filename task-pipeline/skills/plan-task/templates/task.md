@@ -101,6 +101,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Spec cumplida; lo declarado en `Provides` queda realmente disponible para las tareas dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
+- [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):
   - [ ] **TSDoc en el código** — todo símbolo público (funciones, clases, tipos, puertos, errores) documentado con TSDoc, al crearlo (no al final)  · (flag `tsdoc`)
   - [ ] **Doc técnica (contexto)** — README / `CLAUDE.md` del package / `.claude/specs/` / ADRs donde aplique  · (flag `technical-docs`)

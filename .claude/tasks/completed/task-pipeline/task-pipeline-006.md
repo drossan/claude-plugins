@@ -2,11 +2,11 @@
 id: task-pipeline-006
 package: task-pipeline
 plan: honesty-and-verification
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done          # pending | active | blocked | in-review | done | cancelled
 priority: 2
 depends_on: [task-pipeline-005]
 estimate: 1.5h
-actual:
+actual: 0.75h
 created: 2026-07-16
 updated: 2026-07-16
 ---

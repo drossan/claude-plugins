@@ -57,6 +57,13 @@
 >    **repo-wide** en verde (sin regresiones), **cero secretos en logs** y el **gate
 >    de mutation testing** superado (Stryker, `break: 80`, sobre los ficheros
 >    tocados — survivors = escenarios/aserciones que faltan). Sin eso NO es `done`.
+> 6. **Gate de `fact-checker`** (no-negociable, sin flag que lo desactive — como
+>    `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
+>    resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
+>    (incluida «el gate de mutation pasó»). Una afirmación **INCORRECTO bloquea** el
+>    cierre hasta corregirla; **NO VERIFICABLE** es un aviso que hay que **reconocer
+>    explícitamente** (frecuente en stack sin runner), pero no bloquea; **VERIFICADO**
+>    pasa. Aplica en cualquier preset — `mode`/`features` no lo desactivan.
 >
 > Marcar un step de tests como hecho sin haber corrido la suite, o saltarse el
 > Red→Green→Refactor, es engañoso y está prohibido. Si la sesión no puede completar
@@ -105,6 +112,9 @@ REGLAS ESTRICTAS DE LA SESIÓN:
 
 Al terminar:
 - Verifica `pnpm lint` y `pnpm test` repo-wide en verde, sin regresiones.
+- **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre
+  `fact-checker` sobre las afirmaciones de la sesión. `INCORRECTO` bloquea hasta
+  corregir; `NO VERIFICABLE` = aviso a reconocer; `VERIFICADO` pasa.
 - Cierra el histórico en `.claude/context/<package>/<package>-XXX.md` (resumen,
   decisiones + porqué, tests corridos + resultado, docs actualizadas + motivo,
   ficheros/commits, tiempo real, follow-ups).

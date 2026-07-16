@@ -95,7 +95,7 @@ ni impone **disciplina anti-alucinación / anti-slop**. El owner aporta tres pie
 <Descomposición pendiente de endurecer con `scenario-coverage`.>
 
 - [x] `task-pipeline-005` (P1) — Skill `fact-checker` (molde design-review) + `models.fact-checker` (config repo + template + cabeceras)  · depends_on: —
-- [ ] `task-pipeline-006` (P2) — Gate en la DoD (HOW-TO + task-lifecycle + cierre `plan-task`) + frontera con `doctor`  · depends_on: 005
+- [x] `task-pipeline-006` (P2) — Gate en la DoD (HOW-TO + task-lifecycle + cierre `plan-task`) + frontera con `doctor`  · depends_on: 005
 - [ ] `task-pipeline-007` (P3) — `honesty-rules.md` + `@import` opt-in (task-init sugiere / doctor reporta / bootstrap restaura) + no-duplicación en `specs/general/coding-standards.md`  · depends_on: —
 - [ ] `task-pipeline-008` (P4) — Registro de `fact-checker` en metadatos/READMEs/flujo + release (bump + CHANGELOG Added/Migration)  · depends_on: 005, 006, 007
 

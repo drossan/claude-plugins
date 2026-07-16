@@ -12,6 +12,9 @@ trabajo pesado lo hace un subagente lanzado con la **Agent tool** — no lo dilu
 > (la plataforma no lo permite). El gate de cierre lo **orquesta la DoD** del HOW-TO / `task-lifecycle`
 > (ver la tarea del gate); aquí defines *cómo* se verifica, no *cuándo* se invoca.
 
+> **Frontera con `doctor`**: `fact-checker` verifica la **veracidad de las afirmaciones** de una sesión;
+> `doctor` verifica el **drift de convención** de un repo adoptado. No se solapan.
+
 ## Paso 1 — Reunir las afirmaciones
 
 Identifica **cada afirmación factual** de la conversación reciente. Ejemplos: «la función X hace Y», «los
