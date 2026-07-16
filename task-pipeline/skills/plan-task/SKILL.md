@@ -118,9 +118,14 @@ Cada tarea documenta en tres capas, **cada una activable por flag** (default ON;
 
 Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), cada tarea no se cierra hasta pasar el gate de **mutation testing** con el umbral configurado (`true` = `break:80`; `<int>` = ese umbral). Ver la skill `/mutation`, que lee el mismo `stack`/umbral del YAML.
 
+## Paso 8 — Gate de cierre por tarea: fact-checker (no-negociable)
+
+**Tras** el gate de mutation y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
+
 ## Reglas de la sesión
 
 - **Checkpoints humanos**: `grilling` y la aprobación del plan **no se saltan nunca**. `design-review` y `scenario-coverage` solo con el salto en planes triviales (criterios + confirmación + log).
+- **Gate de cierre `fact-checker` (no-negociable)**: cada tarea se cierra con la pasada de `fact-checker` (tras `mutation`, antes de commit/resumen); un `INCORRECTO` bloquea el cierre. Ningún flag lo desactiva.
 - **Commits deliberados**: `<task-id>: <conventional commit>` en la rama del plan.
 - **Una sola tarea `active` por plan** (comparten rama).
 - Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo desde `templates/HOW-TO-START-A-TASK.md` (junto a este skill; ábrela con Read y rellena los bloques `ESPECÍFICO DEL PACKAGE`) antes del handoff. Atajo: `/task-init <package>` hace exactamente eso.

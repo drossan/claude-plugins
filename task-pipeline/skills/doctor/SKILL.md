@@ -8,6 +8,10 @@ Alineas un repo **ya adoptado** con la versión actual del plugin. Frontera clar
 repo existente** y corrige el drift acumulado tras actualizar el plugin. `doctor` **no inicializa** nada
 en un repo virgen.
 
+> **Frontera con `fact-checker`**: `doctor` verifica el **drift de convención** de un repo adoptado
+> (identificadores, estructura, secciones de config y de la DoD); `fact-checker` verifica la **veracidad
+> de las afirmaciones** de una sesión. No se solapan, aunque ambas sean read-only.
+
 El flujo tiene **dos fases** y una regla que no se rompe: **Fase 1 no edita nada; Fase 2 no edita nada
 sin tu aprobación explícita, y siempre te enseña el diff ANTES de pedírtela.** Nada se auto-edita a ciegas.
 
@@ -36,12 +40,34 @@ artefacto del plugin — ver "Propiedad" abajo).
    `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`, specs/HOW-TO).
 2. **Secciones de config esperadas ausentes** — en `.claude/task-pipeline.yml`: p.ej. falta la sección
    `models:` (routing de modelo por fase, ver README del plugin → "Routing de modelo por fase"). Su
-   ausencia no rompe nada (todo hereda la sesión), pero conviene ofrecer añadirla comentada.
+   ausencia no rompe nada (todo hereda la sesión), pero conviene ofrecer añadirla comentada. Al
+   proponer/actualizar `models:`, contempla las **fases con subagente ruteables** (`design-review`,
+   `scenario-coverage`, `fact-checker`) y su presencia en la cabecera de lectores. **Nota**: una clave de
+   fase concreta ausente (p.ej. `models.fact-checker`) **no** es drift — el default es inherit.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
    `.claude/plans/{pending,active,completed,cancelled}`, `.claude/tasks/{…}`, `.claude/context`,
    `.claude/specs`, `docs/guides`.
+5. **Gate de cierre `fact-checker` ausente en la DoD materializada** (drift de plantilla) — desde
+   **0.10.0** el cierre de tarea incluye el gate no-negociable de `fact-checker` (verificar las
+   afirmaciones factuales de la sesión antes de commit/resumen). Si el repo materializó
+   `docs/guides/task-lifecycle.md` (sección "Cerrar una tarea") o algún
+   `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (bloque de cierre) **antes** de 0.10.0 y **no
+   mencionan** el gate, repórtalo (repo-owned): en Fase 2 ofrece añadir la línea / re-materializar la
+   sección desde la plantilla actual (`../plan-task/templates/`), con diff + aprobación. Es un gate
+   no-negociable: **no** busques ni propongas un flag para desactivarlo — no existe.
+6. **Reglas de honestidad ausentes o sin `@import`** (repo-owned, opt-in) — dos comprobaciones
+   independientes:
+   - Si `.claude/honesty-rules.md` **falta**, repórtalo y ofrece **materializarlo** desde la plantilla
+     (`../plan-task/templates/honesty-rules.md`) en Fase 2 (diff + aprobación).
+   - Si el fichero existe pero el `CLAUDE.md` (raíz o de workspace) **no lo `@importa`**
+     (`@.claude/honesty-rules.md`), repórtalo y **SUGIERE** añadir la línea — pero **no** edites el
+     `CLAUDE.md` (invariante: nunca tocas su prosa/config; el `@import` es opt-in del usuario). Si el repo
+     **no tiene** `CLAUDE.md`, no lo crees: solo nota que el `@import` es opt-in.
+   **No** vigiles `.claude/specs/general/coding-standards.md` ni las otras specs generales
+   (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y su ausencia
+   **no es drift**.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -91,7 +117,11 @@ Recorre **todos** los problemas accionables, **uno por uno**, sin saltarte ningu
    siguiente problema. No dejes el fichero a medias.
 
 Fixes seguros típicos (repo-owned, mecánicos): actualizar un identificador desfasado al actual; añadir
-una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`.
+una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`;
+añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o re-materializar la sección
+desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
+auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
+`CLAUDE.md` **no** se aplica: solo se sugiere).
 
 ## Idempotencia
 
@@ -107,3 +137,5 @@ entre ejecuciones: la verdad es el repo.
 - **No edita el plugin** (hooks, SKILLs, plantillas del plugin): eso es solo-reporte + actualizar el plugin.
 - **No toca** el CHANGELOG ni la atribución (menciones históricas legítimas).
 - **No sobrescribe** prosa que el usuario personalizó: la reporta como aviso.
+- **No edita el `CLAUDE.md`** del usuario: sugiere el `@import` de `honesty-rules.md`, nunca lo añade.
+- **No vigila** `coding-standards.md` ni las demás specs generales user-owned: su ausencia no es drift.

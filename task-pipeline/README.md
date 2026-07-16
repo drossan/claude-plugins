@@ -10,6 +10,7 @@ Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
                  →  scenario-coverage (QA adversario de escenarios vía subagente)
                  →  handoff al flujo TDD (Red → Green → Refactor)
                  →  /mutation (gate de calidad de tests, Stryker break 80)
+                 →  fact-checker (gate de cierre: verifica las afirmaciones de la sesión)
 ```
 
 Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
@@ -26,7 +27,8 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grilling`. |
 | `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
-| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
+| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, gate/reglas de honestidad ausentes) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
+| `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
 
 ## Convención que asume el plugin
 
@@ -81,12 +83,13 @@ Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una v
 
 ## Routing de modelo por fase (`models:`)
 
-Las fases que lanzan un **subagente** (`design-review`, `scenario-coverage`) pueden correr con un modelo distinto al de tu sesión. Se configura en la sección `models:` de `.claude/task-pipeline.yml`:
+Las fases que lanzan un **subagente** (`design-review`, `scenario-coverage`, `fact-checker`) pueden correr con un modelo distinto al de tu sesión. Se configura en la sección `models:` de `.claude/task-pipeline.yml`:
 
 ```yaml
 models:
   design-review: opus        # alias o id de modelo
   # scenario-coverage:       # ausente / inherit → hereda la sesión
+  # fact-checker:            # ausente / inherit → hereda la sesión (verificar es barato)
 ```
 
 - **Clave ausente o `inherit`** → la fase hereda el modelo de la sesión (no se fuerza nada).
@@ -121,6 +124,8 @@ El plugin trae las **semillas** que `/plan-task` materializa en el repo (no se i
 |---|---|
 | `skills/plan-task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
 | `skills/plan-task/templates/task-pipeline.yml` | `.claude/task-pipeline.yml` (config del repo: preset/stack/features, una vez) |
+| `skills/plan-task/templates/honesty-rules.md` | `.claude/honesty-rules.md` (reglas de honestidad; `@import` opt-in al `CLAUDE.md`, una vez) |
+| `skills/plan-task/templates/coding-standards.md` | `.claude/specs/general/coding-standards.md` (no-duplicación; user-owned, una vez) |
 | `skills/plan-task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
 | `skills/plan-task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |
 | `skills/plan-task/templates/task.md` | `.claude/tasks/pending/<package>/<task-id>.md` (por tarea; incluye `## Scenarios (Gherkin)`) |

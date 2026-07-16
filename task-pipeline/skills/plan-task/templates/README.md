@@ -9,6 +9,8 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 |---|---|---|
 | `task-lifecycle.md` | `docs/guides/task-lifecycle.md` | Bootstrap del repo (una vez). Flujo canónico: estados, ramas, gates, DoD. |
 | `task-pipeline.yml` | `.claude/task-pipeline.yml` | Bootstrap del repo (una vez). Config del repo: preset `mode` (full/legacy/docs-only), `stack` (runner/gestor/lenguaje) y `features` (tdd, documentación por capas, gate de mutation con umbral). `/task-init` rellena el stack detectado; el hook `SessionStart` la restaura. |
+| `honesty-rules.md` | `.claude/honesty-rules.md` | Bootstrap del repo (una vez). Reglas de honestidad (anti-alucinación) para leerse **cada turno** vía `@import` **opt-in**. `bootstrap.sh` restaura el fichero si se borra; el `@import` al `CLAUDE.md` lo **sugiere** `/task-init`/`doctor`, **nunca** se auto-escribe. |
+| `coding-standards.md` | `.claude/specs/general/coding-standards.md` | Bootstrap del repo (una vez). Regla de **no-duplicación** de código. **User-owned**: `bootstrap` NO lo restaura ni `doctor` lo vigila (como el resto de specs generales). |
 | `HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` | Una vez por package. Gate de ejecución TDD del package. |
 | `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/plan-task`). |
 | `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/plan-task`). |

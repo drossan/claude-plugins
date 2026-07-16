@@ -29,11 +29,13 @@ checkpoints humanos por diseño.
    ├─ Paso 5.5  scenario-coverage .. subagente QA (cobertura de escenarios)
    │
    ├─ Paso 6  Handoff al flujo TDD (Red → Green → Refactor)
-   └─ Paso 7  /mutation ............ gate de calidad de tests (Stryker, break 80)
+   └─ Paso 7  Cierre de cada tarea (gates):
+              /mutation ........ gate de calidad de tests (Stryker, break 80)
+              fact-checker ..... gate de cierre: verifica las afirmaciones (INCORRECTO bloquea)
               + aprobación del plan 🔒 checkpoint humano (no negociable)
 ```
 
-## Las 7 skills
+## Las 8 skills
 
 | Skill | Rol |
 |---|---|
@@ -44,6 +46,7 @@ checkpoints humanos por diseño.
 | `scenario-coverage` | Endurecimiento **QA** de los escenarios Gherkin vía subagente fresco: busca huecos por dimensiones (fronteras, errores, estado, concurrencia, requisitos ausentes). |
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
 | `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
+| `fact-checker` | **Gate de cierre** (no fase de plan): verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía subagente fresco → VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD al cerrar cada tarea (tras `/mutation`), no se auto-ejecuta. Frontera con `/doctor`: veracidad de afirmaciones vs drift de convención. |
 
 ## Las dos ideas clave
 
@@ -69,8 +72,10 @@ Feature: <capacidad de la tarea>
 
 ### 2. Gates con coste proporcional
 
-- 🔒 **No negociables** (baratos y nucleares): `grilling` y la **aprobación del
-  plan**. Ningún flag, preset ni "es que es pequeño" los desactiva.
+- 🔒 **No negociables** (baratos y nucleares): `grilling`, la **aprobación del
+  plan** y, al cerrar cada tarea, `fact-checker` (verifica las afirmaciones; un
+  `INCORRECTO` bloquea el cierre). Ningún flag, preset ni "es que es pequeño" los
+  desactiva.
 - ⚙️ **Por defecto ON, salto solo en planes triviales**: `design-review` y
   `scenario-coverage` (las dos pasadas caras por subagente). El salto **lo decide
   el usuario** (no Claude en silencio), exige criterios estrictos (un solo

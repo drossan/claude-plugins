@@ -56,9 +56,26 @@ Antes de escribir nada, mira el repo en read-only:
      planes + docs) y **confírmalo con `AskUserQuestion`** antes de fijarlo. Si hay
      stack de tests sano, deja `full`.
    El usuario puede editarla luego. No la sobrescribas si ya existe.
+4. Lee `../plan-task/templates/honesty-rules.md` con **Read** y escríbela en
+   `.claude/honesty-rules.md` **solo si no existe**. Son las reglas de honestidad
+   (anti-alucinación / anti-slop) pensadas para leerse **cada turno**. Para que surtan
+   efecto, **SUGIERE** al usuario añadir la línea `@.claude/honesty-rules.md` a su
+   `CLAUDE.md` (raíz y/o del workspace) — pero **no** edites el `CLAUDE.md` tú: el
+   `@import` es **opt-in** del usuario (misma disciplina que la sugerencia del HOW-TO en
+   el paso siguiente). Si el repo **no tiene** `CLAUDE.md`, sugiere crearlo con esa
+   línea; **no lo crees ni lo edites tú**.
+5. Materializa la spec general **`coding-standards.md`**: crea `.claude/specs/general/`
+   si no existe, lee `../plan-task/templates/coding-standards.md` con **Read** y
+   escríbela en `.claude/specs/general/coding-standards.md` **solo si no existe**. Trae
+   la regla de **no-duplicación**; es **user-owned** (la extiendes tú). Las demás specs
+   generales que el HOW-TO referencia (`testing.md`, `error-handling.md`, `security.md`,
+   `git-workflow.md`) siguen siendo **punteros que rellenas tú**: no las materialices
+   con contenido inventado.
 
 > El hook `SessionStart` del plugin auto-repara esta parte genérica en cada sesión
-> una vez el repo está adoptado. Tú la creas la primera vez.
+> una vez el repo está adoptado (incl. restaurar `.claude/honesty-rules.md` si se
+> borra) — pero **nunca** toca el `CLAUDE.md`. `coding-standards.md`, por ser
+> user-owned, **no** la restaura el hook. Tú la creas la primera vez.
 
 ## Paso 2 — HOW-TO del package (si aplica)
 
@@ -97,3 +114,5 @@ inicializado si lo hubo. Cierra indicando el siguiente paso:
 - **No** crea planes ni tareas (eso es `/plan-task`).
 - **No** corre `grilling` ni entra en plan mode.
 - **No** instala Stryker (eso lo hace `/mutation` la primera vez en cada package).
+- **No** edita ni crea el `CLAUDE.md` del usuario: **sugiere** el `@import` de
+  `.claude/honesty-rules.md`, nunca lo escribe (invariante del plugin).
