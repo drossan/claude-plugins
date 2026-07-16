@@ -42,7 +42,7 @@ el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) 
 son configurables** — son por diseño.
 
 La sección `models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
+`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
 en el README del plugin.
 
 ## Layout de directorios
@@ -148,6 +148,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
+- [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -230,23 +231,30 @@ particular:
    que tocó la tarea — salvo que `features.mutation-gate` sea `false`. Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
-4. **Documentación actualizada** — tres capas (cada una obligatoria salvo que su flag
+4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
+   `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
+   resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
+   (incluida «el gate de mutation pasó»). `INCORRECTO` **bloquea** el cierre hasta
+   corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
+   (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
+   en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
+5. **Documentación actualizada** — tres capas (cada una obligatoria salvo que su flag
    en `features.closing-documentation.*` sea `false`), más dev/usuario donde aplique:
    - **TSDoc en el código** (`tsdoc`): cada símbolo público con su comentario
      (intención, params, returns, errores).
    - **Doc técnica / contexto** (`technical-docs`): README del package, `CLAUDE.md`
      del workspace, `.claude/specs/`, ADRs para decisiones de arquitectura.
-   - **Histórico de la tarea** (`context-log`): el session log (paso 5).
+   - **Histórico de la tarea** (`context-log`): el session log (paso 6).
    - **Dev / usuario final** (donde aplique): onboarding, guías, scripts,
      `.env.example`, mensajes de error, entrada de `pnpm changeset`.
 
    Si la tarea no tiene superficie de usuario, el session log lo justifica.
-5. Session log cerrado con: resumen, decisiones técnicas + porqué, tests corridos +
+6. Session log cerrado con: resumen, decisiones técnicas + porqué, tests corridos +
    resultado, docs actualizadas (rutas + motivo), ficheros/commits, tiempo real,
    follow-ups.
-6. Mueve la tarea a `.claude/tasks/completed/<package>/`, `status: done`, rellena
+7. Mueve la tarea a `.claude/tasks/completed/<package>/`, `status: done`, rellena
    `actual:`, bump `updated`.
-7. Marca el `[x]` en la sección **Tasks** del plan y bump el `updated` del plan.
+8. Marca el `[x]` en la sección **Tasks** del plan y bump el `updated` del plan.
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.

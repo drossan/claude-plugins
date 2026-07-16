@@ -47,6 +47,11 @@
 > 5. Al cerrar: **todos** los checkboxes de la DoD en verde (los N/A del stack se omiten al materializar la
 >    tarea), doc técnica + histórico actualizados, y **barrido `grep` reforzado** sin identificadores
 >    renombrados vivos (allowlist). Sin eso NO es `done`.
+> 6. **Gate de `fact-checker`** (no-negociable, sin flag — como `grilling`/aprobación): antes de commit y
+>    del resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión. `INCORRECTO`
+>    **bloquea** el cierre hasta corregir; `NO VERIFICABLE` es un aviso a reconocer explícitamente
+>    (frecuente aquí, stack `none`), pero no bloquea; `VERIFICADO` pasa. Aplica **aunque el stack sea
+>    `none`** (TDD/mutation son N/A; este gate no se desactiva por preset). Ver la skill `/fact-checker`.
 >
 > Marcar verificación como hecha sin haber corrido el hook/skill/inspección correspondiente está prohibido.
 > Si la sesión no puede completar la tarea, queda en `status: blocked` con el progreso en el histórico.
@@ -83,6 +88,8 @@ REGLAS ESTRICTAS DE LA SESIÓN:
 - Doc actualizada ANTES de cerrar: doc técnica/contexto + histórico de la tarea (TSDoc = N/A aquí).
 
 Al terminar:
+- **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre `fact-checker` sobre las
+  afirmaciones de la sesión; un `INCORRECTO` bloquea hasta corregir (`NO VERIFICABLE` = aviso a reconocer).
 - Cierra el histórico en `.claude/context/task-pipeline/task-pipeline-XXX.md` (resumen, decisiones +
   porqué, verificación corrida + resultado, docs actualizadas + motivo, ficheros/commits, tiempo real, follow-ups).
 - Mueve el task a `.claude/tasks/completed/task-pipeline/`, `status: done`, rellena `actual:` y bump `updated:`.
