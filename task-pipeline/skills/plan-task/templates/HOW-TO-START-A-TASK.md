@@ -8,7 +8,7 @@
 > workspace y desde el `CLAUDE.md` raíz para que se tenga en cuenta en **toda** tarea.
 
 > **¿De dónde salen el plan y las tareas?** Del flujo de la skill **`/plan-task`**
-> (plan mode → plan en `.claude/plans/pending/<package>/` → `grill-me` →
+> (plan mode → plan en `.claude/plans/pending/<package>/` → `grilling` →
 > descomposición en tareas con escenarios **Gherkin**). Este HOW-TO cubre la
 > **ejecución** de cada tarea ya creada. Ver `docs/guides/task-lifecycle.md`.
 

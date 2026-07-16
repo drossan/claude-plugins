@@ -1,9 +1,9 @@
 ---
 name: design-review
-description: Revisión holística adversaria de un plan/diseño mediante un subagente fresco que intenta TUMBAR el conjunto (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad) antes de descomponerlo en tareas. Úsala tras cerrar `grill-me`, o cuando el usuario quiera una review de diseño "paso atrás" sobre cualquier plan ya decidido.
+description: Revisión holística adversaria de un plan/diseño mediante un subagente fresco que intenta TUMBAR el conjunto (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad) antes de descomponerlo en tareas. Úsala tras cerrar `grilling`, o cuando el usuario quiera una review de diseño "paso atrás" sobre cualquier plan ya decidido.
 ---
 
-Cierras el zoom-out que `grill-me` no hace. `grill-me` baja **rama por rama** resolviendo cada decisión local; aquí subes y miras el **plan COMO UN TODO**: ¿las piezas encajan?, ¿es del tamaño correcto?, ¿sobrevive al tiempo?
+Cierras el zoom-out que `grilling` no hace. `grilling` baja **rama por rama** resolviendo cada decisión local; aquí subes y miras el **plan COMO UN TODO**: ¿las piezas encajan?, ¿es del tamaño correcto?, ¿sobrevive al tiempo?
 
 **Por qué un subagente y no tú**: la complacencia nace de la presión social acumulada en la conversación y del sesgo de confirmación sobre tu propio plan. Si revisas tú, dirás "todo idóneo". Por eso esta review **la corre un agente fresco sin rapport**, al que no le cuentas que el plan es tuyo ni que al usuario le gusta. Esa es toda la garantía del mecanismo: no la diluyas haciéndola tú.
 

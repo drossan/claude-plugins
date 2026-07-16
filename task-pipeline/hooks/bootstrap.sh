@@ -17,7 +17,7 @@
 set -eu
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
-TEMPLATES="${CLAUDE_PLUGIN_ROOT:-}/skills/task/templates"
+TEMPLATES="${CLAUDE_PLUGIN_ROOT:-}/skills/plan-task/templates"
 LIFECYCLE="$PROJECT_DIR/docs/guides/task-lifecycle.md"
 FEATURES="$PROJECT_DIR/.claude/task-pipeline.yml"
 

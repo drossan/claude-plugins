@@ -8,9 +8,9 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 | Plugin | Skills | Para qué sirve |
 |---|---|---|
-| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `grill-me`, `design-review`, `scenario-coverage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grill-me` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
+| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `grilling`, `design-review`, `scenario-coverage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
 
-Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:grill-me`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`.
+Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`.
 
 ## Instalar
 
@@ -38,14 +38,14 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 
 ```
 /task-pipeline:task-init [<package>]                           # bootstrapea la convención en el repo (una vez tras instalar)
-/task-pipeline:plan-task "<specs de lo que quieres construir>" # orquesta plan → grill-me → design-review → tareas → scenario-coverage → TDD → mutation
+/task-pipeline:plan-task "<specs de lo que quieres construir>" # orquesta plan → grilling → design-review → tareas → scenario-coverage → TDD → mutation
 /task-pipeline:mutation                                        # gate de mutation testing al cerrar una tarea
-/task-pipeline:grill-me                                        # interroga/refina un plan o diseño
+/task-pipeline:grilling                                        # interroga/refina un plan o diseño
 /task-pipeline:design-review                                   # review holística adversaria del plan (subagente fresco)
 /task-pipeline:scenario-coverage                               # endurece QA de los escenarios Gherkin (subagente fresco)
 ```
 
-> En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grill-me` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
+> En un proyecto nuevo, corre **`/task-init`** una vez para materializar la convención (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). El **stack** (runner/gestor/lenguaje) se declara en ese YAML — por defecto **pnpm + Vitest + Stryker**, pero `plan-task` y `mutation` lo respetan si difiere. `grilling` funciona en cualquier repo. Ver [Portabilidad](#portabilidad-de-las-skills).
 
 ### Desarrollo en local (sin GitHub)
 
@@ -80,14 +80,14 @@ claude-plugins/
         ├── task-init/SKILL.md
         ├── plan-task/SKILL.md    # + templates/ (semillas materializables)
         ├── mutation/SKILL.md
-        ├── grill-me/SKILL.md
+        ├── grilling/SKILL.md
         ├── design-review/SKILL.md
         └── scenario-coverage/SKILL.md
 ```
 
 ## Portabilidad de las skills
 
-- **`grill-me`** — genérica, funciona en cualquier repo. *Skill de terceros* (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)); ver [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
+- **`grilling`** — genérica, funciona en cualquier repo. *Skill de terceros* (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)); ver [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
 - **`design-review`** y **`scenario-coverage`** — lanzan un subagente fresco sobre rutas que les pasas; funcionan en cualquier repo, aunque dan su mejor resultado dentro del flujo de `/plan-task`.
 - **`task-init`**, **`plan-task`** y **`mutation`** — asumen la convención de trabajo (`.claude/plans|tasks|specs|context`, `docs/guides/task-lifecycle.md`). `/task-init` la materializa; `plan-task` y `mutation` la usan. El **stack** ya no es una asunción rígida: se declara en `.claude/task-pipeline.yml` (`stack:` — por defecto **pnpm + Vitest + Stryker**), igual que el preset (`full`/`legacy`/`docs-only`) y las features. Ver el detalle en [`task-pipeline/README.md`](task-pipeline/README.md).
 
@@ -107,5 +107,5 @@ Este proyecto se publica bajo licencia **MIT** (ver [`LICENSE`](LICENSE)).
 
 Incluye software de terceros con su propia licencia; el detalle y los avisos de
 copyright están en [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md). En
-concreto, la skill `grill-me` es de **Matt Pocock**
+concreto, la skill `grilling` es de **Matt Pocock**
 ([`mattpocock/skills`](https://github.com/mattpocock/skills), MIT).

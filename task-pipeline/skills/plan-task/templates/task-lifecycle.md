@@ -38,7 +38,7 @@ skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
-el cierre. **Los dos checkpoints humanos (`grill-me` y la aprobación del plan) NO
+el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
 son configurables** — son por diseño.
 
 ## Layout de directorios
@@ -181,12 +181,12 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 ## Crear un plan
 
 > La skill `/plan-task` orquesta todo este flujo (plan mode → plan en `pending/` →
-> `grill-me` → `design-review` → tareas Gherkin → `scenario-coverage` → handoff TDD
+> `grilling` → `design-review` → tareas Gherkin → `scenario-coverage` → handoff TDD
 > → gate de mutation). Los pasos de abajo son lo que sigue, y lo que haces tú si lo
 > conduces a mano.
 
 1. Redacta el plan con la plantilla.
-2. Corre la skill `grill-me` antes de aprobar para sacar huecos, supuestos ocultos
+2. Corre la skill `grilling` antes de aprobar para sacar huecos, supuestos ocultos
    e ítems inviables (rama por rama). Itera hasta que el plan sobreviva al interrogatorio.
 3. Corre la skill `design-review`: un subagente fresco revisa el plan COMO UN TODO
    (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad).
@@ -200,7 +200,7 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 7. Rellena la sección **Tasks** del plan: lista ordenada y consciente de
    dependencias.
 
-> `grill-me` (paso 2) y la aprobación (paso 4) son **no negociables**. `design-review`
+> `grilling` (paso 2) y la aprobación (paso 4) son **no negociables**. `design-review`
 > y `scenario-coverage` (pasos 3 y 6) corren por defecto pero admiten un **salto solo en
 > planes triviales** (un fichero/área, sin superficie nueva ni decisión arquitectónica):
 > lo confirma el owner y se registra en el Plan change log. Nunca un salto silencioso.
@@ -290,7 +290,7 @@ Es el registro canónico; no lo dupliques.
 
 ## Re-planificación, bloqueos, cancelación
 
-- Plan obsoleto a mitad → para, corre `grill-me` sobre las tareas afectadas,
+- Plan obsoleto a mitad → para, corre `grilling` sobre las tareas afectadas,
   ajusta / añade / cancela, registra todo en el **Registro de cambios** del plan.
   No empujes sobre un plan incorrecto.
 - Tarea bloqueada → `status: blocked` + motivo en el session log; ninguna otra tarea
@@ -302,4 +302,4 @@ Es el registro canónico; no lo dupliques.
 
 Cada plan cerrado recibe una nota retro comparando `estimate` vs `actual`, las
 dependencias no vistas y qué hacer distinto. La calibración mejora estimaciones
-futuras y reduce ciclos de `grill-me`.
+futuras y reduce ciclos de `grilling`.

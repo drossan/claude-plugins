@@ -4,7 +4,7 @@ Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
 
 ```
 /plan-task "<specs>"  →  plan mode  →  plan en .claude/plans/pending/<package>/
-                 →  grill-me (refinar rama a rama, checkpoint humano)
+                 →  grilling (refinar rama a rama, checkpoint humano)
                  →  design-review (zoom-out adversario vía subagente, checkpoint)
                  →  descomponer en tareas con escenarios Gherkin
                  →  scenario-coverage (QA adversario de escenarios vía subagente)
@@ -12,7 +12,7 @@ Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
                  →  /mutation (gate de calidad de tests, Stryker break 80)
 ```
 
-Checkpoints humanos: **`grill-me`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
+Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
 
 > 📖 ¿Presentando el pipeline al equipo? Empieza por [docs/flujo-del-pipeline.md](docs/flujo-del-pipeline.md) — resumen del flujo, las skills y las ideas clave, con un ejemplo end-to-end.
 
@@ -22,8 +22,8 @@ Checkpoints humanos: **`grill-me`** y **aprobación del plan** son **no negociab
 |---|---|
 | `/task-init` | Bootstrapea la convención en el repo (esqueleto `.claude/…` + `task-lifecycle.md` + HOW-TO de un package). Úsalo una vez tras instalar. |
 | `/plan-task` | Orquestador del pipeline completo (incl. caso re-plan de un plan activo). |
-| `grill-me` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez (rama por rama). **Skill de terceros** (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)). |
-| `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grill-me`. |
+| `grilling` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez (rama por rama). **Skill de terceros** (MIT, © Matt Pocock — [`mattpocock/skills`](https://github.com/mattpocock/skills)). |
+| `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grilling`. |
 | `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 
@@ -72,7 +72,7 @@ con Jest, npm, no-TS, etc.).
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 
-`grill-me` y la aprobación del plan **no** son configurables: no negociables por
+`grilling` y la aprobación del plan **no** son configurables: no negociables por
 diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
 el opt-out en planes triviales (criterios + confirmación + log), no por flag de repo.
 

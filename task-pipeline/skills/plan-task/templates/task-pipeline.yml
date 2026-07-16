@@ -1,6 +1,6 @@
 # task-pipeline — configuración del repo
 #
-# Las skills del plugin (/task, /mutation, /task-init) LEEN este archivo y lo
+# Las skills del plugin (/plan-task, /mutation, /task-init) LEEN este archivo y lo
 # respetan. No hay parser: el modelo lo interpreta. Edítalo para adaptar el
 # pipeline a ESTE repo (stack, qué fases son obligatorias, etc.).
 #
@@ -11,7 +11,7 @@
 #   → Archivo, sección o clave ausente = se hereda del nivel anterior.
 #   → Sin archivo en el repo = todo `full` (comportamiento histórico del plugin).
 #
-# Los dos checkpoints humanos (grill-me y la aprobación del plan) NO son
+# Los dos checkpoints humanos (grilling y la aprobación del plan) NO son
 # configurables por ningún flag ni preset: son por diseño.
 
 # ── Preset ──────────────────────────────────────────────────────────────────

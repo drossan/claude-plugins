@@ -92,7 +92,7 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
 
 <Descompuestas en Gherkin en `.claude/tasks/pending/task-pipeline/`. Se endurecen con `scenario-coverage`.>
 
-- [ ] `task-pipeline-001` (P1) — Parte A: rename `grill-me`→`grilling` + sync + propagación + atribución + **fix `bootstrap.sh` y drift `/task`**  · depends_on: —
+- [x] `task-pipeline-001` (P1) — Parte A: rename `grill-me`→`grilling` + sync + propagación + atribución + **fix `bootstrap.sh` y drift `/task`**  · depends_on: —
 - [ ] `task-pipeline-002` (P2) — Parte B: `models:` (config repo + template) + design-review/scenario-coverage + plan-task + **doc-once**  · depends_on: task-pipeline-001
 - [ ] `task-pipeline-003` (P3) — Parte C: skill `doctor` (verifica → fix interactivo) + registro en metadatos/READMEs  · depends_on: task-pipeline-001, task-pipeline-002
 - [ ] `task-pipeline-004` (P4) — Release 0.9.0 (bump `plugin.json` + CHANGELOG Changed/Added/Migration)  · depends_on: 001, 002, 003
@@ -131,3 +131,7 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
   en las 4 tareas (doctor: detección de las 4 categorías, idempotencia, repo no adoptado, plugin-owned
   drift = solo-reporte, diff-antes-de-aprobar, YAML malformado, fallo al aplicar; 002: modelo inválido→
   inherit, pin inline→ignorado, cabecera con lectores reales; 004: notas reflejan lo entregado).
+- 2026-07-16: **task-pipeline-001 done** — rename `grill-me`→`grilling` (dir + SKILL verbatim de
+  upstream + atribución), propagación en 20 ficheros, fix `bootstrap.sh:20` y drift `/task`→`/plan-task`
+  en cabeceras YAML + guía repo. Verificación (cmp verbatim, barrido reforzado limpio, hook en 3 repos
+  de prueba, JSON válidos) en `.claude/context/task-pipeline/task-pipeline-001.md`.

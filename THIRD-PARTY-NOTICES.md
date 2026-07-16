@@ -5,12 +5,12 @@ originales se reproducen a continuación, tal y como exige cada licencia.
 
 ---
 
-## `task-pipeline/skills/grill-me`
+## `task-pipeline/skills/grilling`
 
 - **Origen**: [`mattpocock/skills`](https://github.com/mattpocock/skills) —
-  `skills/productivity/grill-me/SKILL.md`. El texto del interrogatorio vive ahora
-  upstream en `skills/productivity/grilling/SKILL.md`; nuestra copia corresponde a
-  la versión anterior de `grill-me`.
+  `skills/productivity/grilling/SKILL.md` (antes `grill-me`). Nuestra copia
+  corresponde a la versión `grilling` actual de upstream, adoptada verbatim
+  (nombre + description + cuerpo).
 - **Autor**: Matt Pocock
 - **Licencia**: MIT
 
