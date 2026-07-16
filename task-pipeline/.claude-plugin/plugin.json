@@ -1,7 +1,7 @@
 {
   "name": "task-pipeline",
   "description": "Pipeline guiado de tarea/plan: bootstrap con /task-init -> plan mode -> plan en .claude/plans/pending -> grilling -> design-review -> descomposición en tareas Gherkin -> scenario-coverage -> handoff TDD -> gate de mutation testing (Stryker). /doctor diagnostica y alinea repos ya adoptados con la versión actual del plugin. Configurable por repo (.claude/task-pipeline.yml). Reutilizable en cualquier repo que adopte la convención .claude/plans|tasks|specs|context.",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "author": {
     "name": "Daniel Rosselló"
   }

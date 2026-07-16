@@ -95,7 +95,7 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
 - [x] `task-pipeline-001` (P1) — Parte A: rename `grill-me`→`grilling` + sync + propagación + atribución + **fix `bootstrap.sh` y drift `/task`**  · depends_on: —
 - [x] `task-pipeline-002` (P2) — Parte B: `models:` (config repo + template) + design-review/scenario-coverage + plan-task + **doc-once**  · depends_on: task-pipeline-001
 - [x] `task-pipeline-003` (P3) — Parte C: skill `doctor` (verifica → fix interactivo) + registro en metadatos/READMEs  · depends_on: task-pipeline-001, task-pipeline-002
-- [ ] `task-pipeline-004` (P4) — Release 0.9.0 (bump `plugin.json` + CHANGELOG Changed/Added/Migration)  · depends_on: 001, 002, 003
+- [x] `task-pipeline-004` (P4) — Release 0.9.0 (bump `plugin.json` + CHANGELOG Changed/Added/Migration)  · depends_on: 001, 002, 003
 
 ## Registro de cambios del plan
 
@@ -146,3 +146,6 @@ lo robusto es pasar `model` por invocación a los **subagentes**. Config editabl
   `marketplace.json` y `flujo-del-pipeline.md`. Verificación: revisión de instrucciones (17 escenarios) +
   fixtures de detección (sano/drift/virgen/yamlbad) en `.claude/context/task-pipeline/task-pipeline-003.md`.
   (Nota de proceso: 003 pasó pending→completed en la misma sesión sin staging físico en active/.)
+- 2026-07-16: **task-pipeline-004 done** — release 0.9.0: `plugin.json` a `0.9.0` + entrada CHANGELOG
+  `## [0.9.0]` (Changed BREAKING + Added + Migration), historial ≤0.8.1 intacto, notas verificadas contra
+  lo entregado. Detalle en `.claude/context/task-pipeline/task-pipeline-004.md`.

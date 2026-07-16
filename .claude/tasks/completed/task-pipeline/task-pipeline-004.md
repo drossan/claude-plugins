@@ -2,11 +2,11 @@
 id: task-pipeline-004
 package: task-pipeline
 plan: grilling-and-model-routing
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done          # pending | active | blocked | in-review | done | cancelled
 priority: 4
 depends_on: [task-pipeline-001, task-pipeline-002, task-pipeline-003]
 estimate: 1h
-actual:
+actual: 0.75h
 created: 2026-07-16
 updated: 2026-07-16
 ---
