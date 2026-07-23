@@ -31,6 +31,8 @@ mode: full
 # no tienen herramienta que correr hasta que se añada un harness (p.ej. bats para los
 # hooks). Cuando llegues al cierre de una tarea: o añades harness, o relajas las
 # features (tdd / mutation-gate) o el preset (legacy / docs-only) según el caso.
+# NOTA: el sub-proyecto `website/` (portal VitePress) SÍ usa pnpm, pero es un build de
+# docs AISLADO, no el harness de tests del pipeline — no cambia este `stack: none`.
 stack:
   language: other             # typescript | javascript | other  → Markdown + Bash
   package-manager: none       # pnpm | npm | yarn | none

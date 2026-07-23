@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-docs-portal-and-tracking
 package: task-pipeline
-status: active
+status: completed
 branch: plan/task-pipeline/docs-portal-and-tracking
 issue: 11                # issue PADRE proyectada en drossan/claude-plugins (2026-07-23)
 created: 2026-07-23
@@ -158,7 +158,7 @@ tras proyectar.
 - [x] `task-pipeline-docs-portal-and-tracking-03` (P2) — Scaffold VitePress (pnpm) en `website/` + config `base`/`srcDir`/`.gitignore`  · depends_on: —  · **done** (VitePress 1.6.4, build verde; issue #14 cerrada)
 - [x] `task-pipeline-docs-portal-and-tracking-04` (P2) — Contenido curado + IA/nav + frontera anti-drift (enlaza al spec canónico)  · depends_on: 02, 03  · **done** (7 páginas, build verde; issue #15 cerrada)
 - [x] `task-pipeline-docs-portal-and-tracking-05` (P2) — Workflow Actions de deploy a Pages (`on: push tags: ['v*']` + dispatch)  · depends_on: 03  · **done** (actionlint OK; issue #16 cerrada)
-- [ ] `task-pipeline-docs-portal-and-tracking-06` (P3) — Wire-up: enlaces README↔web + **carve-out narrativa de stack (#4)** + coherencia final + runbook consolidado (incl. footgun `base` #6)  · depends_on: 04, 05
+- [x] `task-pipeline-docs-portal-and-tracking-06` (P3) — Wire-up: enlaces README↔web + **carve-out narrativa de stack (#4)** + coherencia final + runbook consolidado (incl. footgun `base` #6)  · depends_on: 04, 05  · **done** (issue #17 cerrada)
 
 **Primera recomendada**: `-01` (desbloquea la auto-proyección del plan), luego `-02`.
 
@@ -196,3 +196,24 @@ tras proyectar.
   nota del acoplamiento deploy-en-tag ↔ release. **Corrección de correctitud**: proyectar **tras**
   `scenario-coverage` + aprobación (no antes), con el riesgo exactly-once/dos-ramas declarado y `/doctor`
   posterior. Split y VitePress-vs-simple: descartados por el owner (VitePress ya decidido en clarificación).
+
+## Retro (plan completado — 2026-07-23)
+
+**Estimación vs real**: est ~10.5h / real ~6.5h (más rápido, sobre todo la web: scaffold y contenido
+VitePress fueron menos costosos de lo temido). Por tarea (est→real): -01 1h→1h · -02 1.5h→1.5h ·
+-03 2h→1h · -04 3h→1.5h · -05 1.5h→0.5h · -06 1.5h→1h.
+
+**Sorpresas / dependencias no vistas**:
+- **Identidad de cuenta en GitHub** (la más gorda): `gh` authed como `danielrosse` (colaborador) ≠ owner
+  `drossan` → puede crear Issues pero **no** Projects; el Project #2 lo creó el owner y hubo que darle acceso
+  Write a `danielrosse` para poblar el tablero. Documentado en el runbook.
+- **VitePress publicaba `website/README.md`** como página → `srcExclude`.
+- **`fact-checker` cazó** la imprecisión de la allowlist del barrido (renames en 0.8.0/0.9.0, no ≤0.8.1) —
+  gate haciendo su trabajo; corregido en -06.
+- Gotcha de entorno: `grep` es ugrep + zsh no word-splitea `$FILES` → verificaciones rehechas con `xargs -0`.
+
+**Qué haría distinto**: fijar la identidad `gh` (o el `repo`/owner del Project) **antes** de proyectar, para
+evitar el ida y vuelta del tablero.
+
+**Pendiente del owner (fuera del cierre del plan)**: encender GitHub Pages para el go-live; abrir el PR de
+`plan/task-pipeline/docs-portal-and-tracking` a `main` y, tras merge, cortar el tag `v0.12.1` (publica la web).

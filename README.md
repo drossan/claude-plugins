@@ -4,6 +4,8 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 > El nombre interno del marketplace es **`local-plugins`** (definido en `marketplace.json`), así que en los comandos `install` se referencia como `<plugin>@local-plugins` aunque el repo se llame `claude-plugins`.
 
+> 📖 **Portal de documentación**: [drossan.github.io/claude-plugins](https://drossan.github.io/claude-plugins/) — VitePress, se publica vía GitHub Pages con cada release (tag `v*`). *Quedará vivo tras encender Pages (Settings → Pages → Source: GitHub Actions) y el primer tag; el fuente está en [`website/`](website/).*
+
 ## Plugins incluidos
 
 | Plugin | Skills | Para qué sirve |

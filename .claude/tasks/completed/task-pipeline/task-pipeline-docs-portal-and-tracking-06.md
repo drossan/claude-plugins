@@ -2,11 +2,11 @@
 id: task-pipeline-docs-portal-and-tracking-06
 package: task-pipeline
 plan: docs-portal-and-tracking
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-docs-portal-and-tracking-04, task-pipeline-docs-portal-and-tracking-05]
 estimate: 1.5h
-actual:
+actual: 1h
 issue: 17                 # SUB-ISSUE (padre #11)
 created: 2026-07-23
 updated: 2026-07-23
