@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-02
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 2
 depends_on: [task-pipeline-collision-free-ids-01]
 estimate: 1h
-actual:
+actual: 25min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -79,11 +79,11 @@ Feature: Regla de asignación de id determinista en /plan-task
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado como criterio de aceptación (inspección del SKILL).
-- [ ] Spec cumplida.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado como criterio de aceptación (inspección del SKILL).
+- [x] Spec cumplida.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (6/6 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-02.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.

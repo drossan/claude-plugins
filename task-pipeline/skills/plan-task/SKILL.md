@@ -89,6 +89,16 @@ Invoca la skill **`grilling`** sobre el plan. Itera hasta que sobreviva el inter
 
 Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` desde la plantilla **`templates/task.md`** (junto a este skill; ábrela con Read), que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
 
+### Asignación del `<task-id>` (determinista, plan-scoped)
+
+El id de tarea es **`<task-id> = <plan-id>-<nn>`** (`<plan-id> = <package>-<name-plan>`; ver la definición y la acotación de `<name-plan>` en `docs/guides/task-lifecycle.md`, que no repito aquí). Deriva el `<nn>` así:
+
+- **`<nn>` = (máximo `<nn>` existente EN EL PLAN) + 1**, empezando en **`01`** para la primera tarea de un plan nuevo. Formato de 2 dígitos con cero a la izquierda (`01`, `02`, …).
+- **Cuenta sobre TODAS las tareas del plan, en TODOS sus estados** (`pending` + `active` + `completed` + `cancelled`). **Nunca reutilices** el `<nn>` de una tarea `cancelled` o `completed`: si lo reusas, colisionas dentro del propio plan al re-planificar. (Ej.: plan con `01`, `02` `cancelled`, `03` `completed` → la siguiente es **`04`**, no `02`.)
+- **NO cuentes sobre "el último número del package"** ni sobre un contador global: ese es exactamente el bug que causa las colisiones entre planes en paralelo. El espacio de numeración es **el plan**, no el package.
+- **Convivencia con ids legacy**: los ids opacos del esquema anterior (`<package>-<nnn>`) **no se renumeran**; un histórico mixto (unos plan-scoped, otros legacy) es lo esperado y no hay que "arreglarlo".
+- **Residual honesto (no lo prometas resuelto)**: esta regla **no** previene el caso "dos ramas del mismo plan en paralelo" — ambas ven el mismo máximo y asignan el mismo `<nn>`. Es el límite conocido del esquema (lo prevendría un sufijo aleatorio, descartado). Mitigación: "una rama = un plan / una sola tarea `active` por plan", su **detección** en `/doctor` (ids duplicados) y la **guía de trabajo en equipo** del README del plugin.
+
 ### Gherkin = fuente de los tests
 
 Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre). Aplica las **reglas de la plantilla** (no las repito aquí): **declarativo > imperativo** (el `When` es acción de dominio, no pasos de UI/llamadas internas — es lo que evita tests frágiles a refactors), **un escenario = un comportamiento**, **disciplina G/W/T**, y **`Scenario Outline`** para fronteras/clases de equivalencia. Si `features.tdd` es `false`, los escenarios siguen siendo útiles como **spec de comportamiento** (criterio de aceptación), pero no se exige un test por cada uno.
