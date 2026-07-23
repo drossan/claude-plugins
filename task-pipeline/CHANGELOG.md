@@ -4,6 +4,43 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.12.0] — 2026-07-23
+
+### Changed
+- **Esquema de id de tarea → plan-scoped**: `<task-id> = <plan-id>-<nn>` (`<plan-id> =
+  <package>-<name-plan>`, `<nn>` correlativo **dentro del plan** desde `01`), en vez del contador global
+  del package (`<package>-<nnn>`). Elimina la colisión silenciosa (add/add) entre planes creados en
+  paralelo: el espacio de id coincide con la unidad de paralelismo (**plan = rama**). Los **ids legacy**
+  `task-pipeline-001..012` son estables y **no se renumeran** (histórico mixto). Alineados: plantillas
+  (`task-lifecycle.md`, `task.md`, `plan.md`, `HOW-TO-START-A-TASK.md`, `README.md`), la regla de
+  asignación de `plan-task/SKILL.md` y las copias materializadas del repo.
+
+### Added
+- **Detección de ids de tarea/plan duplicados en `/doctor`** (Fase 1, repo-owned): reporta cualquier
+  `id:` presente en más de un fichero (incl. mismo id en dos carpetas de estado, ids de plan,
+  `filename ≠ id:`), robusto ante frontmatter roto; la resolución es un **aviso** (renumerar no es
+  mecánico), no auto-edición.
+- **`features.github-tracking`** (integración **opcional**, opt-in, default `off`): proyección
+  **one-way md→GitHub** — plan → issue **PADRE**, tarea → **SUB-ISSUE** (`gh issue create --parent`);
+  proyección de **estado** (arranque/cierre de tarea) y **cierre de la issue padre** al completar el plan;
+  el `.md` sigue siendo la **fuente de verdad**. Tejida como pasos **condicionales** en `/plan-task` y en
+  el ciclo de vida. **Reconciliación best-effort** md↔GitHub en `/doctor` (drift, huérfanas). Degrada a
+  **no-op** sin `gh`/red/auth/repo-GitHub. Guía completa (setup, mapeo, límites, riesgos) en el README.
+
+### Notas de diseño
+- La **`design-review`** (opus) recomendó **NO** incluir el tracking GitHub (scope mixto, reversibilidad,
+  sync best-effort sobre un sustrato markdown, contaminación de los playbooks default con ramas
+  condicionales, dependencia de features de Projects en **preview**). El **owner lo mantuvo
+  conscientemente**, aceptando los riesgos C1/C3/I1/I3/M2 — coherente con el Plan change log del plan
+  `collision-free-ids`. Es **opt-in y default off**: quien no lo activa no paga coste ni comportamiento.
+- **Residual honesto**: el esquema plan-scoped **no** previene "dos ramas del mismo plan en paralelo"
+  (ambas ven el mismo máximo `<nn>`); se mitiga con "una rama = un plan", la detección de `/doctor` y la
+  guía de equipo, no con prevención dura.
+
+### Migration
+- Sin acción: los ids existentes **no** se renumeran; el esquema nuevo aplica a planes/tareas nuevos.
+  `github-tracking` es **opt-in** (default off) — el comportamiento por defecto es idéntico al de 0.11.0.
+
 ## [0.11.0] — 2026-07-16
 
 ### Added

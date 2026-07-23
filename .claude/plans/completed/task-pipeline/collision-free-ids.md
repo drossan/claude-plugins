@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-collision-free-ids
 package: task-pipeline
-status: active           # pending | active | completed | cancelled
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/collision-free-ids
 created: 2026-07-17
 updated: 2026-07-23
@@ -177,7 +177,7 @@ mixto de ids opacos: no rompe nada). Sin cambios de carpetas: el filename ya lle
 - [x] `task-pipeline-collision-free-ids-12` (P3) — Ciclo de vida del PLAN en GitHub: cierre de issue padre + proyección concurrente  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09
 - [x] `task-pipeline-collision-free-ids-10` (P3) — Reconciliación best-effort en `/doctor`  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-12
 - [x] `task-pipeline-collision-free-ids-11` (P4) — Doc de la integración GitHub (README + guía de equipo + catálogos)  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09, task-pipeline-collision-free-ids-10, task-pipeline-collision-free-ids-12
-- [ ] `task-pipeline-collision-free-ids-06` (P5) — Release: version bump + CHANGELOG + coherencia descriptions  · depends_on: -01, -02, -03, -04, -05, -07, -08, -09, -10, -11, -12
+- [x] `task-pipeline-collision-free-ids-06` (P5) — Release: version bump + CHANGELOG + coherencia descriptions  · depends_on: -01, -02, -03, -04, -05, -07, -08, -09, -10, -11, -12
 
 ## Registro de cambios del plan
 
@@ -191,6 +191,31 @@ mixto de ids opacos: no rompe nada). Sin cambios de carpetas: el filename ya lle
   (opción "mantener D2 como estaba"), aceptando los riesgos C1/C3/I1/I3/M2 registrados arriba. Tareas 07–11
   añadidas; `-06` (release) extiende `depends_on` a toda D2. Corregido: el flujo vive en
   `docs/guides/task-lifecycle.md` + `README` del plugin (no existe `docs/flujo-del-pipeline.md`).
+- 2026-07-23: **plan completado** (12/12 tareas `done`). Release **0.12.0**. `claude plugin validate .` OK.
+
+## Nota retro
+
+- **Estimación vs real**: estimado ~2–3 sesiones / ~25h de tareas; real ~1 sesión (dogfooding en un
+  hilo), ~6h de trabajo efectivo. Sobreestimación clara: al ser todo Markdown/instrucciones (stack
+  `none`, sin TDD ni mutation), cada tarea fue más ligera de lo estimado.
+- **Orden de ejecución**: 01 → 02 → 03 → 04 → 05 (D1) → 07 → 08 → 09 → 12 → 10 → 11 → 06 (D2 + release).
+  Topológicamente correcto; `-12` antes de `-10` (por `depends_on`) funcionó bien.
+- **Sorpresas / dependencias no vistas**:
+  - Drift template↔materializado del bloque de features: `-07` documentó `github-tracking` en el template
+    + SKILL, pero el materializado `docs/guides/task-lifecycle.md` no lo tenía en su tabla hasta que `-09`
+    lo usó en el cuerpo → fix de coherencia en `-09` (lo cazó el `fact-checker`).
+  - Cabecera "cuatro categorías" de `/doctor` ya stale antes (6), agravada por `-03`/`-10` (→8) →
+    corregida a "estas categorías" en `-10`.
+  - `-05`: olvido puntual del bump `status: active` (se corrigió a `done` en el cierre; sin impacto — no
+    hubo otra tarea `active` en paralelo).
+- **Verificación en `stack:none`**: los escenarios de D2 con GitHub en vivo son **NO VERIFICABLE**
+  reproducible (reconocido por `fact-checker` en -08/-09/-12/-10); se verificó el TEXTO de las
+  instrucciones por inspección + `grep`, y la lógica local (detección de duplicados, validate) de forma real.
+- **Follow-up abierto**: la tabla de features del **template** no lista `features.caveman` (gap del plan
+  caveman 0.11.0) — candidato a alineación futura vía `/doctor`, fuera del alcance de este plan.
+- **Cierre / PR**: rama `plan/task-pipeline/collision-free-ids` lista; el **PR a `main` lo abre el owner**
+  (el sandbox no puede `push` — remoto SSH).
+
 - 2026-07-23: `scenario-coverage` (subagente QA fresco) sobre las 11 tareas → 3 huecos críticos y varios
   importantes (owner: "todo + tarea nueva"). Añadida **tarea `-12`** (ciclo de vida del PLAN en GitHub:
   cierre de issue padre T-A + proyección concurrente T-B). Endurecidos los escenarios de -01 (parseo

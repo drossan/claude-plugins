@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-06
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 5
 depends_on: [task-pipeline-collision-free-ids-01, task-pipeline-collision-free-ids-02, task-pipeline-collision-free-ids-03, task-pipeline-collision-free-ids-04, task-pipeline-collision-free-ids-05, task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09, task-pipeline-collision-free-ids-10, task-pipeline-collision-free-ids-11, task-pipeline-collision-free-ids-12]
 estimate: 1h
-actual:
+actual: 25min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -69,12 +69,12 @@ Feature: Publicación coherente del plan
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado (inspección de versión/CHANGELOG/descripciones; `claude plugin validate .`; `grep`).
-- [ ] Spec cumplida.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado (incluida "el manifest valida"). **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (CHANGELOG + versión + descripciones); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado (inspección de versión/CHANGELOG/descripciones; `claude plugin validate .` → ✔ passed; `grep`).
+- [x] Spec cumplida.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (5/5 VERIFICADO, incl. re-run de "el manifest valida"). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (CHANGELOG + versión + descripciones); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-06.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos ni esquema viejo vivo.
-- [ ] Nota retro en el plan (estimación vs real, sorpresas).
+- [x] Barrido `grep` reforzado sin identificadores muertos ni esquema viejo vivo.
+- [x] Nota retro en el plan (estimación vs real, sorpresas).
