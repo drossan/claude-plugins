@@ -67,6 +67,19 @@ features:
   # Este repo (source del plugin) lo dogfoodea en `lite`.
   caveman: lite
 
+  # Tracking opcional en GitHub Issues/Projects (opt-in, default off). Proyección
+  # ONE-WAY md→GitHub: plan → issue PADRE, tarea → SUB-ISSUE. El .md sigue siendo la
+  # fuente de verdad; GitHub es una proyección best-effort. Solo `enabled: true` activa
+  # (valor no-canónico → off, fail-safe). Ver README del plugin → "GitHub tracking".
+  github-tracking:
+    enabled: true
+    repo: drossan/claude-plugins        # explícito: gh authed (danielrosse) ≠ owner del remoto (drossan)
+    project: 2                          # Project v2 de drossan — github.com/users/drossan/projects/2
+    #                                   # OJO: las ops de tablero requieren que la identidad gh acceda al
+    #                                   # Project. danielrosse (colaborador) NO lo resuelve → board = no-op
+    #                                   # best-effort hasta dar acceso a danielrosse o autenticar como drossan.
+    # issue-type-plan:                  # no se usa; el plan se etiqueta con la label `plan`
+
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
 # `scenario-coverage` y `fact-checker`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan
