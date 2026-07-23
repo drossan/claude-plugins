@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-04
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-collision-free-ids-01]
 estimate: 1h
-actual:
+actual: 25min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -71,11 +71,11 @@ Feature: Guía de trabajo en equipo sin colisiones
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado por inspección.
-- [ ] Spec cumplida.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (README + flujo); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado por inspección.
+- [x] Spec cumplida.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (6/6 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (README + flujo); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-04.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.

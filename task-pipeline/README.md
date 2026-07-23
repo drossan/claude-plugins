@@ -45,6 +45,31 @@ El plugin NO impone estructura nueva; asume que el repo ya organiza el trabajo a
 docs/guides/task-lifecycle.md                  # flujo canónico (estados, plantillas, DoD)
 ```
 
+## Trabajo en equipo y colisiones de id
+
+El `<task-id>` es **plan-scoped**: `<task-id> = <plan-id>-<nn>` (`<plan-id> = <package>-<name-plan>`, `<nn>` correlativo **dentro del plan** desde `01`). No es un contador global del package. La razón: **el espacio de nombres del id coincide con la unidad de paralelismo**, que aquí es el **plan = rama**. Dos planes distintos = dos espacios de id distintos → **nunca colisionan**.
+
+**Por qué importa.** Con un contador global (`<package>-<nnn>`), dos ramas cortadas del mismo `main` ven el mismo "último número" y asignan el mismo `nnn`; al mergear salta un conflicto **add/add silencioso** (dos `…-013.md` distintos). Con ids plan-scoped eso desaparece salvo el residual de abajo.
+
+**Disciplina de equipo:**
+
+- **Una rama = un plan** (`plan/<package>/<name-plan>`). Todas las tareas del plan caen en esa rama.
+- **Una sola tarea `active` por plan** (comparten rama).
+- `/plan-task` asigna el `<nn>` contando el máximo existente **en el plan** (todos los estados) + 1 — nunca sobre el package.
+
+**Residual honesto (no se previene en duro):**
+
+- **Mismo `<name-plan>` en paralelo** → misma `<plan-id>` → colisiona, pero es **1 conflicto único, evidente y semántico** (el fichero del plan), no la lluvia silenciosa de antes. Lo caza **`/doctor`** (categoría "ids de tarea/plan duplicados").
+- **Dos ramas extendiendo el mismo plan** → ambas ven el mismo máximo `<nn>` y asignan el mismo → colisión **no** prevenida por este esquema (la prevendría un sufijo aleatorio, descartado por el owner). Mitigación: la disciplina de arriba + detección en `/doctor`.
+
+**Cómo se ve en git.** Antes: conflicto **add/add silencioso** (cada rama ignora el número de la otra). Ahora: **1 conflicto único y evidente** en el fichero del plan (o el `.md` de tarea concreto), fácil de reconocer y resolver.
+
+**Cómo resolver una colisión detectada** (por `/doctor` o al mergear):
+
+1. Elige el fichero a cambiar (normalmente el `<nn>` **más nuevo**) y **renumera** su `<task-id>` — **o**, si chocan los planes, **renombra** el `<name-plan>` (y con él la `<plan-id>` de todas sus tareas).
+2. **Actualiza los `depends_on`** de las tareas que apuntaban al id renombrado y **cualquier enlace** que lo referencie (contexto/histórico, sección Tasks del plan).
+3. Renombra también el fichero (filename = id) y su session log en `.claude/context/`.
+
 ## Configuración por repo (`.claude/task-pipeline.yml`)
 
 El pipeline se adapta al repo vía `.claude/task-pipeline.yml`. Las skills lo leen y

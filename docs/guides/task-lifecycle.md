@@ -203,6 +203,12 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
    Todas las tareas del plan caen en esta rama. Al cerrar el plan, se mergea a la
    rama de integración por PR.
 
+> **Trabajo en equipo / colisiones de id.** El `<task-id>` es plan-scoped precisamente para que
+> **rama = plan** no genere colisiones al mergear. El porqué, el residual honesto (mismo `<name-plan>` /
+> dos ramas del mismo plan) y **cómo resolver una colisión** están en la guía de equipo del README del
+> plugin → [Trabajo en equipo y colisiones de id](../../task-pipeline/README.md#trabajo-en-equipo-y-colisiones-de-id).
+> `/doctor` la detecta (categoría "ids de tarea/plan duplicados").
+
 ## Arrancar una tarea
 
 1. Comprueba que todas las `depends_on` están en `done`.
