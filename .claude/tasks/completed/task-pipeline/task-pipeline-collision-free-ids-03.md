@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-03
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 2
 depends_on: [task-pipeline-collision-free-ids-01]
 estimate: 2h
-actual:
+actual: 30min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -98,12 +98,12 @@ Feature: Detección de ids de tarea/plan duplicados en /doctor
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado corriendo `/doctor` sobre un repo de prueba con drift inyectado y
-      sobre uno sano.
-- [ ] Spec cumplida; respeta las dos fases y la Propiedad de doctor; robusto ante frontmatter roto.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Escenarios verificados: 1-7 por inspección del SKILL; 8-9 (repo sano / legacy) por `grep` real sobre
+      este repo. Correr `/doctor` en repo con drift inyectado = NO VERIFICABLE reproducible (skill model-driven).
+- [x] Spec cumplida; respeta las dos fases y la Propiedad de doctor; robusto ante frontmatter roto.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (7/7 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-03.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.

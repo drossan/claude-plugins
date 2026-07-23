@@ -72,6 +72,18 @@ artefacto del plugin — ver "Propiedad" abajo).
    **No** vigiles `.claude/specs/general/coding-standards.md` ni las otras specs generales
    (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y su ausencia
    **no es drift**.
+7. **Ids de tarea/plan duplicados** (repo-owned) — red de seguridad del esquema de id plan-scoped
+   (`<task-id> = <plan-id>-<nn>`; ver `docs/guides/task-lifecycle.md`). El id es único por diseño, pero el
+   residual honesto (mismo `<name-plan>`, o dos ramas extendiendo el mismo plan) puede colar duplicados al
+   mergear. Recorre `.claude/tasks/**` y `.claude/plans/**` y **reporta cualquier `id:` que aparezca en más
+   de un fichero, nombrando a TODOS los implicados** (no solo dos). Cubre:
+   - **Ids de tarea duplicados** (el caso `…-01.md` que dos ramas crean a la vez), **incluido** el mismo
+     `id:` en **dos carpetas de estado distintas** (p.ej. `pending/` y `completed/` tras un merge).
+   - **Ids de plan duplicados** (dos ficheros de plan con el mismo `id:`: mismo `<name-plan>`, dos ramas).
+   - **`filename` ≠ `id:`** del propio fichero: rompe el invariante "filename = id"; repórtalo como aviso.
+   - **Robustez de parseo**: un `.md` **sin `id:`** o con **frontmatter YAML roto** se reporta como **no
+     parseable** (aviso) y el check **sigue** — no aborta ni inventa un duplicado (mismo criterio que
+     "Config malformada" abajo). Los ids **legacy** únicos entre sí (`<package>-<nnn>`) **no** disparan nada.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -126,6 +138,14 @@ añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
 `CLAUDE.md` **no** se aplica: solo se sugiere).
+
+**Ids duplicados / `filename` ≠ `id:` (no mecánico → aviso, regla 4):** renumerar un id **no** es un fix
+seguro — rompería los `depends_on` y los enlaces que apuntan a él, y hay que elegir cuál de los ficheros en
+conflicto cambia. Trátalo como **aviso**: nombra los ficheros implicados y **sugiere** la resolución
+(renumerar el `<nn>` más nuevo **o** renombrar el `<name-plan>`, actualizando `depends_on`/enlaces), **sin
+auto-editar**. **Aviso extra (T-H)**: si alguna de las tareas en conflicto **ya tiene `issue:`** (proyectada
+en GitHub por `features.github-tracking`), advierte que renumerar **desincroniza** el `.md` de su issue → hay
+que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
 
 ## Idempotencia
 
