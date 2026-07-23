@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-09
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08]
 estimate: 2h
-actual:
+actual: 40min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -99,11 +99,11 @@ Feature: Proyección de estado de tarea (condicional)
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado en repo de prueba (flag on/off, `gh` ok/sin red, con/sin project).
-- [ ] Spec cumplida; el cambio de estado del `.md` nunca se bloquea por la proyección.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker`: reconocer verificación **NO VERIFICABLE** reproducible sin repo en vivo. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (lifecycle plantilla + materializado + HOW-TO + DoD); **histórico**
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Escenarios verificados por inspección + `grep` en los 4 ficheros; flag on/gh-en-vivo = NO VERIFICABLE reproducible.
+- [x] Spec cumplida; el cambio de estado del `.md` nunca se bloquea por la proyección.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (9 VERIFICADO + 1 NO VERIFICABLE en vivo, 0 INCORRECTO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (lifecycle plantilla + materializado + HOW-TO + DoD); **histórico**
       en `.claude/context/task-pipeline/task-pipeline-collision-free-ids-09.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.

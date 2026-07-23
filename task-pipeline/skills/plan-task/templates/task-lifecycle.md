@@ -251,6 +251,9 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 2. Mueve la tarea a `.claude/tasks/active/<package>/`, `status: active`, bump `updated`.
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
+5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el estado a su
+   issue → **In Progress** (ver la tabla en "Cerrar una tarea"). Best-effort: si `gh` falla, avisa y
+   sigue; el cambio de `status:` del `.md` **no** se bloquea.
 
 > Cada tarea es una conversación/sesión nueva. Las sesiones futuras reconstruyen
 > el contexto exclusivamente desde el task file + el session log.
@@ -301,6 +304,25 @@ particular:
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
+
+> **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
+> `enabled` **y** la tarea tiene `issue:`. Al cambiar `status:` se proyecta a la issue (one-way,
+> best-effort):
+>
+> | `status:` | Acción sobre la issue |
+> |---|---|
+> | `active` (arranque) | campo de estado del Project → **In Progress** (si hay `project`) |
+> | `done` | `gh issue close`; Project → **Done** |
+> | `cancelled` | `gh issue close --reason "not planned"` |
+> | `blocked` | añadir label `blocked` (+ campo Project si aplica) |
+> | `blocked → active` (desbloqueo) | quitar label `blocked`; Project → **In Progress** |
+> | `done → active` (reapertura) | `gh issue reopen` |
+>
+> **Idempotencia**: cerrar una issue ya cerrada es **no-op** (no error). **Degradación (C3)**: si `gh`
+> falla / sin red / el Project no tiene la opción de estado esperada → **avisa y NO bloquees** el cambio
+> de `status:` del `.md` (el `.md` manda; el drift lo reconcilia `/doctor`). **Flag off o sin `issue:`**
+> → el ciclo de vida es **local puro**, idéntico al default (no se llama a `gh`). El cierre de la issue
+> **PADRE** del plan y la concurrencia viven en "Cerrar un plan".
 
 ## Cerrar un plan
 

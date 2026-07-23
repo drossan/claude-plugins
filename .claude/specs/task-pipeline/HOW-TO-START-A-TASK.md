@@ -55,6 +55,12 @@
 >
 > Marcar verificación como hecha sin haber corrido el hook/skill/inspección correspondiente está prohibido.
 > Si la sesión no puede completar la tarea, queda en `status: blocked` con el progreso en el histórico.
+>
+> **(Opcional, `features.github-tracking`)** Si el repo activa el tracking GitHub y la tarea tiene
+> `issue:`, arrancar/cerrar la tarea **proyecta el estado** a su issue (In Progress / `gh issue close` /
+> label `blocked` / reopen) — ver la tabla en `docs/guides/task-lifecycle.md` ("Cerrar una tarea").
+> Best-effort: si `gh` falla, avisa y **no** bloquees el cambio de `status:` del `.md`. En este repo está
+> **off** por defecto (no-op).
 
 Pega el prompt de abajo como **primer mensaje** de cada sesión nueva.
 
