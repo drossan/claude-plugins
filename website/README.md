@@ -25,5 +25,10 @@ pnpm docs:preview       # sirve el build de producción en local
   rompe (footgun documentado en el runbook de github-tracking).
 - El deploy a Pages lo hace el workflow `.github/workflows/deploy-docs.yml` (tarea `-05`), disparado por
   **tags `v*`**. El *encendido* de Pages (Settings → Pages → Source: GitHub Actions) es acción manual del owner.
+- **Gotcha del entorno `github-pages`** (verificado 2026-07-23): el entorno auto-creado al encender Pages
+  solo permite deploys desde **`main`**. Como el trigger es por **tag `v*`**, hay que autorizar los tags o
+  el job `deploy` falla (el `build` pasa): Settings → Environments → **github-pages** → *Deployment branches
+  and tags* → añadir regla **`v*`** (tipo **Tag**). Requiere admin. Atajo para publicar sin admin: lanzar el
+  workflow con **`workflow_dispatch`** desde `main` (`main` sí está permitida por defecto).
 - `node_modules/`, `.vitepress/cache/` y `.vitepress/dist/` están en el `.gitignore` de la raíz; el
   `pnpm-lock.yaml` **sí** se versiona (builds reproducibles).
