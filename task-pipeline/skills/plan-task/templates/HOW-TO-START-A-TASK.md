@@ -79,7 +79,7 @@ gastar turnos en explicarlo.
 ## Prompt de arranque (copia y pega)
 
 ```
-Voy a ejecutar la tarea <package>-XXX del plan <name-plan> (<package>).
+Voy a ejecutar la tarea <task-id> del plan <name-plan> (<package>).
 
 Lee en este orden y repórtame en 3-4 líneas el plan que vas a seguir:
 
@@ -89,8 +89,8 @@ Lee en este orden y repórtame en 3-4 líneas el plan que vas a seguir:
    dependencias de las tareas).
 4. Las specs aplicables en `.claude/specs/<package>/` y `.claude/specs/general/`
    (según el artefacto que toque la tarea — ver tabla en el HOW-TO).
-5. `.claude/tasks/active/<package>/<package>-XXX.md` (la tarea de esta sesión) y
-   `.claude/context/<package>/<package>-XXX.md` (histórico de sesión, si existe).
+5. `.claude/tasks/active/<package>/<task-id>.md` (la tarea de esta sesión) y
+   `.claude/context/<package>/<task-id>.md` (histórico de sesión, si existe).
 
 Tras leerlos, ejecuta la tarea siguiendo el ciclo TDD paso a paso.
 
@@ -103,7 +103,7 @@ REGLAS ESTRICTAS DE LA SESIÓN:
   autorización, TS estricto, lo que aplique a este workspace>.
 - Cada artefacto sigue su spec en `.claude/specs/`. Si introduces o cambias un
   patrón, actualiza la spec en el mismo cambio.
-- Commits en la rama del plan con el formato `<package>-XXX: <conventional commit>`.
+- Commits en la rama del plan con el formato `<task-id>: <conventional commit>`.
 - Documentación actualizada ANTES de declarar la tarea hecha. **Tres capas
   obligatorias**: TSDoc en todo símbolo público (al crearlo), doc técnica/contexto
   y histórico de la tarea.
@@ -115,7 +115,7 @@ Al terminar:
 - **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre
   `fact-checker` sobre las afirmaciones de la sesión. `INCORRECTO` bloquea hasta
   corregir; `NO VERIFICABLE` = aviso a reconocer; `VERIFICADO` pasa.
-- Cierra el histórico en `.claude/context/<package>/<package>-XXX.md` (resumen,
+- Cierra el histórico en `.claude/context/<package>/<task-id>.md` (resumen,
   decisiones + porqué, tests corridos + resultado, docs actualizadas + motivo,
   ficheros/commits, tiempo real, follow-ups).
 - Mueve el task a `.claude/tasks/completed/<package>/`, `status: done`, rellena
@@ -124,8 +124,11 @@ Al terminar:
 - Reporta cambios y siguiente tarea recomendada según el orden del plan.
 ```
 
-Sustituye `<package>-XXX` por el id de la tarea y `<name-plan>` por el plan activo.
-Lista completa de tareas bajo `.claude/plans/active/<package>/`.
+Sustituye `<task-id>` (= `<plan-id>-<nn>`, con `<plan-id> = <package>-<name-plan>` y
+`<nn>` correlativo del plan desde `01`; **no** un contador global del package) por el id
+de la tarea y `<name-plan>` por el plan activo. Los ids legacy con el esquema anterior
+(`<package>-<nnn>`) conviven y no se renumeran. Lista completa de tareas bajo
+`.claude/plans/active/<package>/`.
 
 ---
 

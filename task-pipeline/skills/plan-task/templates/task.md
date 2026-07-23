@@ -1,7 +1,7 @@
 ---
-id: <package>-<nnn>
+id: <plan-id>-<nn>        # <plan-id> = <package>-<name-plan>; <nn> correlativo del plan desde 01 (2 díg.)
 package: <package>
-plan: <name-plan>
+plan: <name-plan>         # = <name-plan> embebido en id (deben coincidir)
 status: pending          # pending | active | blocked | in-review | done | cancelled
 priority: 1
 depends_on: []

@@ -166,7 +166,7 @@ mixto de ids opacos: no rompe nada). Sin cambios de carpetas: el filename ya lle
 
 ## Tasks
 
-- [ ] `task-pipeline-collision-free-ids-01` (P1) — Esquema de id plan-scoped en plantillas + `task-lifecycle`  · depends_on: —
+- [x] `task-pipeline-collision-free-ids-01` (P1) — Esquema de id plan-scoped en plantillas + `task-lifecycle`  · depends_on: —
 - [ ] `task-pipeline-collision-free-ids-02` (P2) — Regla de asignación de id en `plan-task/SKILL.md`  · depends_on: task-pipeline-collision-free-ids-01
 - [ ] `task-pipeline-collision-free-ids-03` (P2) — Check de ids duplicados en `doctor`  · depends_on: task-pipeline-collision-free-ids-01
 - [ ] `task-pipeline-collision-free-ids-04` (P3) — Doc de trabajo en equipo / colisiones (README + flujo)  · depends_on: task-pipeline-collision-free-ids-01

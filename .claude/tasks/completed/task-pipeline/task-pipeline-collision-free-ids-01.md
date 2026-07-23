@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-01
 package: task-pipeline
 plan: collision-free-ids
-status: active           # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 1
 depends_on: []
 estimate: 2h
-actual:
+actual: 1h
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -106,11 +106,11 @@ Feature: Esquema de id plan-scoped en las plantillas
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado como criterio de aceptación (inspección + `grep` de plantillas).
-- [ ] Spec cumplida; el esquema y la acotación de `<name-plan>` disponibles para -02/-03/-05.
-- [ ] Gate de mutation — **N/A** (`stack.mutation-tool: none`).
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (las plantillas SON la doc); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado como criterio de aceptación (inspección + `grep` de plantillas).
+- [x] Spec cumplida; el esquema y la acotación de `<name-plan>` disponibles para -02/-03/-05.
+- [x] Gate de mutation — **N/A** (`stack.mutation-tool: none`).
+- [x] Gate de `fact-checker` superado (8/8 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (las plantillas SON la doc); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-01.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos (allowlist intacta).
+- [x] Barrido `grep` reforzado sin identificadores muertos (allowlist intacta).
