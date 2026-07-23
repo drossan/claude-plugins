@@ -36,6 +36,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+| `features.github-tracking` | bloque; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD: proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
 
 **`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
 

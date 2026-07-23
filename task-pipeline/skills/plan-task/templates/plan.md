@@ -3,6 +3,7 @@ id: <package>-<name-plan>
 package: <package>
 status: pending          # pending | active | completed | cancelled
 branch: plan/<package>/<name-plan>
+issue:                   # opcional; solo con features.github-tracking — nº de la issue PADRE proyectada (lo escribe /plan-task)
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---

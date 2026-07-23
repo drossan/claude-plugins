@@ -7,6 +7,7 @@ priority: 1
 depends_on: []
 estimate: 2h
 actual:
+issue:                    # opcional; solo con features.github-tracking — nº de la SUB-ISSUE proyectada (lo escribe /plan-task)
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---

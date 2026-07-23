@@ -58,6 +58,21 @@ features:
   # Comentado a propósito: el TEMPLATE no impone coste/comportamiento a repos consumidores.
   # caveman: off
 
+  # GitHub tracking (integración OPCIONAL, opt-in, default off). Proyecta el trabajo a
+  # GitHub Issues/Projects one-way (md→GitHub): plan → issue PADRE, tarea → SUB-ISSUE.
+  # El .md sigue siendo la ÚNICA fuente de verdad; GitHub es una proyección.
+  # NO forma parte de ningún preset (mode: full NO lo enciende) y NO es un gate de la DoD:
+  # es comportamiento opt-in. Su AUSENCIA no es drift para /doctor (default off, como caveman).
+  # RESOLUCIÓN FAIL-SAFE: SOLO `enabled: true` (booleano) lo activa. Ausente / enabled: false /
+  # cualquier valor no-canónico (mayúsculas, "true" string, yes, 1, comentado, desconocido) → off.
+  # Además off / sin conexión / sin config / repo no-GitHub / gh sin auth → no-op.
+  # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
+  # github-tracking:
+  #   enabled: false          # opt-in; off / sin conexión / sin config / repo no-GitHub = no-op
+  #   # repo: owner/name       # default = repo actual (gh repo view --json nameWithOwner)
+  #   # project: <number>      # nº Project v2 (URL .../projects/<N> o gh project list --owner <o>)
+  #   # issue-type-plan: Plan  # avanzado: issue types se definen en el ORG; sin ellos → label `plan`
+
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
 # `scenario-coverage` y `fact-checker`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan
