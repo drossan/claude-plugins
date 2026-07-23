@@ -59,8 +59,9 @@
 > **(Opcional, `features.github-tracking`)** Si el repo activa el tracking GitHub y la tarea tiene
 > `issue:`, arrancar/cerrar la tarea **proyecta el estado** a su issue (In Progress / `gh issue close` /
 > label `blocked` / reopen) — ver la tabla en `docs/guides/task-lifecycle.md` ("Cerrar una tarea").
-> Best-effort: si `gh` falla, avisa y **no** bloquees el cambio de `status:` del `.md`. En este repo está
-> **off** por defecto (no-op).
+> Best-effort: si `gh` falla, avisa y **no** bloquees el cambio de `status:` del `.md`. Al completar el
+> **plan**, se cierra la **issue PADRE** (no se auto-cierra sola) — ver "Cerrar un plan". En este repo
+> está **off** por defecto (no-op).
 
 Pega el prompt de abajo como **primer mensaje** de cada sesión nueva.
 

@@ -328,6 +328,9 @@ Es el registro canónico; no lo dupliques.
 
 1. Al cerrar la última tarea:
    - Plan → `completed`: mover a `.claude/plans/completed/<package>/`, `status: completed`, bump `updated`.
+   - **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, cierra la **issue PADRE** con
+     `gh issue close` — GitHub **no** la auto-cierra al cerrar las sub-issues. Best-effort (C3): si `gh`
+     falla / sin red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
    - Borra la rama tras el merge.

@@ -133,6 +133,8 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 **Exactly-once (límite honesto)**: si el proceso muere **entre** crear la issue y escribir `issue:` en el `.md`, un re-run no puede saber que ya existe y **podría** crear una segunda. Se minimiza escribiendo `issue:` inmediatamente (paso 4); el residual lo detecta/limpia `/doctor`. Declarado como límite best-effort.
 
+**Concurrencia — no duplicar el PADRE (T-B)**: antes de crear el padre (paso 3), si el `.md` del plan **ya** trae `issue:` (p.ej. traído por `pull`/merge de la rama donde se proyectó primero), **reutilízalo** — NO crees otro. **Límite conocido (no se previene en duro)**: dos ramas **frescas** del mismo plan, ambas con el flag on, proyectadas por separado, crean **padres duplicados** + `issue:` en conflicto al mergear (es el residual "mismo plan, dos ramas" extendido a la proyección). Mitigación: **una sola rama proyecta el plan**; lo detecta `/doctor` (reconciliación) y lo documenta la guía de usuario.
+
 **Fronteras de tamaño del plan**: `0` tareas → solo el padre, sin sub-issues; `100` → 100 sub-issues; **`101+`** supera el tope de GitHub (**100 sub-issues/padre**) → **avisa** (límite conocido), no falles en silencio.
 
 > **Fuera de alcance de estos pasos**: la proyección del **estado** de una tarea (arranque/cierre) vive en `task-lifecycle`; el cierre de la issue **PADRE** al completar el plan y la disciplina de **concurrencia** en el "Ciclo de vida del plan"; la **reconciliación** md↔GitHub en `/doctor`.
