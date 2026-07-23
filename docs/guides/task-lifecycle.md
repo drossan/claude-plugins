@@ -65,9 +65,31 @@ en el README del plugin.
 ```
 
 - `<package>` es el nombre de un workspace del repo.
-- `<task-id>` es `<package>-<nnn>` (p.ej. `api-007`). Estable para siempre, aunque
-  cambie la prioridad.
-- `<name-plan>` es kebab-case (p.ej. `bootstrap-foundation`).
+- `<name-plan>` es kebab-case **sin sufijo numérico ambiguo** (p.ej.
+  `bootstrap-foundation`, **no** `phase-01`): el `<task-id>` lo embebe y debe poder
+  separarse de forma inequívoca (ver abajo).
+- `<plan-id>` es **`<package>-<name-plan>`** (p.ej. `api-bootstrap-foundation`). Único
+  por plan y ya conocido por `/plan-task`.
+- `<task-id>` es **`<plan-id>-<nn>`** (p.ej. `api-bootstrap-foundation-01`), donde
+  `<nn>` es un **correlativo DENTRO del plan desde `01`** — el **último segmento de 2
+  dígitos** del id. **NO es un contador global del package**: el espacio de nombres del
+  id coincide con la unidad de paralelismo (plan = rama), de modo que dos planes
+  distintos nunca generan ids que colisionen. Estable para siempre, aunque cambie la
+  prioridad.
+  - **Parseo inequívoco (por qué `<name-plan>` no acaba en número)**: como el id es
+    `<plan-id>-<nn>` y `<nn>` son los **2 últimos dígitos**, un `<name-plan>` acabado en
+    número lo hace irrecuperable — `name-plan = phase-01` daría `api-phase-01-01`, donde
+    no se distingue si el plan es `phase` (tarea `01-01`) o `phase-01` (tarea `01`).
+  - **Formato de `<nn>`**: 2 dígitos con cero a la izquierda desde `01` (`01`, …, `09`,
+    `10`). A partir de la tarea **100** pasa a 3 dígitos (`100`), manteniendo el ancho
+    fijo dentro de un tramo para preservar el orden lexicográfico.
+  - **Coherencia `plan:` ↔ `id`**: el campo `plan:` del frontmatter de la tarea es el
+    `<name-plan>` y **debe coincidir** con el `<name-plan>` embebido en el `id`.
+  - **Convivencia con ids legacy**: los ids ya creados con el **esquema anterior**
+    (`<package>-<nnn>`, contador global del package — en este repo, `task-pipeline-001`
+    …`task-pipeline-012`) son estables y **no se renumeran**; conviven con los nuevos
+    ids plan-scoped (histórico mixto de ids opacos). El esquema nuevo aplica solo a
+    planes/tareas nuevos.
 
 La carpeta es un índice; el `status:` del frontmatter es la fuente de verdad.
 **Nunca muevas un fichero sin actualizar `status:`, ni actualices `status:` sin
@@ -94,8 +116,8 @@ updated: YYYY-MM-DD
 ## Estimación global
 ## Criterios de calidad y verificación
 ## Tasks
-- [ ] `<package>-001` (P1) — <título corto>  · depends_on: —
-- [ ] `<package>-002` (P2) — <título corto>  · depends_on: <package>-001
+- [ ] `<plan-id>-01` (P1) — <título corto>  · depends_on: —
+- [ ] `<plan-id>-02` (P2) — <título corto>  · depends_on: <plan-id>-01
 
 ## Registro de cambios del plan
 - YYYY-MM-DD: creado
@@ -105,9 +127,9 @@ updated: YYYY-MM-DD
 
 ````markdown
 ---
-id: <package>-<nnn>
+id: <plan-id>-<nn>        # <plan-id> = <package>-<name-plan>; <nn> correlativo del plan desde 01 (2 díg.)
 package: <package>
-plan: <name-plan>
+plan: <name-plan>         # = <name-plan> embebido en id (deben coincidir)
 status: pending          # pending | active | blocked | in-review | done | cancelled
 priority: 1
 depends_on: []

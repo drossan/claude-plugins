@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-05
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-collision-free-ids-01]
 estimate: 1h
-actual:
+actual: 30min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -70,11 +70,11 @@ Feature: Copias materializadas y catálogos del repo alineados
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado por inspección + `grep`.
-- [ ] Spec cumplida; ejemplos stale actualizados, historia/allowlist intacta.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (materializados + catálogos); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado por inspección + `grep`.
+- [x] Spec cumplida; ejemplos stale actualizados, historia/allowlist intacta.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (6/6 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (materializados + catálogos); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-05.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos ni esquema viejo vivo.
+- [x] Barrido `grep` reforzado sin identificadores muertos ni esquema viejo vivo.
