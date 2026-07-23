@@ -4,6 +4,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.12.1] — 2026-07-23
+
+### Fixed
+- **`plan-task` (description del SKILL)**: el blurb del frontmatter listaba solo `plan mode → plan en
+  pending → grilling → tareas en Gherkin → handoff TDD → gate de mutation`, omitiendo `design-review`,
+  `scenario-coverage` y el gate de cierre `fact-checker` que la propia skill orquesta y que el resto de la
+  doc ya atribuía a `/plan-task`. Alineada con el pipeline real. Cambio **docs-only** (sin efecto en el
+  comportamiento del plugin). El resto de hallazgos de alineación de la sesión (árbol del `README`,
+  `task-lifecycle` del repo, `CLAUDE.md`) son **repo-consumer**, no del plugin, y no entran aquí.
+
 ## [0.12.0] — 2026-07-23
 
 ### Changed

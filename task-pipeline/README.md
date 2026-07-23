@@ -17,6 +17,8 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 
 > 📖 ¿Presentando el pipeline al equipo? Empieza por [docs/flujo-del-pipeline.md](docs/flujo-del-pipeline.md) — resumen del flujo, las skills y las ideas clave, con un ejemplo end-to-end.
 
+> 🌐 **Portal web**: [drossan.github.io/claude-plugins](https://drossan.github.io/claude-plugins/) (VitePress, se publica con cada release `v*`; vivo tras encender Pages + el primer tag).
+
 ## Skills
 
 | Skill | Qué hace |

@@ -2,3 +2,8 @@
 
 # Métricas per-usuario de la skill /pipeline-usage (no es artefacto del repo).
 .claude/analytics/
+
+# Portal VitePress (website/): deps y artefactos de build. El pnpm-lock.yaml SÍ se versiona.
+website/node_modules/
+website/.vitepress/dist/
+website/.vitepress/cache/

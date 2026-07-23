@@ -18,6 +18,9 @@
 >   son **criterios de aceptación** que se verifican **por inspección / `grep` / `test -d` / corriendo la
 >   skill o el hook en un repo de prueba**, no con un runner.
 > - **TSDoc = N/A** (Markdown/Bash); la doc técnica y el histórico de la tarea SÍ son obligatorios.
+> - **Excepción `website/`**: el portal VitePress es un **sub-proyecto aislado** con su propio toolchain
+>   **pnpm** (`pnpm docs:build`, verificación = correr el build). NO es el harness de tests del pipeline;
+>   los entregables del pipeline siguen siendo MD+Bash. "No hay pnpm" se refiere al pipeline, no a `website/`.
 >
 > **Antes de tocar una sola línea:**
 >

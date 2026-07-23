@@ -17,14 +17,18 @@ Hoy hay **un solo plugin: `task-pipeline`** (en `task-pipeline/`).
 
 ## Stack: no hay harness de tests (importante)
 
-`.claude/task-pipeline.yml` declara `stack: none`: los entregables son **skills en Markdown y hooks en
-Bash**. **No existe** `pnpm`/`npm test`/`lint`/typecheck ni Stryker en este repo. Consecuencias directas:
+`.claude/task-pipeline.yml` declara el stack real del repo (`language: other`,
+`package-manager`/`test-runner`/`mutation-tool: none`): los entregables son **skills en Markdown y hooks en
+Bash**. **No existe** `pnpm`/`npm test`/`lint`/typecheck ni Stryker para el pipeline. Consecuencias directas:
 
 - No hay comando de "build/lint/test" ni "correr un test único". Si necesitas verificar un cambio, se hace
   **corriendo la skill/hook** o por inspección, no con un runner.
 - En la DoD de cierre de una tarea, los ítems de **TDD** y **gate de mutation** son **N/A** aquí; los
   escenarios Gherkin de cada tarea son **criterios de aceptación** verificables por inspección / `grep` /
   `test -d` / ejecutando la skill o el hook en un repo de prueba. El gate de `fact-checker` **sí** aplica.
+- **Excepción `website/`**: el portal de documentación (VitePress) es un **sub-proyecto aislado** con su
+  propio toolchain **pnpm** (`pnpm docs:build`); NO es el harness del pipeline y **no** cambia el `stack`
+  del pipeline. Es decir, "no hay pnpm" aplica al pipeline (MD+Bash), no a `website/`. Ver [`website/`](website/).
 
 ## Comandos (desarrollo del plugin)
 
@@ -81,5 +85,8 @@ Los cambios se conducen con el **propio pipeline** del plugin, no ad-hoc:
   Commits: `<task-id>: <conventional commit>`.
 - **Barrido `grep` reforzado** al cerrar: sin identificadores renombrados vivos (`grill-me`, `/task` como
   comando, `skills/task/`). **Allowlist legítima** (no la toques): la **atribución** a Matt Pocock en
-  `grilling/SKILL.md` + `THIRD-PARTY-NOTICES.md`, y las entradas del **CHANGELOG ≤ 0.8.1** que narran el rename.
+  `grilling/SKILL.md` + `THIRD-PARTY-NOTICES.md`; las entradas del **CHANGELOG que narran los renames**
+  (`skills/task`→`plan-task` en 0.8.0; `grill-me`→`grilling` en 0.9.0); la skill **`doctor`**, que **nombra
+  esos ids muertos como patrones a detectar** (no puede detectarlos sin nombrarlos); y las menciones que
+  **describen este propio barrido** (aquí y en el HOW-TO).
 - La skill **`grilling`** es de terceros (MIT, © Matt Pocock — `mattpocock/skills`): conserva su atribución.
