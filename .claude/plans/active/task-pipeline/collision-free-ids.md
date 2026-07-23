@@ -172,7 +172,7 @@ mixto de ids opacos: no rompe nada). Sin cambios de carpetas: el filename ya lle
 - [x] `task-pipeline-collision-free-ids-04` (P3) — Doc de trabajo en equipo / colisiones (README + flujo)  · depends_on: task-pipeline-collision-free-ids-01
 - [x] `task-pipeline-collision-free-ids-05` (P3) — Alinear copias materializadas de este repo (dogfooding)  · depends_on: task-pipeline-collision-free-ids-01
 - [x] `task-pipeline-collision-free-ids-07` (P2) — Config `features.github-tracking` + frontmatter `issue:` (plantillas)  · depends_on: —
-- [ ] `task-pipeline-collision-free-ids-08` (P3) — Proyección md→GitHub tejida en `/plan-task` (condicional)  · depends_on: task-pipeline-collision-free-ids-07
+- [x] `task-pipeline-collision-free-ids-08` (P3) — Proyección md→GitHub tejida en `/plan-task` (condicional)  · depends_on: task-pipeline-collision-free-ids-07
 - [ ] `task-pipeline-collision-free-ids-09` (P3) — Proyección de estado de TAREA (arranque + cierre)  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08
 - [ ] `task-pipeline-collision-free-ids-12` (P3) — Ciclo de vida del PLAN en GitHub: cierre de issue padre + proyección concurrente  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09
 - [ ] `task-pipeline-collision-free-ids-10` (P3) — Reconciliación best-effort en `/doctor`  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-12

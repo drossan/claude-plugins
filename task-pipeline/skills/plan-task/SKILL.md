@@ -117,6 +117,26 @@ Feature: <capacidad de la tarea>
 
 Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
 
+## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)
+
+**Pasos CONDICIONALES**: se ejecutan **solo si** `features.github-tracking.enabled` es `true` (booleano) **y** `gh` está instalado y autenticado con **permiso de escritura** **y** el repo es de GitHub. Si falta cualquiera → **no-op** (silencioso salvo un aviso breve): el `.md` es la verdad y el plan se materializa igual. Es una **proyección one-way** (`.md` → GitHub): plan → issue **PADRE**, tarea → **SUB-ISSUE**. Corre una vez el set de tareas es definitivo (tras Paso 5.5).
+
+> **Degradación (C3, best-effort).** En TODOS los modos de fallo —`gh` ausente/viejo (sin `--parent`), sin red, repo no-GitHub, `gh` sin auth, **authed sin permiso de escritura (403)**, rate-limit/error a mitad de bucle— **avisa y continúa**: **nunca** abortes la materialización del `.md`. La proyección puede quedar **parcial**; el re-run la reanuda de forma idempotente por `issue:`. Este playbook **no garantiza** sync remoto (paginación, rate-limit, auth, issue borrada): es **best-effort**; la reconciliación vive en `/doctor`.
+
+1. **Resolver `repo`**: usa `features.github-tracking.repo` si está; si no, el remoto por defecto: `gh repo view --json nameWithOwner -q .nameWithOwner`. Con **múltiples remotos** (fork `origin` vs `upstream`) se usa el que resuelva `gh repo view`; **recomienda fijar `repo`** en la config para desambiguar.
+2. **Label / issue-type del plan**: si vas a etiquetar el padre con `--label plan`, **crea la label si no existe** (`gh label create plan …`); si no se puede crear, crea la issue **sin** label + aviso (degrada, no abortes). Si `issue-type-plan` está configurado y disponible en el ORG, úsalo en su lugar.
+3. **Plan → issue PADRE**: si el `.md` del plan **no** tiene `issue:` aún, `gh issue create` (título = título del plan; body = resumen + **link al `.md`**). Escribe `issue: <n>` en el frontmatter del plan **inmediatamente**. **Si el `create` del padre FALLA → NO crees sub-issues sueltas**: aborta la proyección del plan (aviso); el `.md` queda materializado igual.
+4. **Tarea → SUB-ISSUE**: por cada tarea cuyo `.md` **no** tenga `issue:`, `gh issue create --parent <nº-padre> …` y escribe `issue: <n>` en su frontmatter **inmediatamente tras** crearla (minimiza la ventana del exactly-once).
+5. **Idempotencia (re-sync no duplica)**: si un `.md` **ya** tiene `issue:`, **no** crees otra; actualiza la existente con `gh issue edit`. Si el número **ya no existe** en GitHub (borrada a mano) → **avisa** y deja la reconciliación a `/doctor` (**no** recrees a ciegas).
+6. **Títulos adversarios**: construye el comando de forma **segura** ante títulos con comillas, backticks, `$` o markdown — pasa el título como **argumento** (`--title` con el valor entre comillas), nunca interpolado en una cadena de shell. El markdown en el título es cosmético (aceptable); lo que no puede pasar es que rompa el shell.
+7. **`depends_on`**: **NO** se proyecta como dependencia nativa de GitHub; como mucho, una nota de texto en el body de la sub-issue.
+
+**Exactly-once (límite honesto)**: si el proceso muere **entre** crear la issue y escribir `issue:` en el `.md`, un re-run no puede saber que ya existe y **podría** crear una segunda. Se minimiza escribiendo `issue:` inmediatamente (paso 4); el residual lo detecta/limpia `/doctor`. Declarado como límite best-effort.
+
+**Fronteras de tamaño del plan**: `0` tareas → solo el padre, sin sub-issues; `100` → 100 sub-issues; **`101+`** supera el tope de GitHub (**100 sub-issues/padre**) → **avisa** (límite conocido), no falles en silencio.
+
+> **Fuera de alcance de estos pasos**: la proyección del **estado** de una tarea (arranque/cierre) vive en `task-lifecycle`; el cierre de la issue **PADRE** al completar el plan y la disciplina de **concurrencia** en el "Ciclo de vida del plan"; la **reconciliación** md↔GitHub en `/doctor`.
+
 ## Paso 6 — Handoff al flujo TDD
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.

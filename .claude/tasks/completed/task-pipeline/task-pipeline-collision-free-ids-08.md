@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-08
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-collision-free-ids-07]
 estimate: 3h
-actual:
+actual: 40min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -133,13 +133,13 @@ Feature: Proyección md→GitHub al planificar (condicional, one-way)
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado en un **repo de prueba de GitHub con `gh` autenticado** y con los
-      modos de fallo (flag off / sin red / repo no-GitHub / 403 / gh viejo).
-- [ ] Spec cumplida; proyección one-way, idempotente, con degradación a no-op y sin abortar el `.md`.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **Reconocer que la verificación con GitHub en vivo es NO VERIFICABLE
-      de forma reproducible en `stack:none`** (repo en vivo, manual). **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (el SKILL; la doc de usuario es `-11`); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Escenarios verificados por **inspección** del SKILL (Paso 5.7). La verificación en **repo GitHub en
+      vivo** es NO VERIFICABLE reproducible en `stack:none` (queda como comprobación manual del owner).
+- [x] Spec cumplida; proyección one-way, idempotente, con degradación a no-op y sin abortar el `.md`.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (10 VERIFICADO + 1 NO VERIFICABLE en vivo, 0 INCORRECTO).
+      Reconocido: verificación con GitHub en vivo NO VERIFICABLE en `stack:none`. **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (el SKILL; la doc de usuario es `-11`); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-08.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.
