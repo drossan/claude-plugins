@@ -165,6 +165,44 @@ que inyecta una directiva mínima de compresión.
   (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
   probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
 
+## GitHub tracking (opcional)
+
+Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Issues/Projects para tener orden global glanceable + tablero. El `.md` sigue siendo la **única fuente de verdad**; GitHub es una **proyección one-way** (`.md` → GitHub). Se activa con `features.github-tracking.enabled: true` en `.claude/task-pipeline.yml`.
+
+**Setup:**
+
+- `gh auth login` con scope `repo` (escritura de issues). Requiere una versión **reciente** de `gh` (sub-issues + `gh issue create --parent`).
+- Sin `gh`, sin red, sin auth de escritura o repo no-GitHub → **no-op** (el flujo local no cambia).
+
+**Config (`features.github-tracking`):**
+
+| Clave | Qué es |
+|---|---|
+| `enabled` | `true` (booleano) lo activa. Ausente / `false` / valor no-canónico (`"true"`, `yes`, `1`, …) → **off** (fail-safe). |
+| `repo` | `owner/name`; default = el repo actual (`gh repo view --json nameWithOwner`). Fíjalo si hay varios remotos. |
+| `project` | nº de Project v2 para el tablero (campos de estado). Opcional. |
+| `issue-type-plan` | issue type del plan (se define en el ORG); sin él → label `plan`. Avanzado, opcional. |
+
+**Mapeo:**
+
+- **Plan → issue PADRE**; **Task → SUB-ISSUE** (`gh issue create --parent`).
+- **Orden global = número de issue** (lo asigna el servidor, monótono, sin colisión).
+- **Estados**: `active` → In Progress · `done` → issue cerrada / Done · `cancelled` → cerrada "not planned" · `blocked` → label `blocked`.
+- **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`); GitHub **no** la auto-cierra al cerrar sus sub-issues.
+- `depends_on` **no** se proyecta como dependencia nativa (a lo sumo nota de texto en el body).
+
+**Límites (honestos):**
+
+- La **jerarquía en Projects** (tabla padre/sub-issue) está en **public preview**, no en el Roadmap.
+- Techos de GitHub: **100 sub-issues por padre** y **8 niveles** de anidamiento.
+- **No hay épica nativa**: el "padre" es una issue normal con sub-issues.
+
+**Riesgos aceptados** (el owner mantuvo la feature conociéndolos; ver el Plan change log):
+
+- **Proyección concurrente (T-B)**: dos devs proyectando el **mismo plan** en ramas separadas crean **padres duplicados** + `issue:` en conflicto al mergear. **No se previene en duro.** Mitigación: **una sola rama proyecta el plan**; `/doctor` lo detecta (reconciliación).
+- **Sync best-effort (C3)**: la reconciliación de `/doctor` **no garantiza** consistencia (paginación, rate-limit, auth caída, issue borrada a mano); ante duda **reporta** y deja la decisión al humano.
+- **Huérfanas al desactivar (I3)**: con el flag `off` la reconciliación **no corre**, así que **no** detecta huérfanas. Por eso: **reconcilia ANTES de desactivar** `github-tracking`; las issues huérfanas que queden tras apagarlo se resuelven a mano. (Misma historia que la categoría de reconciliación de `/doctor`.)
+
 ## Bootstrap del repo (tras instalar)
 
 Dos mecanismos, complementarios:

@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-11
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 4
 depends_on: [task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09, task-pipeline-collision-free-ids-10, task-pipeline-collision-free-ids-12]
 estimate: 2h
-actual:
+actual: 30min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -92,12 +92,12 @@ Feature: Documentación de la integración GitHub opcional
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado por inspección.
-- [ ] Spec cumplida; límites y riesgos documentados sin sobreventa (honesty-rules); historia de huérfanas
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Cada escenario Gherkin verificado por inspección + `grep`.
+- [x] Spec cumplida; límites y riesgos documentados sin sobreventa (honesty-rules); historia de huérfanas
       coherente con `-10`.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker` superado. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (README + flujo + catálogos); **histórico** en
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (8/8 VERIFICADO). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (README + flujo + catálogos); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-11.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.

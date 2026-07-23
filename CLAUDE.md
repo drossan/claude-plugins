@@ -56,8 +56,11 @@ La versión vive en `task-pipeline/.claude-plugin/plugin.json` (es la que resuel
   (`/plan-task` es el orquestador; el flujo canónico completo está en `docs/guides/task-lifecycle.md`);
   **`pipeline-usage`** es analítica de uso **on-demand** (tokens/modelo/tiempo por fase y subagente), no
   una fase del pipeline. Frontera clave: **`task-init`** bootstrapea un repo desde cero; **`doctor`**
-  realinea un repo **ya adoptado** con la versión actual del plugin. Además, el modo **caveman**
-  (`features.caveman`, opt-in default off) comprime el output vía hook `UserPromptSubmit`.
+  realinea un repo **ya adoptado** con la versión actual del plugin (incluye detección de **ids de
+  tarea/plan duplicados** y **reconciliación best-effort md↔GitHub**). Además, el modo **caveman**
+  (`features.caveman`, opt-in default off) comprime el output vía hook `UserPromptSubmit`; y el **tracking
+  GitHub** opcional (`features.github-tracking`, opt-in default off) proyecta plan→issue padre y
+  tarea→sub-issue (one-way md→GitHub), tejido como pasos condicionales en `/plan-task` y el lifecycle.
 - **Hook `SessionStart` → `hooks/bootstrap.sh`**: en repos **ya adoptados** asegura el esqueleto y restaura
   ficheros materializados si faltan (`task-lifecycle.md`, `task-pipeline.yml`, `honesty-rules.md`). En
   repos **no adoptados es un no-op silencioso** — el plugin es global, no debe ensuciar repos ajenos.

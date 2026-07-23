@@ -43,6 +43,10 @@ Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
 son configurables** — son por diseño.
 
+> **`features.github-tracking`** (proyección opcional a GitHub Issues) tiene su guía completa —setup,
+> config, mapeo plan→padre / task→sub-issue, ciclo de vida del padre, límites y riesgos aceptados— en el
+> README del plugin → [GitHub tracking (opcional)](../../task-pipeline/README.md#github-tracking-opcional).
+
 La sección `models:` fija el modelo de las fases con subagente (`design-review`,
 `scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
 en el README del plugin.

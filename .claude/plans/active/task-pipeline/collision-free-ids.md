@@ -176,7 +176,7 @@ mixto de ids opacos: no rompe nada). Sin cambios de carpetas: el filename ya lle
 - [x] `task-pipeline-collision-free-ids-09` (P3) — Proyección de estado de TAREA (arranque + cierre)  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08
 - [x] `task-pipeline-collision-free-ids-12` (P3) — Ciclo de vida del PLAN en GitHub: cierre de issue padre + proyección concurrente  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09
 - [x] `task-pipeline-collision-free-ids-10` (P3) — Reconciliación best-effort en `/doctor`  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-12
-- [ ] `task-pipeline-collision-free-ids-11` (P4) — Doc de la integración GitHub (README + guía de equipo + catálogos)  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09, task-pipeline-collision-free-ids-10, task-pipeline-collision-free-ids-12
+- [x] `task-pipeline-collision-free-ids-11` (P4) — Doc de la integración GitHub (README + guía de equipo + catálogos)  · depends_on: task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-09, task-pipeline-collision-free-ids-10, task-pipeline-collision-free-ids-12
 - [ ] `task-pipeline-collision-free-ids-06` (P5) — Release: version bump + CHANGELOG + coherencia descriptions  · depends_on: -01, -02, -03, -04, -05, -07, -08, -09, -10, -11, -12
 
 ## Registro de cambios del plan
