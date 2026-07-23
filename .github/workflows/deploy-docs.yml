@@ -1,0 +1,55 @@
+# Construye el portal VitePress (website/) y lo despliega a GitHub Pages.
+#
+# OJO (acción manual del owner): Pages debe estar encendido a mano en
+# Settings → Pages → Source: "GitHub Actions" (requiere permiso admin). Sin eso, este
+# workflow construye pero el deploy no publica.
+name: Deploy docs to Pages
+
+on:
+  push:
+    tags: ['v*']          # deploy en cada release SemVer (v0.12.1, v0.13.0, …)
+  workflow_dispatch: {}   # deploy manual sin cortar un tag
+
+# Permisos mínimos para publicar en Pages vía OIDC.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un despliegue a la vez; no cancelar el que esté en curso.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: website/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm docs:build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/.vitepress/dist
+
+  deploy:
+    needs: build          # el deploy solo corre si el build tuvo éxito
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

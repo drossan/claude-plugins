@@ -157,7 +157,7 @@ tras proyectar.
 - [x] `task-pipeline-docs-portal-and-tracking-02` (P1) — Alinear docs con el código (5 hallazgos) + bump `0.12.1` + CHANGELOG (el hallazgo plugin-source)  · depends_on: —  · **done** (issue #13 cerrada, Project→Done)
 - [x] `task-pipeline-docs-portal-and-tracking-03` (P2) — Scaffold VitePress (pnpm) en `website/` + config `base`/`srcDir`/`.gitignore`  · depends_on: —  · **done** (VitePress 1.6.4, build verde; issue #14 cerrada)
 - [ ] `task-pipeline-docs-portal-and-tracking-04` (P2) — Contenido curado + IA/nav + frontera anti-drift (enlaza al spec canónico)  · depends_on: 02, 03
-- [ ] `task-pipeline-docs-portal-and-tracking-05` (P2) — Workflow Actions de deploy a Pages (`on: push tags: ['v*']` + dispatch)  · depends_on: 03
+- [x] `task-pipeline-docs-portal-and-tracking-05` (P2) — Workflow Actions de deploy a Pages (`on: push tags: ['v*']` + dispatch)  · depends_on: 03  · **done** (actionlint OK; issue #16 cerrada)
 - [ ] `task-pipeline-docs-portal-and-tracking-06` (P3) — Wire-up: enlaces README↔web + **carve-out narrativa de stack (#4)** + coherencia final + runbook consolidado (incl. footgun `base` #6)  · depends_on: 04, 05
 
 **Primera recomendada**: `-01` (desbloquea la auto-proyección del plan), luego `-02`.
