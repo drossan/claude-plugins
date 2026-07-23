@@ -23,10 +23,10 @@
 >
 > 1. Confirmar que la tarea está en `.claude/tasks/active/task-pipeline/<task-id>.md` con
 >    `status: active` y que **todas** sus `depends_on` están en `done`. Si no → **PARAR y avisar**.
-> 2. Confirmar que estamos en la rama del plan `plan/task-pipeline/grilling-and-model-routing`
+> 2. Confirmar que estamos en la rama del plan `plan/task-pipeline/<name-plan>`
 >    (**no** en `main`, que aquí ES la rama de integración — no hay `dev`). Solo **una** tarea `active`
 >    por plan (comparten rama). El arranque del plan hace: `git switch main && git pull` →
->    `git switch -c plan/task-pipeline/grilling-and-model-routing`.
+>    `git switch -c plan/task-pipeline/<name-plan>`.
 > 3. **Verificar el comportamiento con los escenarios Gherkin como criterio de aceptación.**
 >
 >    <!-- ESPECÍFICO DEL PACKAGE: nivel de verificación por artefacto (stack `none`). -->
@@ -55,6 +55,13 @@
 >
 > Marcar verificación como hecha sin haber corrido el hook/skill/inspección correspondiente está prohibido.
 > Si la sesión no puede completar la tarea, queda en `status: blocked` con el progreso en el histórico.
+>
+> **(Opcional, `features.github-tracking`)** Si el repo activa el tracking GitHub y la tarea tiene
+> `issue:`, arrancar/cerrar la tarea **proyecta el estado** a su issue (In Progress / `gh issue close` /
+> label `blocked` / reopen) — ver la tabla en `docs/guides/task-lifecycle.md` ("Cerrar una tarea").
+> Best-effort: si `gh` falla, avisa y **no** bloquees el cambio de `status:` del `.md`. Al completar el
+> **plan**, se cierra la **issue PADRE** (no se auto-cierra sola) — ver "Cerrar un plan". En este repo
+> está **off** por defecto (no-op).
 
 Pega el prompt de abajo como **primer mensaje** de cada sesión nueva.
 
@@ -63,16 +70,16 @@ Pega el prompt de abajo como **primer mensaje** de cada sesión nueva.
 ## Prompt de arranque (copia y pega)
 
 ```
-Voy a ejecutar la tarea task-pipeline-XXX del plan grilling-and-model-routing (task-pipeline).
+Voy a ejecutar la tarea <task-id> del plan <name-plan> (task-pipeline).
 
 Lee en este orden y repórtame en 3-4 líneas el plan que vas a seguir:
 
 1. `.claude/specs/task-pipeline/HOW-TO-START-A-TASK.md` (este fichero).
 2. `docs/guides/task-lifecycle.md` (flujo canónico: estados, ramas, cierre, DoD).
-3. `.claude/plans/active/task-pipeline/grilling-and-model-routing.md` (contexto, objetivos, orden y
+3. `.claude/plans/active/task-pipeline/<name-plan>.md` (contexto, objetivos, orden y
    dependencias de las tareas + su Registro de cambios).
-4. `.claude/tasks/active/task-pipeline/task-pipeline-XXX.md` (la tarea de esta sesión) y
-   `.claude/context/task-pipeline/task-pipeline-XXX.md` (histórico, si existe).
+4. `.claude/tasks/active/task-pipeline/<task-id>.md` (la tarea de esta sesión) y
+   `.claude/context/task-pipeline/<task-id>.md` (histórico, si existe).
 
 OJO STACK: este repo es `stack: none` (skills Markdown + hooks Bash, sin runner ni Stryker). NO hay
 `pnpm test`/`pnpm lint` ni gate de mutation: esos ítems de la DoD son N/A. Los escenarios Gherkin son
@@ -80,24 +87,26 @@ CRITERIOS DE ACEPTACIÓN verificables por inspección / grep / test -d / corrien
 
 REGLAS ESTRICTAS DE LA SESIÓN:
 - GATE (antes de tocar nada): status: active + depends_on en done (si no → PARAR); en la rama
-  plan/task-pipeline/grilling-and-model-routing (main es la integración; no hay dev); una sola tarea active.
+  plan/task-pipeline/<name-plan> (main es la integración; no hay dev); una sola tarea active.
 - Verifica cada escenario Gherkin como criterio de aceptación (no test automatizado).
 - Barrido grep reforzado: sin `grill-me`/`/task`/`skills/task/` vivos como identificador operativo
   (allowlist: atribución + CHANGELOG ≤ 0.8.1 son legítimos).
-- Commits en la rama del plan con `task-pipeline-XXX: <conventional commit>`.
+- Commits en la rama del plan con `<task-id>: <conventional commit>`.
 - Doc actualizada ANTES de cerrar: doc técnica/contexto + histórico de la tarea (TSDoc = N/A aquí).
 
 Al terminar:
 - **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre `fact-checker` sobre las
   afirmaciones de la sesión; un `INCORRECTO` bloquea hasta corregir (`NO VERIFICABLE` = aviso a reconocer).
-- Cierra el histórico en `.claude/context/task-pipeline/task-pipeline-XXX.md` (resumen, decisiones +
+- Cierra el histórico en `.claude/context/task-pipeline/<task-id>.md` (resumen, decisiones +
   porqué, verificación corrida + resultado, docs actualizadas + motivo, ficheros/commits, tiempo real, follow-ups).
 - Mueve el task a `.claude/tasks/completed/task-pipeline/`, `status: done`, rellena `actual:` y bump `updated:`.
 - Marca `[ ]`→`[x]` de la tarea en el plan y bump su `updated:`.
 - Reporta cambios y la siguiente tarea recomendada según el orden del plan.
 ```
 
-Sustituye `task-pipeline-XXX` por el id de la tarea (001–004).
+Sustituye `<task-id>` (= `<plan-id>-<nn>`, con `<plan-id> = <package>-<name-plan>` y `<nn>`
+correlativo del plan desde `01`) y `<name-plan>` por los del plan activo. Los ids legacy con el
+esquema anterior (`task-pipeline-001`…`012`) conviven y no se renumeran.
 
 ---
 
@@ -105,7 +114,7 @@ Sustituye `task-pipeline-XXX` por el id de la tarea (001–004).
 
 Este repo aún **no tiene** `.claude/specs/task-pipeline/<artefacto>.md` ni `.claude/specs/general/`. El
 "contrato" de cada tarea vive en su propia sección **`## Spec`** y **`## Scenarios (Gherkin)`**, y el
-plan (`grilling-and-model-routing.md`) como referencia global. Si en el futuro se extraen specs
+plan (`<name-plan>.md`) como referencia global. Si en el futuro se extraen specs
 reutilizables (p.ej. convenciones de SKILL.md, de hooks Bash), créalas en `.claude/specs/task-pipeline/`
 y enlázalas aquí.
 

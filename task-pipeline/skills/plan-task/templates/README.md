@@ -25,10 +25,12 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 
 ## Placeholders
 
-Los `<package>`, `<name-plan>`, `<task-id>`, `<nnn>`, `YYYY-MM-DD` y los bloques
-marcados `ESPECÍFICO DEL PACKAGE` se sustituyen al materializar. El `task.md`
-exige siempre la sección `## Scenarios (Gherkin)` (fuente 1:1 de los tests); si la
-tarea no produce código testeable, se justifica ahí cómo se verifica.
+Los `<package>`, `<name-plan>`, `<plan-id>` (= `<package>-<name-plan>`), `<task-id>`
+(= `<plan-id>-<nn>`, con `<nn>` correlativo del plan desde `01` — **no** un contador
+global del package), `YYYY-MM-DD` y los bloques marcados `ESPECÍFICO DEL PACKAGE` se
+sustituyen al materializar. El `task.md` exige siempre la sección
+`## Scenarios (Gherkin)` (fuente 1:1 de los tests); si la tarea no produce código
+testeable, se justifica ahí cómo se verifica.
 
 ## Supuestos del plugin
 

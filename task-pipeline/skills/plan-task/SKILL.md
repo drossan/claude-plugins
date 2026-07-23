@@ -36,6 +36,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+| `features.github-tracking` | bloque; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD: proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
 
 **`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
 
@@ -89,6 +90,16 @@ Invoca la skill **`grilling`** sobre el plan. Itera hasta que sobreviva el inter
 
 Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` desde la plantilla **`templates/task.md`** (junto a este skill; ábrela con Read), que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
 
+### Asignación del `<task-id>` (determinista, plan-scoped)
+
+El id de tarea es **`<task-id> = <plan-id>-<nn>`** (`<plan-id> = <package>-<name-plan>`; ver la definición y la acotación de `<name-plan>` en `docs/guides/task-lifecycle.md`, que no repito aquí). Deriva el `<nn>` así:
+
+- **`<nn>` = (máximo `<nn>` existente EN EL PLAN) + 1**, empezando en **`01`** para la primera tarea de un plan nuevo. Formato de 2 dígitos con cero a la izquierda (`01`, `02`, …).
+- **Cuenta sobre TODAS las tareas del plan, en TODOS sus estados** (`pending` + `active` + `completed` + `cancelled`). **Nunca reutilices** el `<nn>` de una tarea `cancelled` o `completed`: si lo reusas, colisionas dentro del propio plan al re-planificar. (Ej.: plan con `01`, `02` `cancelled`, `03` `completed` → la siguiente es **`04`**, no `02`.)
+- **NO cuentes sobre "el último número del package"** ni sobre un contador global: ese es exactamente el bug que causa las colisiones entre planes en paralelo. El espacio de numeración es **el plan**, no el package.
+- **Convivencia con ids legacy**: los ids opacos del esquema anterior (`<package>-<nnn>`) **no se renumeran**; un histórico mixto (unos plan-scoped, otros legacy) es lo esperado y no hay que "arreglarlo".
+- **Residual honesto (no lo prometas resuelto)**: esta regla **no** previene el caso "dos ramas del mismo plan en paralelo" — ambas ven el mismo máximo y asignan el mismo `<nn>`. Es el límite conocido del esquema (lo prevendría un sufijo aleatorio, descartado). Mitigación: "una rama = un plan / una sola tarea `active` por plan", su **detección** en `/doctor` (ids duplicados) y la **guía de trabajo en equipo** del README del plugin.
+
 ### Gherkin = fuente de los tests
 
 Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre). Aplica las **reglas de la plantilla** (no las repito aquí): **declarativo > imperativo** (el `When` es acción de dominio, no pasos de UI/llamadas internas — es lo que evita tests frágiles a refactors), **un escenario = un comportamiento**, **disciplina G/W/T**, y **`Scenario Outline`** para fronteras/clases de equivalencia. Si `features.tdd` es `false`, los escenarios siguen siendo útiles como **spec de comportamiento** (criterio de aceptación), pero no se exige un test por cada uno.
@@ -105,6 +116,28 @@ Feature: <capacidad de la tarea>
 ## Paso 5.5 — Endurecer escenarios (QA, subagente fresco)
 
 Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
+
+## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)
+
+**Pasos CONDICIONALES**: se ejecutan **solo si** `features.github-tracking.enabled` es `true` (booleano) **y** `gh` está instalado y autenticado con **permiso de escritura** **y** el repo es de GitHub. Si falta cualquiera → **no-op** (silencioso salvo un aviso breve): el `.md` es la verdad y el plan se materializa igual. Es una **proyección one-way** (`.md` → GitHub): plan → issue **PADRE**, tarea → **SUB-ISSUE**. Corre una vez el set de tareas es definitivo (tras Paso 5.5).
+
+> **Degradación (C3, best-effort).** En TODOS los modos de fallo —`gh` ausente/viejo (sin `--parent`), sin red, repo no-GitHub, `gh` sin auth, **authed sin permiso de escritura (403)**, rate-limit/error a mitad de bucle— **avisa y continúa**: **nunca** abortes la materialización del `.md`. La proyección puede quedar **parcial**; el re-run la reanuda de forma idempotente por `issue:`. Este playbook **no garantiza** sync remoto (paginación, rate-limit, auth, issue borrada): es **best-effort**; la reconciliación vive en `/doctor`.
+
+1. **Resolver `repo`**: usa `features.github-tracking.repo` si está; si no, el remoto por defecto: `gh repo view --json nameWithOwner -q .nameWithOwner`. Con **múltiples remotos** (fork `origin` vs `upstream`) se usa el que resuelva `gh repo view`; **recomienda fijar `repo`** en la config para desambiguar.
+2. **Label / issue-type del plan**: si vas a etiquetar el padre con `--label plan`, **crea la label si no existe** (`gh label create plan …`); si no se puede crear, crea la issue **sin** label + aviso (degrada, no abortes). Si `issue-type-plan` está configurado y disponible en el ORG, úsalo en su lugar.
+3. **Plan → issue PADRE**: si el `.md` del plan **no** tiene `issue:` aún, `gh issue create` (título = título del plan; body = resumen + **link al `.md`**). Escribe `issue: <n>` en el frontmatter del plan **inmediatamente**. **Si el `create` del padre FALLA → NO crees sub-issues sueltas**: aborta la proyección del plan (aviso); el `.md` queda materializado igual.
+4. **Tarea → SUB-ISSUE**: por cada tarea cuyo `.md` **no** tenga `issue:`, `gh issue create --parent <nº-padre> …` y escribe `issue: <n>` en su frontmatter **inmediatamente tras** crearla (minimiza la ventana del exactly-once).
+5. **Idempotencia (re-sync no duplica)**: si un `.md` **ya** tiene `issue:`, **no** crees otra; actualiza la existente con `gh issue edit`. Si el número **ya no existe** en GitHub (borrada a mano) → **avisa** y deja la reconciliación a `/doctor` (**no** recrees a ciegas).
+6. **Títulos adversarios**: construye el comando de forma **segura** ante títulos con comillas, backticks, `$` o markdown — pasa el título como **argumento** (`--title` con el valor entre comillas), nunca interpolado en una cadena de shell. El markdown en el título es cosmético (aceptable); lo que no puede pasar es que rompa el shell.
+7. **`depends_on`**: **NO** se proyecta como dependencia nativa de GitHub; como mucho, una nota de texto en el body de la sub-issue.
+
+**Exactly-once (límite honesto)**: si el proceso muere **entre** crear la issue y escribir `issue:` en el `.md`, un re-run no puede saber que ya existe y **podría** crear una segunda. Se minimiza escribiendo `issue:` inmediatamente (paso 4); el residual lo detecta/limpia `/doctor`. Declarado como límite best-effort.
+
+**Concurrencia — no duplicar el PADRE (T-B)**: antes de crear el padre (paso 3), si el `.md` del plan **ya** trae `issue:` (p.ej. traído por `pull`/merge de la rama donde se proyectó primero), **reutilízalo** — NO crees otro. **Límite conocido (no se previene en duro)**: dos ramas **frescas** del mismo plan, ambas con el flag on, proyectadas por separado, crean **padres duplicados** + `issue:` en conflicto al mergear (es el residual "mismo plan, dos ramas" extendido a la proyección). Mitigación: **una sola rama proyecta el plan**; lo detecta `/doctor` (reconciliación) y lo documenta la guía de usuario.
+
+**Fronteras de tamaño del plan**: `0` tareas → solo el padre, sin sub-issues; `100` → 100 sub-issues; **`101+`** supera el tope de GitHub (**100 sub-issues/padre**) → **avisa** (límite conocido), no falles en silencio.
+
+> **Fuera de alcance de estos pasos**: la proyección del **estado** de una tarea (arranque/cierre) vive en `task-lifecycle`; el cierre de la issue **PADRE** al completar el plan y la disciplina de **concurrencia** en el "Ciclo de vida del plan"; la **reconciliación** md↔GitHub en `/doctor`.
 
 ## Paso 6 — Handoff al flujo TDD
 

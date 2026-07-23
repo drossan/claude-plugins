@@ -30,7 +30,7 @@ Mira, en read-only, si el repo **ha adoptado** la convención. Marcadores (cualq
 
 ## Fase 1 — Verificación (READ-ONLY, nunca edita)
 
-Recorre estas cuatro categorías **sin tocar ningún fichero** y construye una **lista numerada de
+Recorre estas categorías **sin tocar ningún fichero** y construye una **lista numerada de
 problemas**. Para cada uno anota: qué es, dónde (fichero:línea), y quién lo posee (repo consumidor vs
 artefacto del plugin — ver "Propiedad" abajo).
 
@@ -48,6 +48,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    ausencia **no** es drift (default `off`, como cualquier comportamiento opt-in); doctor
    puede **ofrecer** añadirlo comentado como nicety, pero **nunca** lo reporta como problema
    bloqueante. El hook `caveman.sh` que lo consume es **plugin-owned** (solo-reporte).
+   Lo mismo con **`features.github-tracking`** (bloque opt-in, default off — T-E): su **ausencia
+   no es drift**; doctor puede ofrecerlo comentado como nicety, **nunca** reportarlo como problema.
+   La lógica que lo consume (los pasos condicionales de `/plan-task` y del lifecycle) es
+   **plugin-owned**; la **reconciliación** del drift md↔GitHub es una categoría aparte (ver abajo).
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
@@ -72,6 +76,35 @@ artefacto del plugin — ver "Propiedad" abajo).
    **No** vigiles `.claude/specs/general/coding-standards.md` ni las otras specs generales
    (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y su ausencia
    **no es drift**.
+7. **Ids de tarea/plan duplicados** (repo-owned) — red de seguridad del esquema de id plan-scoped
+   (`<task-id> = <plan-id>-<nn>`; ver `docs/guides/task-lifecycle.md`). El id es único por diseño, pero el
+   residual honesto (mismo `<name-plan>`, o dos ramas extendiendo el mismo plan) puede colar duplicados al
+   mergear. Recorre `.claude/tasks/**` y `.claude/plans/**` y **reporta cualquier `id:` que aparezca en más
+   de un fichero, nombrando a TODOS los implicados** (no solo dos). Cubre:
+   - **Ids de tarea duplicados** (el caso `…-01.md` que dos ramas crean a la vez), **incluido** el mismo
+     `id:` en **dos carpetas de estado distintas** (p.ej. `pending/` y `completed/` tras un merge).
+   - **Ids de plan duplicados** (dos ficheros de plan con el mismo `id:`: mismo `<name-plan>`, dos ramas).
+   - **`filename` ≠ `id:`** del propio fichero: rompe el invariante "filename = id"; repórtalo como aviso.
+   - **Robustez de parseo**: un `.md` **sin `id:`** o con **frontmatter YAML roto** se reporta como **no
+     parseable** (aviso) y el check **sigue** — no aborta ni inventa un duplicado (mismo criterio que
+     "Config malformada" abajo). Los ids **legacy** únicos entre sí (`<package>-<nnn>`) **no** disparan nada.
+8. **Reconciliación md↔GitHub** (repo-owned, **best-effort** — **solo si** `features.github-tracking.enabled`
+   **y** `gh` disponible/autenticado). Detecta el drift entre los `.md` (fuente de verdad) y su proyección
+   GitHub (la proyección la tejen `/plan-task` y el ciclo de vida del plan). Casos a reportar:
+   - `.md` de tarea `done` (o `cancelled`) con su issue **open**.
+   - `.md` de **plan** `completed` con su issue **PADRE open** (mirror del cierre del padre del lifecycle).
+   - `.md` con `issue: <n>` cuyo número **no existe** (borrada) o resuelve a un **repo distinto** del `repo`
+     de referencia (config `repo` o `gh repo view`) — "otro repo" solo es detectable con esa referencia.
+   - `.md` de tarea **sin** `issue:` con el flag on (proyección **pendiente**).
+   - **Huérfanas (I3)**: sub-issue bajo el padre del plan **sin** `.md` que la gobierne.
+   - **Degradación (4 casos)**: flag off / sin red / repo no-GitHub / **flag on pero `gh` sin auth** → esta
+     categoría **se salta con gracia** (aviso, no crash); doctor sigue con sus checks locales.
+   - **Límite best-effort (C3)**: **no** garantiza consistencia — no maneja de forma fiable la paginación
+     (tope **100 sub-issues/padre**), rate-limit ni auth caída; **ante duda, reporta** y deja la decisión al
+     humano. No prometas sync fuerte.
+   - **Desactivar el flag y huérfanas (I3, historia coherente con la guía de usuario)**: con el flag off
+     esta categoría **no corre**, así que **no** detecta huérfanas. Por eso la regla es **reconciliar ANTES
+     de desactivar** `github-tracking`; las huérfanas que queden tras apagarlo se resuelven a mano.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -126,6 +159,20 @@ añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
 `CLAUDE.md` **no** se aplica: solo se sugiere).
+
+**Ids duplicados / `filename` ≠ `id:` (no mecánico → aviso, regla 4):** renumerar un id **no** es un fix
+seguro — rompería los `depends_on` y los enlaces que apuntan a él, y hay que elegir cuál de los ficheros en
+conflicto cambia. Trátalo como **aviso**: nombra los ficheros implicados y **sugiere** la resolución
+(renumerar el `<nn>` más nuevo **o** renombrar el `<name-plan>`, actualizando `depends_on`/enlaces), **sin
+auto-editar**. **Aviso extra (T-H)**: si alguna de las tareas en conflicto **ya tiene `issue:`** (proyectada
+en GitHub por `features.github-tracking`), advierte que renumerar **desincroniza** el `.md` de su issue → hay
+que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
+
+**Reconciliación md↔GitHub (solo con el flag on):** re-proyecta **desde el `.md`** (la fuente de verdad):
+crear la issue que falta, cerrar la que quedó `open`, con **diff + aprobación** problema a problema. Lo **no
+mecánico** —**huérfana**, `repo` cambiado, número **inexistente**— es **aviso**, no auto-edición. Si `gh` no
+está disponible/autenticado, **sáltala con gracia** (aviso) y sigue con los checks locales; es **best-effort**
+(no promete consistencia — ver el límite C3 en Fase 1).
 
 ## Idempotencia
 

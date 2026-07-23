@@ -36,6 +36,7 @@ skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
 | `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
+| `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
@@ -60,9 +61,32 @@ son configurables** — son por diseño.
 ```
 
 - `<package>` es el nombre de un workspace del repo.
-- `<task-id>` es `<package>-<nnn>` (p.ej. `api-007`). Estable para siempre, aunque
-  cambie la prioridad.
-- `<name-plan>` es kebab-case (p.ej. `bootstrap-foundation`).
+- `<name-plan>` es kebab-case **sin sufijo numérico ambiguo** (p.ej.
+  `bootstrap-foundation`, **no** `phase-01`): el `<task-id>` lo embebe y debe poder
+  separarse de forma inequívoca (ver abajo).
+- `<plan-id>` es **`<package>-<name-plan>`** (p.ej. `api-bootstrap-foundation`). Único
+  por plan y ya conocido por `/plan-task`.
+- `<task-id>` es **`<plan-id>-<nn>`** (p.ej. `api-bootstrap-foundation-01`), donde
+  `<nn>` es un **correlativo DENTRO del plan desde `01`** — el **último segmento de 2
+  dígitos** del id. **NO es un contador global del package**: el espacio de nombres del
+  id coincide con la unidad de paralelismo (plan = rama), de modo que dos planes
+  distintos nunca generan ids que colisionen. Estable para siempre, aunque cambie la
+  prioridad.
+  - **Parseo inequívoco (por qué `<name-plan>` no acaba en número)**: como el id es
+    `<plan-id>-<nn>` y `<nn>` son los **2 últimos dígitos**, un `<name-plan>` acabado en
+    número lo hace irrecuperable — `name-plan = phase-01` daría `api-phase-01-01`, donde
+    no se distingue si el plan es `phase` (tarea `01-01`) o `phase-01` (tarea `01`). Por
+    eso el `<name-plan>` va en kebab-case **sin sufijo numérico ambiguo**.
+  - **Formato de `<nn>`**: 2 dígitos con cero a la izquierda desde `01` (`01`, `02`, …,
+    `09`, `10`). A partir de la tarea **100** pasa a 3 dígitos (`100`); mantener el ancho
+    fijo dentro de un tramo preserva el orden lexicográfico (un plan de 100+ tareas suele
+    ser señal de que hay que partirlo).
+  - **Coherencia `plan:` ↔ `id`**: el campo `plan:` del frontmatter de la tarea es el
+    `<name-plan>` y **debe coincidir** con el `<name-plan>` embebido en el `id`.
+  - **Convivencia con ids legacy**: los ids ya creados con el **esquema anterior**
+    (`<package>-<nnn>`, contador global del package — p.ej. `api-001`, `api-012`) son
+    estables y **no se renumeran**; conviven con los nuevos ids plan-scoped (histórico
+    mixto de ids opacos). El esquema nuevo aplica solo a planes/tareas nuevos.
 
 La carpeta es un índice; el `status:` del frontmatter es la fuente de verdad.
 **Nunca muevas un fichero sin actualizar `status:`, ni actualices `status:` sin
@@ -89,8 +113,8 @@ updated: YYYY-MM-DD
 ## Estimación global
 ## Criterios de calidad y verificación
 ## Tasks
-- [ ] `<package>-001` (P1) — <título corto>  · depends_on: —
-- [ ] `<package>-002` (P2) — <título corto>  · depends_on: <package>-001
+- [ ] `<plan-id>-01` (P1) — <título corto>  · depends_on: —
+- [ ] `<plan-id>-02` (P2) — <título corto>  · depends_on: <plan-id>-01
 
 ## Registro de cambios del plan
 - YYYY-MM-DD: creado
@@ -100,9 +124,9 @@ updated: YYYY-MM-DD
 
 ````markdown
 ---
-id: <package>-<nnn>
+id: <plan-id>-<nn>        # <plan-id> = <package>-<name-plan>; <nn> correlativo del plan desde 01 (2 díg.)
 package: <package>
-plan: <name-plan>
+plan: <name-plan>         # = <name-plan> embebido en id (deben coincidir)
 status: pending          # pending | active | blocked | in-review | done | cancelled
 priority: 1
 depends_on: []
@@ -227,6 +251,9 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 2. Mueve la tarea a `.claude/tasks/active/<package>/`, `status: active`, bump `updated`.
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
+5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el estado a su
+   issue → **In Progress** (ver la tabla en "Cerrar una tarea"). Best-effort: si `gh` falla, avisa y
+   sigue; el cambio de `status:` del `.md` **no** se bloquea.
 
 > Cada tarea es una conversación/sesión nueva. Las sesiones futuras reconstruyen
 > el contexto exclusivamente desde el task file + el session log.
@@ -278,10 +305,32 @@ particular:
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
 
+> **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
+> `enabled` **y** la tarea tiene `issue:`. Al cambiar `status:` se proyecta a la issue (one-way,
+> best-effort):
+>
+> | `status:` | Acción sobre la issue |
+> |---|---|
+> | `active` (arranque) | campo de estado del Project → **In Progress** (si hay `project`) |
+> | `done` | `gh issue close`; Project → **Done** |
+> | `cancelled` | `gh issue close --reason "not planned"` |
+> | `blocked` | añadir label `blocked` (+ campo Project si aplica) |
+> | `blocked → active` (desbloqueo) | quitar label `blocked`; Project → **In Progress** |
+> | `done → active` (reapertura) | `gh issue reopen` |
+>
+> **Idempotencia**: cerrar una issue ya cerrada es **no-op** (no error). **Degradación (C3)**: si `gh`
+> falla / sin red / el Project no tiene la opción de estado esperada → **avisa y NO bloquees** el cambio
+> de `status:` del `.md` (el `.md` manda; el drift lo reconcilia `/doctor`). **Flag off o sin `issue:`**
+> → el ciclo de vida es **local puro**, idéntico al default (no se llama a `gh`). El cierre de la issue
+> **PADRE** del plan y la concurrencia viven en "Cerrar un plan".
+
 ## Cerrar un plan
 
 1. Al cerrar la última tarea:
    - Plan → `completed`: mover a `.claude/plans/completed/<package>/`, `status: completed`, bump `updated`.
+   - **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, cierra la **issue PADRE** con
+     `gh issue close` — GitHub **no** la auto-cierra al cerrar las sub-issues. Best-effort (C3): si `gh`
+     falla / sin red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
    - Borra la rama tras el merge.

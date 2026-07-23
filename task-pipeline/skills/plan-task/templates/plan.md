@@ -3,6 +3,7 @@ id: <package>-<name-plan>
 package: <package>
 status: pending          # pending | active | completed | cancelled
 branch: plan/<package>/<name-plan>
+issue:                   # opcional; solo con features.github-tracking — nº de la issue PADRE proyectada (lo escribe /plan-task)
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -52,8 +53,8 @@ hace falta este trabajo.>
 <Lista ordenada por prioridad y dependencias. Cada entrada tiene su archivo en
 `.claude/tasks/pending/<package>/<task-id>.md`. Marca `[x]` al cerrar.>
 
-- [ ] `<package>-001` (P1) — <título corto>  · depends_on: —
-- [ ] `<package>-002` (P2) — <título corto>  · depends_on: <package>-001
+- [ ] `<plan-id>-01` (P1) — <título corto>  · depends_on: —
+- [ ] `<plan-id>-02` (P2) — <título corto>  · depends_on: <plan-id>-01
 
 ## Registro de cambios del plan
 

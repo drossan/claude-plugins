@@ -45,6 +45,31 @@ El plugin NO impone estructura nueva; asume que el repo ya organiza el trabajo a
 docs/guides/task-lifecycle.md                  # flujo canónico (estados, plantillas, DoD)
 ```
 
+## Trabajo en equipo y colisiones de id
+
+El `<task-id>` es **plan-scoped**: `<task-id> = <plan-id>-<nn>` (`<plan-id> = <package>-<name-plan>`, `<nn>` correlativo **dentro del plan** desde `01`). No es un contador global del package. La razón: **el espacio de nombres del id coincide con la unidad de paralelismo**, que aquí es el **plan = rama**. Dos planes distintos = dos espacios de id distintos → **nunca colisionan**.
+
+**Por qué importa.** Con un contador global (`<package>-<nnn>`), dos ramas cortadas del mismo `main` ven el mismo "último número" y asignan el mismo `nnn`; al mergear salta un conflicto **add/add silencioso** (dos `…-013.md` distintos). Con ids plan-scoped eso desaparece salvo el residual de abajo.
+
+**Disciplina de equipo:**
+
+- **Una rama = un plan** (`plan/<package>/<name-plan>`). Todas las tareas del plan caen en esa rama.
+- **Una sola tarea `active` por plan** (comparten rama).
+- `/plan-task` asigna el `<nn>` contando el máximo existente **en el plan** (todos los estados) + 1 — nunca sobre el package.
+
+**Residual honesto (no se previene en duro):**
+
+- **Mismo `<name-plan>` en paralelo** → misma `<plan-id>` → colisiona, pero es **1 conflicto único, evidente y semántico** (el fichero del plan), no la lluvia silenciosa de antes. Lo caza **`/doctor`** (categoría "ids de tarea/plan duplicados").
+- **Dos ramas extendiendo el mismo plan** → ambas ven el mismo máximo `<nn>` y asignan el mismo → colisión **no** prevenida por este esquema (la prevendría un sufijo aleatorio, descartado por el owner). Mitigación: la disciplina de arriba + detección en `/doctor`.
+
+**Cómo se ve en git.** Antes: conflicto **add/add silencioso** (cada rama ignora el número de la otra). Ahora: **1 conflicto único y evidente** en el fichero del plan (o el `.md` de tarea concreto), fácil de reconocer y resolver.
+
+**Cómo resolver una colisión detectada** (por `/doctor` o al mergear):
+
+1. Elige el fichero a cambiar (normalmente el `<nn>` **más nuevo**) y **renumera** su `<task-id>` — **o**, si chocan los planes, **renombra** el `<name-plan>` (y con él la `<plan-id>` de todas sus tareas).
+2. **Actualiza los `depends_on`** de las tareas que apuntaban al id renombrado y **cualquier enlace** que lo referencie (contexto/histórico, sección Tasks del plan).
+3. Renombra también el fichero (filename = id) y su session log en `.claude/context/`.
+
 ## Configuración por repo (`.claude/task-pipeline.yml`)
 
 El pipeline se adapta al repo vía `.claude/task-pipeline.yml`. Las skills lo leen y
@@ -139,6 +164,44 @@ que inyecta una directiva mínima de compresión.
   de herramientas dominan). El pipeline **no puede medir por sí solo** el efecto de caveman
   (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
   probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
+
+## GitHub tracking (opcional)
+
+Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Issues/Projects para tener orden global glanceable + tablero. El `.md` sigue siendo la **única fuente de verdad**; GitHub es una **proyección one-way** (`.md` → GitHub). Se activa con `features.github-tracking.enabled: true` en `.claude/task-pipeline.yml`.
+
+**Setup:**
+
+- `gh auth login` con scope `repo` (escritura de issues). Requiere una versión **reciente** de `gh` (sub-issues + `gh issue create --parent`).
+- Sin `gh`, sin red, sin auth de escritura o repo no-GitHub → **no-op** (el flujo local no cambia).
+
+**Config (`features.github-tracking`):**
+
+| Clave | Qué es |
+|---|---|
+| `enabled` | `true` (booleano) lo activa. Ausente / `false` / valor no-canónico (`"true"`, `yes`, `1`, …) → **off** (fail-safe). |
+| `repo` | `owner/name`; default = el repo actual (`gh repo view --json nameWithOwner`). Fíjalo si hay varios remotos. |
+| `project` | nº de Project v2 para el tablero (campos de estado). Opcional. |
+| `issue-type-plan` | issue type del plan (se define en el ORG); sin él → label `plan`. Avanzado, opcional. |
+
+**Mapeo:**
+
+- **Plan → issue PADRE**; **Task → SUB-ISSUE** (`gh issue create --parent`).
+- **Orden global = número de issue** (lo asigna el servidor, monótono, sin colisión).
+- **Estados**: `active` → In Progress · `done` → issue cerrada / Done · `cancelled` → cerrada "not planned" · `blocked` → label `blocked`.
+- **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`); GitHub **no** la auto-cierra al cerrar sus sub-issues.
+- `depends_on` **no** se proyecta como dependencia nativa (a lo sumo nota de texto en el body).
+
+**Límites (honestos):**
+
+- La **jerarquía en Projects** (tabla padre/sub-issue) está en **public preview**, no en el Roadmap.
+- Techos de GitHub: **100 sub-issues por padre** y **8 niveles** de anidamiento.
+- **No hay épica nativa**: el "padre" es una issue normal con sub-issues.
+
+**Riesgos aceptados** (el owner mantuvo la feature conociéndolos; ver el Plan change log):
+
+- **Proyección concurrente (T-B)**: dos devs proyectando el **mismo plan** en ramas separadas crean **padres duplicados** + `issue:` en conflicto al mergear. **No se previene en duro.** Mitigación: **una sola rama proyecta el plan**; `/doctor` lo detecta (reconciliación).
+- **Sync best-effort (C3)**: la reconciliación de `/doctor` **no garantiza** consistencia (paginación, rate-limit, auth caída, issue borrada a mano); ante duda **reporta** y deja la decisión al humano.
+- **Huérfanas al desactivar (I3)**: con el flag `off` la reconciliación **no corre**, así que **no** detecta huérfanas. Por eso: **reconcilia ANTES de desactivar** `github-tracking`; las issues huérfanas que queden tras apagarlo se resuelven a mano. (Misma historia que la categoría de reconciliación de `/doctor`.)
 
 ## Bootstrap del repo (tras instalar)
 
