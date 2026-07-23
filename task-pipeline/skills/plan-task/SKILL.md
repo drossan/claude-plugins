@@ -1,6 +1,6 @@
 ---
 name: plan-task
-description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grilling → tareas en Gherkin → handoff al flujo TDD → gate de mutation testing. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/plan-task "quiero añadir X"`).
+description: Orquesta el inicio de una tarea/plan de principio a fin — plan mode → plan en pending → grilling → design-review → tareas en Gherkin → scenario-coverage → handoff al flujo TDD → gate de mutation testing → gate de cierre fact-checker. Úsalo cuando el usuario quiera arrancar trabajo nuevo a partir de unas especificaciones (p.ej. `/plan-task "quiero añadir X"`).
 ---
 
 Eres el orquestador del flujo de trabajo del repo. A partir de las especificaciones del usuario (`$ARGUMENTS`), conduces el pipeline hasta dejar las tareas listas para ejecutar en TDD. **No es 100% automático**: hay dos checkpoints humanos no negociables (refinado con `grilling` y aprobación del plan). No los saltes.

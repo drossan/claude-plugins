@@ -28,7 +28,7 @@ Desde cualquier proyecto, añade este marketplace e instala el plugin:
   claude plugin marketplace add drossan/claude-plugins
   claude plugin install task-pipeline@local-plugins
   ```
-- Anclar a una versión/rama (opcional): `/plugin marketplace add drossan/claude-plugins@v0.1.0`
+- Anclar a una versión/rama (opcional): `/plugin marketplace add drossan/claude-plugins@<tag>` (usa un tag SemVer publicado, p.ej. la versión vigente del [CHANGELOG](task-pipeline/CHANGELOG.md))
 - Actualizar tras un cambio publicado: `/plugin marketplace update local-plugins`
 - Listar / habilitar / deshabilitar: `/plugin list`, `/plugin enable task-pipeline`, `/plugin disable task-pipeline`
 
@@ -79,8 +79,9 @@ claude-plugins/
     ├── README.md                 # cómo funciona y qué convención asume
     ├── CHANGELOG.md              # historial de versiones (SemVer)
     ├── hooks/
-    │   ├── hooks.json            # SessionStart → bootstrap.sh
-    │   └── bootstrap.sh          # auto-repara el scaffolding en repos ya adoptados
+    │   ├── hooks.json            # SessionStart → bootstrap.sh · UserPromptSubmit → caveman.sh
+    │   ├── bootstrap.sh          # auto-repara el scaffolding en repos ya adoptados
+    │   └── caveman.sh            # compresión opt-in del output (modo caveman)
     └── skills/
         ├── task-init/SKILL.md
         ├── plan-task/SKILL.md    # + templates/ (semillas materializables)
@@ -89,7 +90,8 @@ claude-plugins/
         ├── grilling/SKILL.md
         ├── design-review/SKILL.md
         ├── scenario-coverage/SKILL.md
-        └── fact-checker/SKILL.md
+        ├── fact-checker/SKILL.md
+        └── pipeline-usage/SKILL.md
 ```
 
 ## Portabilidad de las skills

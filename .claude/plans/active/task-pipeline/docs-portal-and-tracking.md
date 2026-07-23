@@ -154,7 +154,7 @@ tras proyectar.
 ## Tasks
 
 - [x] `task-pipeline-docs-portal-and-tracking-01` (P1) — Activar github-tracking (Issues) en el YAML + label `plan` + runbook de setup (scope Projects, Project v2, Pages)  · depends_on: —  · **done** (issue #12 cerrada, Project→Done)
-- [ ] `task-pipeline-docs-portal-and-tracking-02` (P1) — Alinear docs con el código (5 hallazgos) + bump `0.12.1` + CHANGELOG (el hallazgo plugin-source)  · depends_on: —
+- [x] `task-pipeline-docs-portal-and-tracking-02` (P1) — Alinear docs con el código (5 hallazgos) + bump `0.12.1` + CHANGELOG (el hallazgo plugin-source)  · depends_on: —  · **done** (issue #13 cerrada, Project→Done)
 - [ ] `task-pipeline-docs-portal-and-tracking-03` (P2) — Scaffold VitePress (pnpm) en `website/` + config `base`/`srcDir`/`.gitignore`  · depends_on: —
 - [ ] `task-pipeline-docs-portal-and-tracking-04` (P2) — Contenido curado + IA/nav + frontera anti-drift (enlaza al spec canónico)  · depends_on: 02, 03
 - [ ] `task-pipeline-docs-portal-and-tracking-05` (P2) — Workflow Actions de deploy a Pages (`on: push tags: ['v*']` + dispatch)  · depends_on: 03

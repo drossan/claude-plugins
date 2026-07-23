@@ -17,8 +17,9 @@ Hoy hay **un solo plugin: `task-pipeline`** (en `task-pipeline/`).
 
 ## Stack: no hay harness de tests (importante)
 
-`.claude/task-pipeline.yml` declara `stack: none`: los entregables son **skills en Markdown y hooks en
-Bash**. **No existe** `pnpm`/`npm test`/`lint`/typecheck ni Stryker en este repo. Consecuencias directas:
+`.claude/task-pipeline.yml` declara el stack real del repo (`language: other`,
+`package-manager`/`test-runner`/`mutation-tool: none`): los entregables son **skills en Markdown y hooks en
+Bash**. **No existe** `pnpm`/`npm test`/`lint`/typecheck ni Stryker para el pipeline. Consecuencias directas:
 
 - No hay comando de "build/lint/test" ni "correr un test único". Si necesitas verificar un cambio, se hace
   **corriendo la skill/hook** o por inspección, no con un runner.

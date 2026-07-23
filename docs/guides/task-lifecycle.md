@@ -9,6 +9,14 @@ el **Registro de cambios** del plan afectado.
 > plantilla. Ajústalo a las particularidades del repo (lista de packages, runner
 > de tests, comandos) pero conserva el esqueleto: estados, ramas, gates y DoD.
 
+> **Adaptado a ESTE repo** (source del plugin `task-pipeline`):
+> - **Rama de integración = `main`** (no hay `dev`). Las ramas de feature son `plan/<package>/<name-plan>`
+>   y se cortan **desde `main`**.
+> - **Stack = `none`** (entregables: Markdown + Bash). Los comandos concretos que aparecen abajo
+>   (`pnpm test`/`lint`, Stryker, TSDoc, `pnpm changeset`) son **N/A aquí**; la verificación es por
+>   **inspección / `grep` / `test -d` / correr la skill o el hook**. Los ítems de **TDD** y **gate de
+>   mutation** de la DoD no aplican; **`fact-checker`** y los dos checkpoints humanos **sí**.
+
 ## Configuración del repo (`.claude/task-pipeline.yml`)
 
 Algunas fases del pipeline son **opcionales y configurables por repo** en
@@ -218,11 +226,10 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 ## Arrancar un plan
 
 1. Mueve el plan a `.claude/plans/active/<package>/`, `status: active`, bump `updated`.
-2. Abre la rama de feature **desde la rama de integración** (p.ej. `dev`, nunca
-   desde `main`):
+2. Abre la rama de feature **desde la rama de integración** (en este repo, **`main`** — no hay `dev`):
 
    ```bash
-   git switch dev
+   git switch main
    git pull
    git switch -c plan/<package>/<name-plan>
    ```
@@ -325,7 +332,7 @@ Es el registro canónico; no lo dupliques.
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
    - Borra la rama tras el merge.
-2. La promoción a `main` ocurre en ciclos de release, no al cerrar un plan.
+2. Los releases se cortan con **tags SemVer sobre `main`** (`v<x.y.z>`), en ciclos de release, no al cerrar un plan.
 3. Añade una nota retro al plan cerrado: estimación vs. real, sorpresas, dependencias
    no vistas.
 
