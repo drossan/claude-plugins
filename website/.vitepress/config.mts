@@ -16,16 +16,34 @@ export default defineConfig({
   srcExclude: ['**/README.md'],
   // ignoreDeadLinks se deja en su default (false): el build FALLA ante enlaces internos rotos.
   themeConfig: {
-    nav: [{ text: 'Inicio', link: '/' }],
+    nav: [
+      { text: 'Inicio', link: '/' },
+      { text: 'Guía', link: '/guia/que-es' },
+      { text: 'Skills', link: '/skills/' },
+    ],
     sidebar: [
       {
-        text: 'task-pipeline',
-        items: [{ text: 'Inicio', link: '/' }],
+        text: 'Guía',
+        items: [
+          { text: 'Qué es', link: '/guia/que-es' },
+          { text: 'Instalación', link: '/guia/instalacion' },
+          { text: 'El pipeline', link: '/guia/pipeline' },
+        ],
+      },
+      {
+        text: 'Skills',
+        items: [{ text: 'Las 9 skills', link: '/skills/' }],
+      },
+      {
+        text: 'Opcional',
+        items: [
+          { text: 'github-tracking', link: '/features/github-tracking' },
+          { text: 'caveman', link: '/features/caveman' },
+        ],
       },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/drossan/claude-plugins' },
     ],
-    docFooter: { prev: false, next: false },
   },
 })
