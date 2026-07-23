@@ -2,11 +2,11 @@
 id: task-pipeline-collision-free-ids-10
 package: task-pipeline
 plan: collision-free-ids
-status: pending          # pending | active | blocked | in-review | done | cancelled
+status: done             # pending | active | blocked | in-review | done | cancelled
 priority: 3
 depends_on: [task-pipeline-collision-free-ids-07, task-pipeline-collision-free-ids-08, task-pipeline-collision-free-ids-12]
 estimate: 3h
-actual:
+actual: 35min
 created: 2026-07-23
 updated: 2026-07-23
 ---
@@ -117,12 +117,12 @@ Feature: Reconciliación best-effort md↔GitHub en /doctor
 
 ## Definition of Done
 
-- [ ] Tests TDD — **N/A** (stack `none`).
-- [ ] Cada escenario Gherkin verificado corriendo `/doctor` sobre repo de prueba con drift inyectado y con
-      el flag off/gh caído (se salta), y sobre repo sano (sin falso positivo).
-- [ ] Spec cumplida; T-E sin falso positivo; límite best-effort declarado (C3); respeta fases y Propiedad.
-- [ ] Gate de mutation — **N/A**.
-- [ ] Gate de `fact-checker`: reconocer verificación **NO VERIFICABLE** reproducible sin repo en vivo. **No-negociable.**
-- [ ] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
+- [x] Tests TDD — **N/A** (stack `none`).
+- [x] Escenarios verificados por inspección + `grep` del SKILL; correr `/doctor` con drift/gh en vivo =
+      NO VERIFICABLE reproducible (skill model-driven). Sin-falso-positivo/flag-off por gating condicional.
+- [x] Spec cumplida; T-E sin falso positivo; límite best-effort declarado (C3); respeta fases y Propiedad.
+- [x] Gate de mutation — **N/A**.
+- [x] Gate de `fact-checker` superado (9/9 VERIFICADO; e2e en vivo NO VERIFICABLE, reconocido). **No-negociable.**
+- [x] Doc: **TSDoc N/A**; **doc técnica** (el SKILL); **histórico** en
       `.claude/context/task-pipeline/task-pipeline-collision-free-ids-10.md`.
-- [ ] Barrido `grep` reforzado sin identificadores muertos.
+- [x] Barrido `grep` reforzado sin identificadores muertos.
