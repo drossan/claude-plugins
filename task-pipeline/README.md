@@ -171,9 +171,9 @@ que inyecta una directiva mínima de compresión.
 
 Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Issues/Projects para tener orden global glanceable + tablero. El `.md` sigue siendo la **única fuente de verdad**; GitHub es una **proyección one-way** (`.md` → GitHub). Se activa con `features.github-tracking.enabled: true` en `.claude/task-pipeline.yml`.
 
-**Setup:**
+**Setup — la feature REQUIERE `gh`:**
 
-- `gh auth login` con scope `repo` (escritura de issues). Requiere una versión **reciente** de `gh` (sub-issues + `gh issue create --parent`).
+- **No funciona sin `gh`** instalado y autenticado: `gh auth login` con scope **`repo`** (escritura de issues) y, para el tablero (Project), **`project`** (`gh auth refresh -s project`). Requiere una versión **reciente** de `gh` (sub-issues + `gh issue create --parent`).
 - Sin `gh`, sin red, sin auth de escritura o repo no-GitHub → **no-op** (el flujo local no cambia).
 
 **Config (`features.github-tracking`):**
@@ -183,14 +183,18 @@ Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Iss
 | `enabled` | `true` (booleano) lo activa. Ausente / `false` / valor no-canónico (`"true"`, `yes`, `1`, …) → **off** (fail-safe). |
 | `repo` | `owner/name`; default = el repo actual (`gh repo view --json nameWithOwner`). Fíjalo si hay varios remotos. |
 | `project` | nº de Project v2 para el tablero (campos de estado). Opcional. |
+| `assignee` | `@me` (default) = identidad `gh` que arranca; un login para fijar otro; `false` = no asignar. Exige colaborador **asignable**. Solo la sub-issue de la tarea. Opcional. |
 | `issue-type-plan` | issue type del plan (se define en el ORG); sin él → label `plan`. Avanzado, opcional. |
 
 **Mapeo:**
 
 - **Plan → issue PADRE**; **Task → SUB-ISSUE** (`gh issue create --parent`).
 - **Orden global = número de issue** (lo asigna el servidor, monótono, sin colisión).
-- **Estados**: `active` → In Progress · `done` → issue cerrada / Done · `cancelled` → cerrada "not planned" · `blocked` → label `blocked`.
-- **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`); GitHub **no** la auto-cierra al cerrar sus sub-issues.
+- **Body = cuerpo completo del `.md`** (sin frontmatter) + **banner de espejo** («⚠️ espejo generado desde `<path>` — la fuente de verdad es el `.md`») + link al `.md`. Se vuelca **al crear** y se re-vuelca **solo en re-proyección explícita** (`/doctor` / re-run de `/plan-task`), **no** en cada transición.
+- **Label `pkg:<package>`** (derivada de `package:`, creada si falta) en padre y sub-issues → filtro glanceable por workspace.
+- **Alta en el Project** (si hay `project`): padre y sub-issues entran con Status **`Backlog`** al crear.
+- **Estados** — proyectados en cada transición en **dos sitios**: label `status:*` en la issue + campo **Status del Project**: `active` → `In progress` + `status: in-progress` (+ **assignee** según `assignee`) · `in-review` → `In review` + `status: in-review` · `blocked` → `status: blocked` (el Project queda en `In progress`) · `done` → cerrada + Project `Done` + `status:*` retirada · `cancelled` → cerrada "not planned" + `Done`. Recipe **add-then-remove** (añade la nueva antes de quitar las demás `status:*`). Mecánica canónica en [`docs/guides/task-lifecycle.md`](../docs/guides/task-lifecycle.md) → "Cerrar una tarea".
+- **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`) + Project `Done`; GitHub **no** la auto-cierra al cerrar sus sub-issues. El padre **no** lleva `status:*` ni assignee.
 - `depends_on` **no** se proyecta como dependencia nativa (a lo sumo nota de texto en el body).
 
 **Límites (honestos):**
@@ -198,12 +202,16 @@ Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Iss
 - La **jerarquía en Projects** (tabla padre/sub-issue) está en **public preview**, no en el Roadmap.
 - Techos de GitHub: **100 sub-issues por padre** y **8 niveles** de anidamiento.
 - **No hay épica nativa**: el "padre" es una issue normal con sub-issues.
+- **Issue types omitidos + asimetría (org)**: los issue types nativos son **org-only** (en cuenta personal, `/orgs/<owner>/issue-types` → 404 verificado). El type se **omite**; en consumidores **org** el padre puede llevar `issue-type-plan` pero las sub-issues **no** llevan type (medio-tipado); en cuenta personal, ninguno.
+- **`assignee` exige identidad asignable**: si quien corre (o el login fijado) no es **colaborador asignable** del repo, no asigna + avisa (el resto de la proyección sigue).
+- **Status del Project = opciones default**: el match es por nombre **case-insensitive** sobre `Backlog/Ready/In progress/In review/Done` (la opción real es `In progress`, no `In Progress`). Si el Project del consumidor las nombra distinto → salta el Status + avisa (la label `status:*` es el fallback visible).
+- **Body sin demonio + límite de tamaño**: el body se vuelca al crear y en re-proyección explícita, **no** en cada guardado del `.md` (no hay watcher; el trabajo vivo va al session log, que **no** se proyecta). Un cuerpo que supere el **límite de body de GitHub (~65536 chars)** se **trunca** con nota «(ver el `.md`)» conservando banner + link.
 
 **Riesgos aceptados** (el owner mantuvo la feature conociéndolos; ver el Plan change log):
 
 - **Proyección concurrente (T-B)**: dos devs proyectando el **mismo plan** en ramas separadas crean **padres duplicados** + `issue:` en conflicto al mergear. **No se previene en duro.** Mitigación: **una sola rama proyecta el plan**; `/doctor` lo detecta (reconciliación).
 - **Sync best-effort (C3)**: la reconciliación de `/doctor` **no garantiza** consistencia (paginación, rate-limit, auth caída, issue borrada a mano); ante duda **reporta** y deja la decisión al humano.
-- **Huérfanas al desactivar (I3)**: con el flag `off` la reconciliación **no corre**, así que **no** detecta huérfanas. Por eso: **reconcilia ANTES de desactivar** `github-tracking`; las issues huérfanas que queden tras apagarlo se resuelven a mano. (Misma historia que la categoría de reconciliación de `/doctor`.)
+- **Huérfanas al desactivar (I3, ampliado)**: con el flag `off` la reconciliación **no corre**, así que **no** detecta huérfanas. Desactivar deja además huérfanas las **definiciones** de labels `pkg:*`/`status:*`, los **items** del Project y las `status:*` pegadas a issues in-flight. Por eso: **reconcilia/limpia ANTES de desactivar** `github-tracking`; lo que quede tras apagarlo se resuelve a mano. (Misma historia que la categoría de reconciliación de `/doctor`.)
 
 ## Bootstrap del repo (tras instalar)
 

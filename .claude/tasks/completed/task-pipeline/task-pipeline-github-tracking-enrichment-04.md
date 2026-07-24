@@ -2,14 +2,14 @@
 id: task-pipeline-github-tracking-enrichment-04
 package: task-pipeline
 plan: github-tracking-enrichment
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-github-tracking-enrichment-01, task-pipeline-github-tracking-enrichment-02, task-pipeline-github-tracking-enrichment-03]
 estimate: 2h
-actual:
+actual: 1h
 issue: 23
 created: 2026-07-23
-updated: 2026-07-23
+updated: 2026-07-24
 ---
 
 # Docs de usuario: README + website + runbook (requisito gh y límites)
