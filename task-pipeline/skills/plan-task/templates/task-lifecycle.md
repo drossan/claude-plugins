@@ -244,6 +244,9 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 
    Todas las tareas del plan caen en esta rama. Al cerrar el plan, se mergea a la
    rama de integración por PR.
+3. **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, proyecta el arranque del **padre**:
+   campo **Status del Project → `In progress`** (best-effort). El padre **no** recibe label `status:*` ni
+   assignee. Si `gh` falla, avisa y sigue; el `status:` del plan **no** se bloquea.
 
 ## Arrancar una tarea
 
@@ -251,9 +254,10 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 2. Mueve la tarea a `.claude/tasks/active/<package>/`, `status: active`, bump `updated`.
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
-5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el estado a su
-   issue → **In Progress** (ver la tabla en "Cerrar una tarea"). Best-effort: si `gh` falla, avisa y
-   sigue; el cambio de `status:` del `.md` **no** se bloquea.
+5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el arranque a su issue
+   (best-effort): campo **Status del Project → `In progress`**, label **`status: in-progress`** (recipe
+   add-then-remove) y **assignee** según la clave `assignee` (ver la tabla completa y el recipe en "Cerrar
+   una tarea"). Si `gh` falla, avisa y sigue; el cambio de `status:` del `.md` **no** se bloquea.
 
 > Cada tarea es una conversación/sesión nueva. Las sesiones futuras reconstruyen
 > el contexto exclusivamente desde el task file + el session log.
@@ -306,31 +310,57 @@ El session log es append-only y vive solo en `.claude/context/<package>/<task-id
 Es el registro canónico; no lo dupliques.
 
 > **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
-> `enabled` **y** la tarea tiene `issue:`. Al cambiar `status:` se proyecta a la issue (one-way,
-> best-effort):
+> `enabled` **y** la tarea tiene `issue:` (sin `issue:` → ciclo de vida **local puro**, ni un comando
+> `gh`; tampoco dispara un `create` — eso es Paso 5.7 de `/plan-task`). One-way, **best-effort**,
+> idempotente desde el `.md`. Al cambiar `status:` el estado se proyecta en **dos sitios**: el **campo
+> Status del Project** y una **label `status:*`** en la propia issue.
 >
-> | `status:` | Acción sobre la issue |
-> |---|---|
-> | `active` (arranque) | campo de estado del Project → **In Progress** (si hay `project`) |
-> | `done` | `gh issue close`; Project → **Done** |
-> | `cancelled` | `gh issue close --reason "not planned"` |
-> | `blocked` | añadir label `blocked` (+ campo Project si aplica) |
-> | `blocked → active` (desbloqueo) | quitar label `blocked`; Project → **In Progress** |
-> | `done → active` (reapertura) | `gh issue reopen` |
+> | Transición | Status del Project | label `status:*` | Issue |
+> |---|---|---|---|
+> | → `active` (arranque) | `In progress` | `status: in-progress` | + assignee (ver clave `assignee`) |
+> | → `in-review` | `In review` | `status: in-review` | — |
+> | → `blocked` | (queda en `In progress`) | `status: blocked` | — |
+> | `blocked` → `active` (desbloqueo) | `In progress` | `status: in-progress` | — |
+> | → `done` | `Done` | (retirar `status:*`) | `gh issue close` |
+> | → `cancelled` | `Done` | (retirar `status:*`) | `gh issue close --reason "not planned"` |
+> | `done` → `active` (reapertura) | `In progress` | `status: in-progress` | `gh issue reopen` |
 >
-> **Idempotencia**: cerrar una issue ya cerrada es **no-op** (no error). **Degradación (C3)**: si `gh`
-> falla / sin red / el Project no tiene la opción de estado esperada → **avisa y NO bloquees** el cambio
-> de `status:` del `.md` (el `.md` manda; el drift lo reconcilia `/doctor`). **Flag off o sin `issue:`**
-> → el ciclo de vida es **local puro**, idéntico al default (no se llama a `gh`). El cierre de la issue
+> **Familia de labels** — `status: in-progress` · `status: blocked` · `status: in-review` (crear con
+> `gh label create` si faltan — "ya existe" **no** es fallo; colores sugeridos in-progress `FBCA04`,
+> blocked `B60205`, in-review `0E8A16`; descripción `(task-pipeline)`).
+>
+> **Recipe idempotente (add-then-remove)**: al entrar en un estado, **añade primero** la label nueva y
+> **después** retira las demás `status:*` **y la label `blocked` PELADA legacy** (esquema anterior — el
+> recipe la migra, o quedaría pegada sin auto-cura). Así un fallo parcial **sobre-etiqueta** (se auto-cura
+> en la siguiente transición) en vez de dejar la issue **sin** estado. En `done`/`cancelled` se retiran
+> **todas** las `status:*`.
+>
+> **Assignee** (solo la sub-issue de la tarea; lee la clave `features.github-tracking.assignee`): `@me`
+> (default) = identidad `gh` que arranca; un **login** para fijar otro; **`false`** para no asignar. Con
+> `gh issue edit --add-assignee` (acumula, no reemplaza; no se desasigna al cerrar). Si el assignee **no
+> es colaborador asignable** → avisa y sigue.
+>
+> **Match del Status case-insensitive** por nombre (`In progress` real ≠ el `In Progress` que a veces
+> escriben los docs); si el Project del consumidor **no tiene** la opción esperada → **salta el Status +
+> avisa** (la label `status:*` es el fallback visible).
+>
+> **El body NO se re-vuelca** en transiciones (design-review #3): solo se tocan Status/label/assignee. El
+> re-vuelco del body vive en la **re-proyección explícita** (`/doctor` / re-run de `/plan-task`).
+>
+> **Idempotencia**: cerrar una issue ya cerrada es **no-op** (no error); re-proyectar el estado actual no
+> duplica label ni assignee. **Degradación (C3)**: si `gh` falla / sin red / el Project no tiene la opción
+> esperada → **avisa y NO bloquees** el cambio de `status:` del `.md` (el `.md` manda; el drift
+> `.md`↔label↔Project es **residual aceptado** que se re-alinea al re-proyectar). El cierre de la issue
 > **PADRE** del plan y la concurrencia viven en "Cerrar un plan".
 
 ## Cerrar un plan
 
 1. Al cerrar la última tarea:
    - Plan → `completed`: mover a `.claude/plans/completed/<package>/`, `status: completed`, bump `updated`.
-   - **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, cierra la **issue PADRE** con
-     `gh issue close` — GitHub **no** la auto-cierra al cerrar las sub-issues. Best-effort (C3): si `gh`
-     falla / sin red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
+   - **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, proyecta el cierre del **padre**:
+     campo **Status del Project → `Done`** y `gh issue close` — GitHub **no** la auto-cierra al cerrar las
+     sub-issues. El padre **no** lleva label `status:*` ni assignee. Best-effort (C3): si `gh` falla / sin
+     red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
    - Borra la rama tras el merge.
