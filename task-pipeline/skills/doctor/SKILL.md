@@ -105,6 +105,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    - **Desactivar el flag y huérfanas (I3, historia coherente con la guía de usuario)**: con el flag off
      esta categoría **no corre**, así que **no** detecta huérfanas. Por eso la regla es **reconciliar ANTES
      de desactivar** `github-tracking`; las huérfanas que queden tras apagarlo se resuelven a mano.
+   - **Re-proyección idempotente (sin detección nueva)**: al reconciliar (Fase 2) se re-aplica **desde el
+     `.md`** el **body**, las labels (`pkg:*`/`status:*`), el **Status del Project** y el **assignee** de
+     forma **idempotente** (recipe add-then-remove del ciclo de vida); **no** hay detección nueva del drift
+     `status:*`↔`.md`↔Project (es residual aceptado: se re-alinea al re-proyectar, no se diagnostica aparte).
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 

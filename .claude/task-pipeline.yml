@@ -77,9 +77,12 @@ features:
     enabled: true
     repo: drossan/claude-plugins        # explícito: gh authed (danielrosse) ≠ owner del remoto (drossan)
     project: 2                          # Project v2 de drossan — github.com/users/drossan/projects/2
-    #                                   # OJO: las ops de tablero requieren que la identidad gh acceda al
-    #                                   # Project. danielrosse (colaborador) NO lo resuelve → board = no-op
-    #                                   # best-effort hasta dar acceso a danielrosse o autenticar como drossan.
+    #                                   # WRITE al Project VERIFICADO: danielrosse (colaborador) SÍ resuelve
+    #                                   # y edita el Status del board (write-spike 2026-07-23 + dogfood tarea
+    #                                   # 02: #21 Backlog→In progress→Done, exit=0). Opciones reales del
+    #                                   # Status: Backlog · Ready · In progress · In review · Done (match
+    #                                   # por nombre, case-insensitive: "In progress" real, no "In Progress").
+    assignee: "@me"                     # @me = identidad gh que arranca (danielrosse); login para fijar otro; false = no asignar
     # issue-type-plan:                  # no se usa; el plan se etiqueta con la label `plan`
 
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────

@@ -16,10 +16,11 @@ La sesión `gh` está autenticada como **`danielrosse`** (colaborador con `push`
 
 - ✅ Crear/cerrar **Issues** en `drossan/claude-plugins`: funciona (colaborador con push).
 - ❌ **Crear Projects v2** de `drossan`: **denegado** (`createProjectV2: danielrosse does not have permission`). Lo crea el owner.
-- ❌ **Resolver/editar** el Project de `drossan`: falla (`Could not resolve to a ProjectV2`) hasta que el owner da acceso **Write** a `danielrosse` en el Project.
+- ✅ **Resolver/editar** el Project de `drossan`: **funciona** — el owner ya dio acceso **Write** a `danielrosse`. Write al Status del board **VERIFICADO** (write-spike 2026-07-23 + dogfood `github-tracking-enrichment` tareas 02/03/04: items `Backlog→In progress→Done`, `exit=0`).
 
-→ Si quieres que la automatización toque el tablero, **una de dos**: (a) el owner da acceso Write a
-`danielrosse` en el Project (hecho), o (b) autenticar `gh` como `drossan` (`gh auth switch`).
+→ El acceso ya está concedido: la automatización toca el tablero. Alternativa (si se pierde): autenticar
+`gh` como `drossan` (`gh auth switch`). Opciones reales del Status: `Backlog · Ready · In progress · In
+review · Done` (match por nombre **case-insensitive** — la opción real es `In progress`, no `In Progress`).
 
 ## Pasos
 
@@ -52,6 +53,37 @@ gh auth refresh -s project
 - `base: '/claude-plugins/'` está **atado al nombre del repo**. Un rename/fork/traslado a org o el paso a
   dominio custom rompe **todos** los assets con 404. Si cambias el nombre del repo o el dominio, **actualiza
   `base`** en la config de VitePress.
+
+## Comandos `gh` de la proyección (referencia — coherentes con Paso 5.7 y el lifecycle)
+
+> El playbook lo tejen `/plan-task` (Paso 5.7, al crear) y `docs/guides/task-lifecycle.md` (transiciones de
+> estado). Estos son los comandos concretos que ejecutan; aquí como referencia del owner. `OWNER=drossan`,
+> `R=drossan/claude-plugins`, `P=2`.
+
+```bash
+# Crear label de package (idempotente: "already exists" NO es fallo)
+gh label create "pkg:task-pipeline" -R "$R" --color 5319E7 --description "Package: task-pipeline (task-pipeline)"
+# Familia de labels de estado (colores sugeridos)
+gh label create "status: in-progress" -R "$R" --color FBCA04 --description "(task-pipeline)"
+gh label create "status: in-review"  -R "$R" --color 0E8A16 --description "(task-pipeline)"
+gh label create "status: blocked"    -R "$R" --color B60205 --description "(task-pipeline)"
+
+# Crear la issue (body completo desde fichero — nunca --body interpolado; label de package)
+gh issue create -R "$R" --title "<título>" --body-file <cuerpo.md> --label "pkg:task-pipeline"        # padre
+gh issue create -R "$R" --parent <nº-padre> --title "<título>" --body-file <cuerpo.md> --label "pkg:task-pipeline"  # sub-issue
+
+# Alta en el Project + fijar Status (resolver el option-id por nombre, case-insensitive)
+gh project item-add "$P" --owner "$OWNER" --url https://github.com/$R/issues/<n>
+gh project item-edit --project-id <PVT_…> --id <PVTI_…> --field-id <PVTSSF_…> --single-select-option-id <opt-id>
+
+# Transición de estado (recipe add-then-remove) + assignee al arrancar
+gh issue edit <n> -R "$R" --add-label "status: in-progress"     # 1º añade la nueva
+gh issue edit <n> -R "$R" --remove-label "status: in-review"    # 2º quita las demás status:* (y la `blocked` pelada legacy)
+gh issue edit <n> -R "$R" --add-assignee @me                    # acumula; no se desasigna al cerrar
+gh issue close <n> -R "$R"                                      # done  (idempotente: cerrar una cerrada = no-op)
+gh issue close <n> -R "$R" --reason "not planned"              # cancelled
+gh issue reopen <n> -R "$R"                                     # reapertura done → active
+```
 
 ## Desactivar github-tracking (precaución)
 - Con el flag `off`, la **reconciliación de `/doctor` no corre** → no detecta huérfanas. **Reconcilia ANTES

@@ -4,6 +4,54 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.13.0] — 2026-07-24
+
+Enriquecimiento de `features.github-tracking` (opt-in, default off): la proyección one-way md→GitHub ahora
+refleja **contenido, estado, assignee y package** en las issues/Projects, **sin cambiar el modelo** (el `.md`
+sigue siendo la única fuente de verdad; GitHub es proyección best-effort).
+
+### Added
+- **Body de la issue = cuerpo completo del `.md`** (sin frontmatter) + **banner de espejo** + link, en padre y
+  sub-issues (antes: solo resumen + link). Se vuelca **al crear** y se re-vuelca **solo en re-proyección
+  explícita** (`/doctor` / re-run de `/plan-task`), no en cada transición. Trunca con nota si supera el límite
+  de body de GitHub (~65536).
+- **Label `pkg:<package>`** (derivada de `package:`, creada si falta) en padre y sub-issues → filtro glanceable
+  por workspace.
+- **Estado proyectado en dos sitios** en cada transición del ciclo de vida: **campo Status del Project** +
+  **label `status:*`** (`in-progress`/`in-review`/`blocked`) con recipe **add-then-remove** (añade la nueva
+  antes de retirar las demás y la `blocked` pelada legacy → un fallo parcial sobre-etiqueta, nunca deja la
+  issue sin estado). Alta en el Project con Status `Backlog` al crear; match del Status **case-insensitive**.
+- **Assignee** al arrancar la tarea (clave `assignee`: `@me` default / un login / `false`), solo la sub-issue.
+- Clave de config **`assignee`** (comentada en el template; el repo source la fija a `@me`).
+
+### Changed
+- **Ciclo de vida** (`docs/guides/task-lifecycle.md` + su plantilla, en paralelo): tabla de transiciones
+  estado→(Status del Project, label `status:*`, acción sobre la issue); arranque/cierre del padre (`In progress`
+  / `Done` + close, **sin** `status:*` ni assignee). Corregido `In Progress` → `In progress` (nombre real de la
+  opción). El body **no** se re-vuelca en transiciones.
+- **`/doctor`** (categoría 8): re-proyectar re-aplica body + labels + Status del Project + assignee de forma
+  **idempotente** desde el `.md`; sin detección nueva del drift `status:*`↔`.md`↔Project (residual aceptado).
+- Corregido el comentario **stale** "board = no-op" del `.claude/task-pipeline.yml` del repo: el write al
+  Project está **verificado** (write-spike 2026-07-23 + dogfood de este plan).
+- Docs de usuario (README §GitHub-tracking + `website/features/github-tracking.md` + runbook): `gh` **requerido**
+  explícito (scopes `repo` + `project`), comportamientos nuevos y límites honestos.
+
+### Notas de diseño
+- **Issue types nativos omitidos** (org-only; `/orgs/<owner>/issue-types` → 404 en cuenta personal). Asimetría
+  documentada: en consumidores **org** el padre puede llevar `issue-type-plan`, las sub-issues no; en cuenta
+  personal, ninguno. Sin sustituto por label de type (decisión del owner).
+- **Sin sync bidireccional ni watcher**: el body se proyecta en touchpoints del pipeline; el trabajo vivo va al
+  session log, que no se proyecta. El mismo estado vive en 3 stores (`.md` normativo + label + Project)
+  sincronizados best-effort e idempotentes desde el `.md`; el drift es **residual aceptado** que se re-alinea al
+  re-proyectar (no detección nueva en `/doctor`).
+- **I3 ampliado**: desactivar el flag deja huérfanas las definiciones de labels `pkg:*`/`status:*`, los items del
+  Project y las `status:*` in-flight → reconciliar/limpiar **antes** de desactivar.
+
+### Migration
+- Sin acción: `github-tracking` sigue **opt-in** (default off); el comportamiento por defecto es idéntico al de
+  0.12.x. En repos que ya lo usaban, las issues existentes se enriquecen en la siguiente re-proyección
+  (`/doctor` / re-run de `/plan-task`).
+
 ## [0.12.1] — 2026-07-23
 
 ### Fixed
