@@ -1,7 +1,7 @@
 {
   "name": "task-pipeline",
-  "description": "Pipeline guiado de tarea/plan: bootstrap con /task-init -> plan mode -> plan en .claude/plans/pending -> grilling -> design-review -> descomposición en tareas Gherkin -> scenario-coverage -> handoff TDD -> gate de mutation testing (Stryker) -> gate de cierre fact-checker (verifica las afirmaciones de la sesión). Ids de tarea plan-scoped (sin colisión en equipo). /doctor diagnostica y alinea repos ya adoptados, detecta ids duplicados y drift md<->GitHub. Incluye /pipeline-usage (analítica de uso on-demand: tokens/modelo/tiempo por fase y subagente) y los modos opcionales caveman (compresión de output) y github-tracking (proyección one-way a GitHub Issues, opt-in). Configurable por repo (.claude/task-pipeline.yml). Reutilizable en cualquier repo que adopte la convención .claude/plans|tasks|specs|context.",
-  "version": "0.12.1",
+  "description": "Pipeline guiado de tarea/plan: bootstrap con /task-init -> plan mode -> plan en .claude/plans/pending -> grilling -> design-review -> descomposición en tareas Gherkin -> scenario-coverage -> handoff TDD -> gate de mutation testing (Stryker) -> gate de cierre fact-checker (verifica las afirmaciones de la sesión). Ids de tarea plan-scoped (sin colisión en equipo). /doctor diagnostica y alinea repos ya adoptados, detecta ids duplicados y drift md<->GitHub. Incluye /pipeline-usage (analítica de uso on-demand: tokens/modelo/tiempo por fase y subagente) y los modos opcionales caveman (compresión de output) y github-tracking (proyección one-way a GitHub Issues/Projects: body completo, labels pkg/status, Status del Project y assignee; opt-in). Configurable por repo (.claude/task-pipeline.yml). Reutilizable en cualquier repo que adopte la convención .claude/plans|tasks|specs|context.",
+  "version": "0.13.0",
   "author": {
     "name": "Daniel Rosselló"
   }

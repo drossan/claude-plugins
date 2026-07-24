@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-github-tracking-enrichment
 package: task-pipeline
-status: active
+status: completed
 branch: plan/task-pipeline/github-tracking-enrichment
 issue: 19
 created: 2026-07-23
@@ -134,7 +134,7 @@ modelo** (el `.md` sigue siendo la única fuente de verdad; GitHub es proyecció
 - [x] `task-pipeline-github-tracking-enrichment-02` (P1) — Lifecycle (materializado **+** template): arranque→Project `In progress` + `status: in-progress` + `@me`; cierre/bloqueo/in-review/reopen con gestión de `status:*` + Project Status; padre→`Done`+close (sin label/assignee); body NO re-vuelto en transiciones; degradación best-effort; frase idempotente en `doctor/SKILL.md` · depends_on: 01 · **done 2026-07-24**
 - [x] `task-pipeline-github-tracking-enrichment-03` (P2) — Config: template `task-pipeline.yml` (clave `assignee` comentada + comportamiento nuevo; `issue-type-plan` intacta) + `.claude/task-pipeline.yml` de este repo (comentario stale del board corregido + `assignee: "@me"`) · depends_on: 01, 02 · **done 2026-07-24**
 - [x] `task-pipeline-github-tracking-enrichment-04` (P2) — Docs: README §GitHub-tracking (`gh` **requerido** + scopes, comportamientos, límites) + `website/features/github-tracking.md` + runbook (comandos `gh` + gotcha corregido) · depends_on: 01, 02, 03 · **done 2026-07-24**
-- [ ] `task-pipeline-github-tracking-enrichment-05` (P3) — Release: CHANGELOG `0.13.0` + bump `plugin.json` + coherencia `marketplace.json`/`description` · depends_on: 01, 02, 03, 04
+- [x] `task-pipeline-github-tracking-enrichment-05` (P3) — Release: CHANGELOG `0.13.0` + bump `plugin.json` + coherencia `marketplace.json`/`description` · depends_on: 01, 02, 03, 04 · **done 2026-07-24**
 
 ## Registro de cambios del plan
 
@@ -181,3 +181,11 @@ modelo** (el `.md` sigue siendo la única fuente de verdad; GitHub es proyecció
   - **[Decisión] Transversal B**: el re-vuelco de body en **re-proyección explícita** se pinea en T01 y la frase de
     `/doctor` (T02) pasa a incluir **body** + labels/Status/assignee (antes omitía el body).
   - **T04**: documentar el límite de tamaño de body; coherencia docs↔canónico (usar `status: blocked`, no `blocked` pelada).
+- 2026-07-24: **plan COMPLETADO** (5/5 tareas done). Release **0.13.0**. Issue PADRE #19 cerrada + Project `Done`;
+  sub-issues #20–24 CLOSED + Done. **Retro** (estimate vs real): estimado 1–2 sesiones → real 1 sesión (~4.5h
+  efectivas 02–05; 01 venía de antes). Sorpresas: (a) el write al Project estaba mal documentado como "no-op"
+  (memoria/config **stale**) — write-spike + dogfood lo dejaron **VERIFICADO**; (b) `gh issue close` emite
+  errores GraphQL transitorios intermitentes en este entorno, pero el cierre **reconcilia** (demostró la
+  degradación **C3** en vivo); (c) `HOW-TO-START-A-TASK.md` quedó con menciones **stale** (In Progress / label
+  `blocked` / "off por defecto") **fuera de alcance** → follow-up (`/doctor` o plan futuro). Sin dependencias no
+  vistas; orden 01→05 sin bloqueos. **Pendiente**: pushear la rama + abrir PR a `main` (sandbox sin push).

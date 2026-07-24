@@ -2,14 +2,14 @@
 id: task-pipeline-github-tracking-enrichment-05
 package: task-pipeline
 plan: github-tracking-enrichment
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-github-tracking-enrichment-01, task-pipeline-github-tracking-enrichment-02, task-pipeline-github-tracking-enrichment-03, task-pipeline-github-tracking-enrichment-04]
 estimate: 30m
-actual:
+actual: 30m
 issue: 24
 created: 2026-07-23
-updated: 2026-07-23
+updated: 2026-07-24
 ---
 
 # Release: CHANGELOG 0.13.0 + bump plugin.json + coherencia marketplace
