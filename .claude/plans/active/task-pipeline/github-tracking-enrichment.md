@@ -132,7 +132,7 @@ modelo** (el `.md` sigue siendo la única fuente de verdad; GitHub es proyecció
 
 - [x] `task-pipeline-github-tracking-enrichment-01` (P1) — Paso 5.7 (`plan-task/SKILL.md`): body completo (sin frontmatter + link) padre y tareas; label `pkg:<package>` (crear si falta); añadir issue al Project (Status `Backlog`); sin type · depends_on: — · **done 2026-07-23**
 - [x] `task-pipeline-github-tracking-enrichment-02` (P1) — Lifecycle (materializado **+** template): arranque→Project `In progress` + `status: in-progress` + `@me`; cierre/bloqueo/in-review/reopen con gestión de `status:*` + Project Status; padre→`Done`+close (sin label/assignee); body NO re-vuelto en transiciones; degradación best-effort; frase idempotente en `doctor/SKILL.md` · depends_on: 01 · **done 2026-07-24**
-- [ ] `task-pipeline-github-tracking-enrichment-03` (P2) — Config: template `task-pipeline.yml` (clave `assignee` comentada + comportamiento nuevo; `issue-type-plan` intacta) + `.claude/task-pipeline.yml` de este repo · depends_on: 01, 02
+- [x] `task-pipeline-github-tracking-enrichment-03` (P2) — Config: template `task-pipeline.yml` (clave `assignee` comentada + comportamiento nuevo; `issue-type-plan` intacta) + `.claude/task-pipeline.yml` de este repo (comentario stale del board corregido + `assignee: "@me"`) · depends_on: 01, 02 · **done 2026-07-24**
 - [ ] `task-pipeline-github-tracking-enrichment-04` (P2) — Docs: README §GitHub-tracking (`gh` **requerido** + scopes, comportamientos, límites) + `website/features/github-tracking.md` · depends_on: 01, 02, 03
 - [ ] `task-pipeline-github-tracking-enrichment-05` (P3) — Release: CHANGELOG `0.13.0` + bump `plugin.json` + coherencia `marketplace.json`/`description` · depends_on: 01, 02, 03, 04
 

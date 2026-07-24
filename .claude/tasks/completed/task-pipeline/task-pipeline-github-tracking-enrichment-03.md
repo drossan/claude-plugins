@@ -2,14 +2,14 @@
 id: task-pipeline-github-tracking-enrichment-03
 package: task-pipeline
 plan: github-tracking-enrichment
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-github-tracking-enrichment-01, task-pipeline-github-tracking-enrichment-02]
 estimate: 1h
-actual:
+actual: 0.5h
 issue: 22
 created: 2026-07-23
-updated: 2026-07-23
+updated: 2026-07-24
 ---
 
 # Config: clave `assignee` en el template + corregir comentario stale del repo
