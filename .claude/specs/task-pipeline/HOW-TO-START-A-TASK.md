@@ -65,6 +65,13 @@
 > Best-effort: si `gh` falla, avisa y **no** bloquees el cambio de `status:` del `.md`. Al completar el
 > **plan**, se cierra la **issue PADRE** (no se auto-cierra sola) — ver "Cerrar un plan". En este repo
 > está **off** por defecto (no-op).
+>
+> **(`features.use-cases` — ON en este repo, área `PIPELINE`)** Al cerrar, consolida los escenarios de
+> producto de la tarea como ACs (`ACn · …`) en los UCs de su `use_cases:`
+> (`.claude/specs/task-pipeline/use-cases/`): `trace:` al día (los ficheros donde se edita el
+> comportamiento) y nota en el `## Change log` del UC. Los de andamiaje mueren con la tarea. Sin runner
+> (stack `none`) los UCs permanecen en `draft`: la verificación de los ACs es por inspección, como el
+> resto del gate.
 
 Pega el prompt de abajo como **primer mensaje** de cada sesión nueva.
 
@@ -100,6 +107,9 @@ REGLAS ESTRICTAS DE LA SESIÓN:
 Al terminar:
 - **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre `fact-checker` sobre las
   afirmaciones de la sesión; un `INCORRECTO` bloquea hasta corregir (`NO VERIFICABLE` = aviso a reconocer).
+- Consolida los escenarios de producto como ACs en los UCs de `use_cases:`
+  (`.claude/specs/task-pipeline/use-cases/`, área PIPELINE): `trace:` al día + nota en el `## Change log`
+  del UC (los UCs quedan en `draft`: stack `none`).
 - Cierra el histórico en `.claude/context/task-pipeline/<task-id>.md` (resumen, decisiones +
   porqué, verificación corrida + resultado, docs actualizadas + motivo, ficheros/commits, tiempo real, follow-ups).
 - Mueve el task a `.claude/tasks/completed/task-pipeline/`, `status: done`, rellena `actual:` y bump `updated:`.
@@ -115,14 +125,16 @@ esquema anterior (`task-pipeline-001`…`012`) conviven y no se renumeran.
 
 ## Specs aplicables (paso 3 del gate)
 
-Este repo aún **no tiene** `.claude/specs/task-pipeline/<artefacto>.md` ni `.claude/specs/general/`. El
-"contrato" de cada tarea vive en su propia sección **`## Spec`** y **`## Scenarios (Gherkin)`**, y el
-plan (`<name-plan>.md`) como referencia global. Si en el futuro se extraen specs
-reutilizables (p.ej. convenciones de SKILL.md, de hooks Bash), créalas en `.claude/specs/task-pipeline/`
-y enlázalas aquí.
+Este repo **no tiene** specs `<artefacto>.md` ni `.claude/specs/general/`, pero **sí** use cases
+(`features.use-cases` on): las specs **vivas** del comportamiento del producto viven en
+`.claude/specs/task-pipeline/use-cases/`. El "contrato" de cada tarea vive en su propia sección
+**`## Spec`** y **`## Scenarios (Gherkin)`**, y el plan (`<name-plan>.md`) como referencia global. Si en
+el futuro se extraen specs reutilizables (p.ej. convenciones de SKILL.md, de hooks Bash), créalas en
+`.claude/specs/task-pipeline/` y enlázalas aquí.
 
 | Si la tarea crea / toca… | Contrato a leer |
 |---|---|
+| Comportamiento ya especificado del pipeline | los UCs de `.claude/specs/task-pipeline/use-cases/` que la tarea lista en `use_cases:` (sus ACs son criterios vigentes: si los cambias, actualízalos) |
 | Skill (`SKILL.md`) | `## Spec` + `## Scenarios` de la tarea; skills existentes como referencia de estilo |
 | Hook Bash | `## Spec` de la tarea; `hooks/bootstrap.sh` + `hooks/hooks.json` actuales |
 | Config/Template YAML | `## Spec` de la tarea; `task-pipeline.yml` (repo) + `templates/task-pipeline.yml` |

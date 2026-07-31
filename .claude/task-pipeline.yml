@@ -69,6 +69,22 @@ features:
   # Este repo (source del plugin) lo dogfoodea en `lite`.
   caveman: lite
 
+  # Use cases (specs VIVAS de producto — opt-in, default off). Mantiene en
+  # .claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md el comportamiento que el
+  # software tiene HOY: el plan declara `## Use cases`, las tareas los referencian
+  # (`use_cases:`) y la DoD consolida los escenarios de producto como ACs al cerrar.
+  # Ver README del plugin → "Use cases (opcional)".
+  # Este repo (source del plugin) lo dogfoodea: package `task-pipeline`, área `PIPELINE`
+  # (declarada en `areas:` — sin entrada, el default mecánico sería TASKPIPELINE).
+  # Solo `enabled: true` (booleano) activa; valor no-canónico → off (fail-safe).
+  # OJO stack: sin runner de tests (test-runner: none) los UCs no pueden pasar a
+  # `active` (el criterio es AC↔test tagueado): aquí viven en `draft` como spec
+  # verificada a mano del comportamiento de los playbooks.
+  use-cases:
+    enabled: true
+    areas:
+      task-pipeline: PIPELINE
+
   # Tracking opcional en GitHub Issues/Projects (opt-in, default off). Proyección
   # ONE-WAY md→GitHub: plan → issue PADRE, tarea → SUB-ISSUE. El .md sigue siendo la
   # fuente de verdad; GitHub es una proyección best-effort. Solo `enabled: true` activa
