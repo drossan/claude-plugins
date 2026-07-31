@@ -106,6 +106,15 @@ en el README del plugin.
 comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en los
 checkpoints. Opt-in, no forma parte de ningún preset. Ver [Modo caveman](../README.md#modo-caveman-featurescaveman).
 
+`features.use-cases` (bloque opt-in, default off — solo `enabled: true` activa;
+`areas:` declara el alias del id por package) añade la capa de **specs vivas de
+producto**: casos de uso `UC-<AREA>-<slug>` con ACs en Gherkin en
+`.claude/specs/<package>/use-cases/`. Los planes/tareas son efímeros; el UC es donde el
+comportamiento sobrevive: el plan los declara, las tareas los referencian
+(`use_cases:`), `scenario-coverage` los usa como baseline y la DoD consolida los
+escenarios de producto como ACs al cerrar. Fuera de presets. Ver
+[Use cases](../README.md#use-cases-opcional--featuresuse-cases).
+
 ## Estructura que asume en el repo
 
 ```
@@ -114,6 +123,7 @@ checkpoints. Opt-in, no forma parte de ningún preset. Ver [Modo caveman](../REA
   tasks/<estado>/<package>/<task-id>.md   # incluye ## Scenarios (Gherkin)
   context/<package>/<task-id>.md          # session log (append-only)
   specs/<package>/HOW-TO-START-A-TASK.md  # gate de ejecución por package
+  specs/<package>/use-cases/UC-….md       # (features.use-cases) specs vivas de producto
   task-pipeline.yml                       # config del repo
 docs/guides/task-lifecycle.md             # flujo canónico
 ```

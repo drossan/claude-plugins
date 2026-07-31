@@ -36,6 +36,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+| `features.use-cases` | bloque; opt-in (default **off**) | Specs **vivas** de producto (`.claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md`, plantilla `templates/use-case.md`): el plan declara `## Use cases` (Paso 2), cada tarea referencia en `use_cases:` los UC que crea/modifica (Paso 5), `scenario-coverage` recibe los UCs como baseline (Paso 5.5) y la DoD exige consolidar los escenarios de producto como ACs al cerrar. **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` (booleano) activa; valor no-canónico → off. `areas:` declara el alias `<AREA>` por package; un package sin entrada usa el default mecánico (package en MAYÚSCULAS sin guiones). |
 | `features.github-tracking` | bloque; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD: proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
 
 **`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
@@ -70,6 +71,7 @@ Si hay duda de scope o de a qué package pertenece, pregunta con `AskUserQuestio
 ## Paso 2 — Plan mode + draft del plan
 
 - Entra en **plan mode** (`EnterPlanMode`).
+- Con `features.use-cases`: lee **primero** los UCs del package (`.claude/specs/<package>/use-cases/*.md`) — son el comportamiento ya especificado del producto; parte de ahí antes de explorar código, y declara en la sección `## Use cases` del plan cuáles crea o modifica (sin el flag, borra esa sección de la plantilla).
 - Investiga el codebase en read-only lo necesario (usa la skill `Explore` para barridos amplios).
 - Redacta el plan siguiendo la plantilla **`templates/plan.md`** (junto a este skill; ábrela con Read).
 - Presenta el plan para aprobación con `ExitPlanMode`.
@@ -113,9 +115,13 @@ Feature: <capacidad de la tarea>
     Then <resultado observable y verificable>
 ```
 
+### Use cases (solo con `features.use-cases`)
+
+Al descomponer, rellena `use_cases:` en el frontmatter de cada tarea con los ids `UC-<AREA>-<slug>` cuyo comportamiento crea o modifica (los declaró el plan en `## Use cases`; `[]` si la tarea es puro andamiaje). Si una tarea define comportamiento de producto que **ningún** UC cubre, crea el UC en `status: draft` desde **`templates/use-case.md`** (fichero = id; `<AREA>` = el alias declarado en `features.use-cases.areas` del YAML o, sin entrada, el package en MAYÚSCULAS sin guiones). **No** dupliques en el UC los escenarios de la tarea ahora: la consolidación como ACs ocurre **al cerrar** cada tarea (DoD), cuando el comportamiento existe de verdad.
+
 ## Paso 5.5 — Endurecer escenarios (QA, subagente fresco)
 
-Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
+Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas (con `features.use-cases`, pásale también las rutas de los UCs del package: son la baseline de comportamiento ya especificado): lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
 
 ## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)
 

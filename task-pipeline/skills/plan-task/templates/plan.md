@@ -48,6 +48,17 @@ hace falta este trabajo.>
 - Gate de mutation testing (Stryker, `break: 80`) por tarea.
 - <Criterios específicos del plan (cobertura, integración, e2e manual, etc.)>
 
+## Use cases
+
+<!-- Solo con `features.use-cases` (si el flag está off, borra esta sección al
+     materializar). Qué comportamiento del PRODUCTO crea o modifica este plan, como
+     ids de `.claude/specs/<package>/use-cases/`. Los UCs existentes se leen ANTES
+     de explorar el código (son el comportamiento ya especificado); los nuevos nacen
+     `draft` al descomponer (plantilla use-case.md). Si el plan no toca comportamiento
+     de producto (refactor interno, tooling), pon "—" y el porqué. -->
+
+- `UC-<AREA>-<slug>` — <crea | modifica (qué ACs)>
+
 ## Tasks
 
 <Lista ordenada por prioridad y dependencias. Cada entrada tiene su archivo en

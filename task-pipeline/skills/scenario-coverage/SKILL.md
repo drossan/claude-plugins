@@ -13,6 +13,7 @@ Cubres el hueco que **ningún gate posterior tapa**. El gate de mutation testing
 
 - **Dentro de `/plan-task`**: todas las tareas recién creadas del plan (`.claude/tasks/pending|active/<package>/*.md`) y la(s) spec(s) en `.claude/specs/<package>/`.
 - **Standalone**: la(s) tarea(s) que indique el usuario; si es ambiguo, pregunta con `AskUserQuestion`.
+- **Con `features.use-cases` on** (léelo en `.claude/task-pipeline.yml`): además, los use cases del package (`.claude/specs/<package>/use-cases/*.md`) — el comportamiento **ya especificado** del producto, que sirve de baseline: sus `Out of scope` son fronteras declaradas (no huecos) y sus ACs son comportamiento existente que el plan puede estar alterando.
 
 Revisa el **set completo**, no tarea a tarea: así cazas huecos *dentro* de una tarea y huecos *entre* tareas (un comportamiento que **ninguna** tarea cubre).
 
@@ -28,12 +29,20 @@ Revisa el **set completo**, no tarea a tarea: así cazas huecos *dentro* de una 
 
 Lanza **un subagente fresco** con la **Agent tool** (`subagent_type: general-purpose`, y `model` solo si `models.scenario-coverage` trae un valor válido). Pásale rutas (que lea tareas y specs con `Read`) y permítele explorar el codebase en **read-only**. No debe editar nada.
 
-Prompt EXACTO para el subagente (sustituye `<RUTAS_TAREAS>` y `<RUTAS_SPECS>`):
+Prompt EXACTO para el subagente (sustituye `<RUTAS_TAREAS>` y `<RUTAS_SPECS>`; con `features.use-cases` on, sustituye también `<RUTAS_UCS>` — sin el flag, elimina del prompt el párrafo de use cases):
 
 ```
 Eres un ingeniero de QA independiente. Lee las tareas en <RUTAS_TAREAS> (su
 sección `## Scenarios (Gherkin)`) y las specs en <RUTAS_SPECS>. Explora el
 codebase en read-only lo necesario. No edites nada.
+
+Lee también los use cases en <RUTAS_UCS>: son el comportamiento YA especificado
+del producto (sus `Scenario: ACn · …` son criterios de aceptación vigentes). Un
+`## Out of scope` de un UC es una frontera declarada SOLO si su destino existe
+(otro UC, otro package, una doc concreta): esa NO la reportes como hueco. Un
+`Out of scope` sin destino existente ("no existe aún") trátalo como CANDIDATO A
+HUECO, no como frontera. Un AC existente que las tareas del plan alteran sin que
+ninguna lo actualice SÍ es un hueco (dimensión 8).
 
 Tu trabajo es encontrar COMPORTAMIENTOS QUE LOS ESCENARIOS NO CUBREN, mirando el
 set completo de tareas (huecos dentro de una tarea Y huecos que ninguna tarea
@@ -48,7 +57,9 @@ que falta, o márcala "N/A porque…":
 6. Input adversario — malformado, hostil, inesperado.
 7. Spec implícita — lo que la Spec asume pero no fija explícitamente.
 8. Requisito ausente — comportamiento que el producto necesita y que NINGUNA tarea
-   contempla todavía (el hueco que el mutation testing no puede detectar).
+   contempla todavía (el hueco que el mutation testing no puede detectar). Si hay
+   use cases, contrasta contra ellos: cubre tanto el AC vigente que el plan rompe
+   sin actualizarlo como el comportamiento nuevo que ningún UC ni tarea recoge.
 
 NO infles: si una dimensión no aplica a una tarea (p.ej. concurrencia en una
 función pura), márcala N/A con su porqué en vez de inventar escenarios.

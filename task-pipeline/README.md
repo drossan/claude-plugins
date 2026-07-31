@@ -43,6 +43,7 @@ El plugin NO impone estructura nueva; asume que el repo ya organiza el trabajo a
   tasks/<estado>/<package>/<task-id>.md
   context/<package>/<task-id>.md               # histórico de sesión (append-only)
   specs/<package>/HOW-TO-START-A-TASK.md        # gate de ejecución por package
+  specs/<package>/use-cases/UC-<AREA>-<slug>.md # (features.use-cases) specs vivas de producto
   task-pipeline.yml                             # config de features del repo (defaults ON)
 docs/guides/task-lifecycle.md                  # flujo canónico (estados, plantillas, DoD)
 ```
@@ -102,6 +103,7 @@ con Jest, npm, no-TS, etc.).
 | `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
+| `features.use-cases` | bloque; opt-in (default **off**) | **Specs vivas de producto**: casos de uso `UC-<AREA>-<slug>` con ACs en Gherkin, en `.claude/specs/<package>/use-cases/`. Fuera de todo preset; solo `enabled: true` activa (valor no-canónico → off); `areas:` declara el alias del id por package. Ver [Use cases](#use-cases-opcional--featuresuse-cases). |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
 
 `grilling` y la aprobación del plan **no** son configurables: no negociables por
@@ -166,6 +168,78 @@ que inyecta una directiva mínima de compresión.
   de herramientas dominan). El pipeline **no puede medir por sí solo** el efecto de caveman
   (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
   probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
+
+## Use cases (opcional — `features.use-cases`)
+
+Feature **opt-in** (default `off`) que añade al pipeline la capa de **specs vivas de
+producto**: casos de uso (`UC-<AREA>-<slug>`) con criterios de aceptación en Gherkin, en
+`.claude/specs/<package>/use-cases/`. Resuelve una asimetría del pipeline: los planes y
+las tareas son **efímeros** (se archivan al cerrar, con su Gherkin dentro), así que sin
+esta capa no queda en ningún sitio mantenido *qué hace el software HOY* — el conocimiento
+de comportamiento se genera en cada tarea y se entierra con ella.
+
+**Config (`features.use-cases`)** — bloque, mismo fail-safe que `github-tracking`
+(**solo `enabled: true` booleano activa**; ausente / `false` / valor no-canónico → off):
+
+| Clave | Qué es |
+|---|---|
+| `enabled` | `true` (booleano) lo activa. Fuera de todo preset; su ausencia no es drift. |
+| `areas` | Mapa `package: AREA` — el alias del id (`MAYÚSCULAS sin guiones`, p.ej. `shop-cart: CART`). Un package **sin entrada** usa el default mecánico: el nombre del package en MAYÚSCULAS sin guiones (`shop-cart` → `SHOPCART`). Declararlo evita el juicio por sesión y las colisiones de alias. Opcional. |
+
+- **El artefacto** (`templates/use-case.md`): `## Intent`, `## Actors and trigger`,
+  `## Main flow` (pasos numerados en lenguaje de dominio), `## Alternative flows /
+  errors` (cada desvío con el paso donde salta y cómo cierra), `## Acceptance criteria
+  (Gherkin)` — cada `Scenario: ACn · …` es un AC —, `## Out of scope` (fronteras
+  declaradas, **cada una con destino existente**: un «no existe aún» es un hueco, no una
+  frontera), `## Notes / links` y `## Change log`. **Regla anti-drift**: el main flow
+  narra el orden, los ACs fijan los detalles (formatos, límites, valores) — cuando un
+  dato concreto vive en un AC, el flow lo **referencia** («…con el formato que fija
+  AC5») en vez de repetirlo; cada duplicado es una copia que, sin validador, acaba
+  contradiciéndose. Frontmatter con `status: draft|active` y `trace:` — los ficheros
+  donde **se edita** el comportamiento (rutas desde la raíz; siempre el artefacto
+  **vivo**, nunca una plantilla/semilla que se copia; los tests no van ahí — se
+  encuentran por su tag). El **nombre del fichero ES el id**, sin contador: un UC es
+  global al package y longevo, no plan-scoped, así que un correlativo reintroduciría
+  justo la colisión entre ramas que los ids plan-scoped eliminaron.
+- **Cómo se teje con el pipeline** (flag on): el plan declara `## Use cases` y los UCs
+  existentes se leen **antes** de explorar código (Paso 2); cada tarea referencia en
+  `use_cases:` los UC que crea/modifica (Paso 5); `scenario-coverage` recibe los UCs como
+  **baseline** — un `Out of scope` con destino existente es frontera declarada, no hueco;
+  uno sin destino es candidato a hueco; un AC vigente que el plan altera sin tarea que lo
+  actualice es un hueco (Paso 5.5); y la DoD exige **consolidar** al cerrar: el escenario
+  que define comportamiento observable del producto se promueve o actualiza como AC del
+  UC; el de andamiaje muere con la tarea. Cada AC mapea 1:1 con un test
+  `[UC-<AREA>-<slug>] ACn · …`.
+- **Ciclo de vida**: nace `draft` (committeable sin tests) → `active` cuando todos sus ACs
+  tienen test. Comportamiento retirado = UC borrado (git lo recuerda). Un cambio de
+  comportamiento **actualiza** el AC existente, nunca añade uno que lo contradiga; los
+  números de AC retirados no se reutilizan (los tags de tests viejos no deben
+  re-significarse). Sin harness que taguear — `features.tdd: false` **o**
+  `stack.test-runner: none` — los UCs se quedan en `draft`: spec sin verificación
+  automática, dicho honestamente (el criterio real de `active` depende de que exista
+  runner, no del flag `tdd`).
+- **Renombrar un UC** (el slug se elige el primer día, cuando peor se entiende la
+  capacidad — pasará) es una operación de primera clase, no un `mv`: (1) renombra fichero
+  **e** `id:` a la vez (filename = id); (2) actualiza los `use_cases:` de las tareas en
+  **todos** los estados y la sección `## Use cases` de los planes que lo citan; (3)
+  actualiza los **tags de tests** `[UC-…]`; (4) anota el rename en el `## Change log` del
+  UC (el nombre viejo queda buscable). `/doctor` reporta los cabos sueltos (referencias
+  huérfanas, fichero ≠ id) pero no auto-edita.
+- **Residual conocido (`ACn` en paralelo)**: dos ramas que añaden ACs al **mismo** UC
+  pueden elegir el mismo número. A diferencia de los task-ids (ficheros nuevos → add/add
+  silencioso), aquí ambas editan el **mismo fichero** → git da conflicto textual visible
+  al mergear; si aun así cuela, `/doctor` reporta el `ACn` duplicado. No se previene en
+  duro (mismo criterio que el residual de los task-ids).
+- **Reconcilia antes de desactivar**: con `enabled: false` la categoría de `/doctor` **no
+  corre** — los UCs que existan quedan huérfanos y sin vigilancia (nadie detecta `trace:`
+  muerto ni `active` sin tests). Igual que con `github-tracking`: deja los UCs
+  consolidados (o bórralos) **antes** de apagar el flag.
+- **Límite honesto (hoy)**: la trazabilidad UC↔código↔test es **disciplina de DoD +
+  playbook**, no un validador determinista. `/doctor` (con el flag on) caza el drift grueso
+  — fichero ≠ id, `trace:` muerto, `use_cases:` huérfano, `ACn` duplicado, `AREA` que no
+  cuadra con `areas:`, UC `active` con AC sin test (grep best-effort) — pero un script de
+  trace ejecutable en CI (link-rot + cobertura AC↔test) es la evolución natural y **no
+  existe aún**.
 
 ## GitHub tracking (opcional)
 
@@ -241,6 +315,7 @@ El plugin trae las **semillas** que `/plan-task` materializa en el repo (no se i
 | `skills/plan-task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
 | `skills/plan-task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |
 | `skills/plan-task/templates/task.md` | `.claude/tasks/pending/<package>/<task-id>.md` (por tarea; incluye `## Scenarios (Gherkin)`) |
+| `skills/plan-task/templates/use-case.md` | `.claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md` (por caso de uso; solo con `features.use-cases`) |
 
 Detalle y placeholders en `skills/plan-task/templates/README.md`. Esto cierra el bootstrap: `/plan-task` copia desde estas plantillas en vez de "replicar el HOW-TO de otro package".
 

@@ -8,6 +8,7 @@ depends_on: []
 estimate: 2h
 actual:
 issue:                    # opcional; solo con features.github-tracking — nº de la SUB-ISSUE proyectada (lo escribe /plan-task)
+use_cases: []             # opcional; solo con features.use-cases — ids UC-<AREA>-<slug> (en .claude/specs/<package>/use-cases/) cuyo comportamiento crea/modifica esta tarea; [] si es andamiaje
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -45,6 +46,11 @@ Lista de bullets verificables, no prosa. Enlaza la(s) spec(s) del artefacto.>
      4. Para variaciones del MISMO comportamiento (fronteras, clases de equivalencia,
         off-by-one) usa `Scenario Outline` + `Examples`; no copies escenarios casi
         iguales. (Conecta con la dimensión "fronteras" de scenario-coverage.)
+     5. (Solo con `features.use-cases`) Estos escenarios son EFÍMEROS: mueren con la
+        tarea al archivarse. El que define comportamiento observable del PRODUCTO se
+        consolida al cierre como AC (`ACn · …`) del UC declarado en `use_cases:`
+        (ver templates/use-case.md); el de andamiaje de la tarea (bootstrap,
+        migración, refactor interno) muere con ella y no se promueve.
 
      Si la tarea no produce código testeable (p.ej. bootstrap de tipos, doc-only),
      sustituye los escenarios por una nota que lo justifique y di cómo se verifica
@@ -104,6 +110,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
+- [ ] UCs de `use_cases:` consolidados — escenarios de producto promovidos/actualizados como ACs (`ACn · …`), `trace:` del UC al día, `draft`→`active` si todos sus ACs tienen test tagueado `[UC-<AREA>-<slug>]`  · solo si `features.use-cases`
 - [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):
   - [ ] **TSDoc en el código** — todo símbolo público (funciones, clases, tipos, puertos, errores) documentado con TSDoc, al crearlo (no al final)  · (flag `tsdoc`)
   - [ ] **Doc técnica (contexto)** — README / `CLAUDE.md` del package / `.claude/specs/` / ADRs donde aplique  · (flag `technical-docs`)

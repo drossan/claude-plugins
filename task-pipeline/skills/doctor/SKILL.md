@@ -52,6 +52,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    no es drift**; doctor puede ofrecerlo comentado como nicety, **nunca** reportarlo como problema.
    La lógica que lo consume (los pasos condicionales de `/plan-task` y del lifecycle) es
    **plugin-owned**; la **reconciliación** del drift md↔GitHub es una categoría aparte (ver abajo).
+   Ídem **`features.use-cases`** (bloque opt-in, default off, desde 0.14.0 — solo `enabled: true`
+   activa): su **ausencia no es drift**; doctor puede ofrecerlo comentado como nicety, **nunca**
+   reportarlo como problema. La verificación de los UCs en sí (con el flag on) es una categoría
+   aparte (ver abajo).
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
@@ -109,6 +113,30 @@ artefacto del plugin — ver "Propiedad" abajo).
      `.md`** el **body**, las labels (`pkg:*`/`status:*`), el **Status del Project** y el **assignee** de
      forma **idempotente** (recipe add-then-remove del ciclo de vida); **no** hay detección nueva del drift
      `status:*`↔`.md`↔Project (es residual aceptado: se re-alinea al re-proyectar, no se diagnostica aparte).
+
+9. **Use cases desalineados** (repo-owned; **solo si** `features.use-cases.enabled: true` — con el
+   flag off esta categoría **no corre** y los UCs que existan se ignoran; por eso la regla es
+   **reconciliar antes de desactivar**, como en `github-tracking`). Recorre
+   `.claude/specs/*/use-cases/*.md` y las tareas que los referencian, y reporta:
+   - **`filename` ≠ `id:`** del frontmatter (rompe el invariante "fichero = id"; mismo criterio
+     que la categoría 7).
+   - **`<AREA>` del id que no cuadra** — ni con el alias declarado en `features.use-cases.areas`
+     para su `package:` ni con el default mecánico (package en MAYÚSCULAS sin guiones). Señal de
+     alias re-derivado por juicio: el mismo package acaba con UCs bajo dos áreas.
+   - **Rutas muertas en `trace:`** — un fichero listado que ya no existe en el repo. (Recuerda el
+     criterio: el `trace:` apunta a donde SE EDITA el comportamiento — artefacto vivo, no semillas.)
+   - **`use_cases:` huérfano** — una tarea (en cualquier estado) apuntando a un UC inexistente.
+   - **`ACn` duplicado dentro de un UC** — dos `Scenario: ACn · …` con el mismo número (residual
+     de dos ramas añadiendo ACs al mismo UC; normalmente lo caza el conflicto git, esto es la red).
+   - **Destino muerto en `## Out of scope`** — un bullet cuyo destino (fichero de UC, doc) ya no
+     existe. Un bullet **sin** destino existente no es frontera: repórtalo como aviso (es un hueco
+     disfrazado; la plantilla lo prohíbe).
+   - **UC `active` con AC sin test** — para cada `Scenario: ACn · …` del UC, busca el tag
+     `[UC-<AREA>-<slug>] ACn` en el repo (grep textual, **sin ejecutar tests**). Si falta,
+     repórtalo como **aviso best-effort** (el tag puede construirse dinámicamente): un `active`
+     sin cobertura aparente debería volver a `draft` o recuperar su test.
+   - **Robustez de parseo**: frontmatter roto o sin `id:` = aviso **no parseable**, el check
+     sigue (mismo criterio que la categoría 7 y "Config malformada").
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -171,6 +199,15 @@ conflicto cambia. Trátalo como **aviso**: nombra los ficheros implicados y **su
 auto-editar**. **Aviso extra (T-H)**: si alguna de las tareas en conflicto **ya tiene `issue:`** (proyectada
 en GitHub por `features.github-tracking`), advierte que renumerar **desincroniza** el `.md` de su issue → hay
 que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
+
+**Use cases desalineados (rara vez mecánico → regla 4):** un `trace:` muerto puede ser un fichero
+renombrado (propón el diff si el destino es evidente) o un comportamiento retirado (entonces lo que toca
+es actualizar/borrar el UC — decisión humana); `filename` ≠ `id:`, el `use_cases:` huérfano, el `ACn`
+duplicado y el AC de un UC `active` sin test son **avisos** con la resolución sugerida (elegir qué lado
+cambia; degradar el UC a `draft` o recuperar el test), **sin auto-editar**. Para un UC mal nombrado,
+sugiere la **checklist de rename** del README del plugin (fichero + `id:` a la vez, `use_cases:` de las
+tareas en todos los estados, `## Use cases` de los planes, tags de tests, nota en el `## Change log`) —
+nunca un `mv` a secas.
 
 **Reconciliación md↔GitHub (solo con el flag on):** re-proyecta **desde el `.md`** (la fuente de verdad):
 crear la issue que falta, cerrar la que quedó `open`, con **diff + aprobación** problema a problema. Lo **no

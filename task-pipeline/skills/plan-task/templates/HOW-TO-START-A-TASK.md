@@ -53,7 +53,10 @@
 > 5. Al cerrar: **todos** los checkboxes de la Definition of Done en verde, incluida
 >    la documentación en sus **tres capas obligatorias** —(1) **TSDoc** en todo
 >    símbolo público, (2) **doc técnica/contexto** (README/CLAUDE.md/specs/ADRs),
->    (3) **histórico de la tarea** (session log)—, con `pnpm lint` y `pnpm test`
+>    (3) **histórico de la tarea** (session log)—, los **UCs de `use_cases:`
+>    consolidados** si el repo activa `features.use-cases` (escenarios de producto
+>    promovidos/actualizados como ACs en `.claude/specs/<package>/use-cases/`, con
+>    el `trace:` al día y nota en su `## Change log`), con `pnpm lint` y `pnpm test`
 >    **repo-wide** en verde (sin regresiones), **cero secretos en logs** y el **gate
 >    de mutation testing** superado (Stryker, `break: 80`, sobre los ficheros
 >    tocados — survivors = escenarios/aserciones que faltan). Sin eso NO es `done`.
@@ -115,6 +118,10 @@ Al terminar:
 - **Gate `fact-checker` (no-negociable)**: antes de commit y del resumen, corre
   `fact-checker` sobre las afirmaciones de la sesión. `INCORRECTO` bloquea hasta
   corregir; `NO VERIFICABLE` = aviso a reconocer; `VERIFICADO` pasa.
+- (Solo si `features.use-cases`) Consolida los escenarios de producto de la tarea
+  como ACs en los UCs de `use_cases:` (`.claude/specs/<package>/use-cases/`):
+  `trace:` al día, `draft`→`active` si todos los ACs tienen test, nota en el
+  `## Change log` del UC.
 - Cierra el histórico en `.claude/context/<package>/<task-id>.md` (resumen,
   decisiones + porqué, tests corridos + resultado, docs actualizadas + motivo,
   ficheros/commits, tiempo real, follow-ups).

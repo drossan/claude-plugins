@@ -14,6 +14,7 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 | `HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` | Una vez por package. Gate de ejecución TDD del package. |
 | `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/plan-task`). |
 | `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/plan-task`). |
+| `use-case.md` | `.claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md` | Por cada caso de uso nuevo (paso 5 de `/plan-task`; **solo con `features.use-cases`**, opt-in). Spec **viva** del comportamiento del producto: sobrevive a los planes/tareas (efímeros) que la formaron. |
 
 ## Cómo las usa `/plan-task`
 
@@ -22,13 +23,22 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 - **Package sin su HOW-TO** → se crea desde `HOW-TO-START-A-TASK.md` (rellenando
   los bloques `ESPECÍFICO DEL PACKAGE`), en vez de "replicar el de otro package".
 - **Plan / tarea nuevos** → se copian `plan.md` / `task.md` y se rellenan.
+- **Comportamiento de producto nuevo sin UC que lo cubra** (con `features.use-cases`)
+  → se copia `use-case.md` (nace `status: draft`); los UCs existentes se leen como
+  contexto ANTES de explorar el código.
 
 ## Placeholders
 
 Los `<package>`, `<name-plan>`, `<plan-id>` (= `<package>-<name-plan>`), `<task-id>`
 (= `<plan-id>-<nn>`, con `<nn>` correlativo del plan desde `01` — **no** un contador
-global del package), `YYYY-MM-DD` y los bloques marcados `ESPECÍFICO DEL PACKAGE` se
-sustituyen al materializar. El `task.md` exige siempre la sección
+global del package), `UC-<AREA>-<slug>` (`<AREA>` = el alias declarado en
+`features.use-cases.areas` del YAML del repo, en MAYÚSCULAS **sin guiones**; un
+package sin entrada usa el default mecánico — el package en MAYÚSCULAS sin guiones,
+`shop-cart` → `SHOPCART` — para que el id sea parseable y diga su package fuera de
+contexto; `<slug>` = kebab de 2-4 palabras que nombra la capacidad, no la
+implementación; el nombre del fichero ES el id, sin contador — un UC es global al
+package y longevo, no plan-scoped), `YYYY-MM-DD` y los bloques marcados
+`ESPECÍFICO DEL PACKAGE` se sustituyen al materializar. El `task.md` exige siempre la sección
 `## Scenarios (Gherkin)` (fuente 1:1 de los tests); si la tarea no produce código
 testeable, se justifica ahí cómo se verifica.
 
