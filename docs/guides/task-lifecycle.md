@@ -46,6 +46,7 @@ skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en checkpoints. No forma parte de ningún preset; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
+| `features.use-cases` | bloque; opt-in (default `off`) | Specs **vivas** de producto en `.claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md`: el plan las declara (`## Use cases`), las tareas las referencian (`use_cases:`) y la DoD exige consolidar los escenarios de producto como ACs al cerrar. **No** forma parte de ningún preset; su **ausencia no es drift**. Solo `enabled: true` activa (valor no-canónico → off); `areas:` declara el alias `<AREA>` por package. **Este repo lo dogfoodea** (`enabled: true`, `areas: {task-pipeline: PIPELINE}`); sin runner de tests, sus UCs viven en `draft`. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
@@ -75,6 +76,7 @@ en el README del plugin.
     cancelled/<package>/<task-id>.md
   context/<package>/<task-id>.md      # session log — append-only
   specs/<package>/HOW-TO-START-A-TASK.md
+  specs/<package>/use-cases/UC-<AREA>-<slug>.md   # (features.use-cases) specs vivas de producto — fichero = id
 ```
 
 - `<package>` es el nombre de un workspace del repo.
@@ -128,6 +130,7 @@ updated: YYYY-MM-DD
 ## Recursos externos
 ## Estimación global
 ## Criterios de calidad y verificación
+## Use cases                  # (features.use-cases) UCs que el plan crea/modifica; los existentes se leen ANTES de explorar código
 ## Tasks
 - [ ] `<plan-id>-01` (P1) — <título corto>  · depends_on: —
 - [ ] `<plan-id>-02` (P2) — <título corto>  · depends_on: <plan-id>-01
@@ -148,6 +151,7 @@ priority: 1
 depends_on: []
 estimate: 2h
 actual:
+use_cases: []             # (features.use-cases) ids UC-<AREA>-<slug> que esta tarea crea/modifica; [] si es andamiaje
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
 ---
@@ -185,6 +189,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
+- [ ] UCs de `use_cases:` consolidados — escenarios de producto promovidos como ACs, `trace:` al día, `draft`→`active` si todos los ACs tienen test  · solo si `features.use-cases`
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -286,23 +291,32 @@ particular:
    corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
    (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
    en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
-5. **Documentación actualizada** — tres capas (cada una obligatoria salvo que su flag
+5. **Use cases consolidados** (solo si `features.use-cases`): los escenarios Gherkin
+   de la tarea que definen comportamiento observable del producto se promueven (o
+   actualizan) como ACs (`ACn · …`) en los UCs de su `use_cases:`
+   (`.claude/specs/<package>/use-cases/`); los de andamiaje mueren con la tarea. El
+   `trace:` de cada UC tocado queda al día, y el UC pasa `draft`→`active` si todos
+   sus ACs tienen test tagueado `[UC-<AREA>-<slug>] ACn · …` (en este repo, sin
+   runner de tests, los UCs permanecen en `draft`). Registra el cambio en el
+   `## Change log` del UC (fecha + task-id). Si la tarea CAMBIA un comportamiento ya
+   especificado, se ACTUALIZA el AC existente — nunca se añade uno que lo contradiga.
+6. **Documentación actualizada** — tres capas (cada una obligatoria salvo que su flag
    en `features.closing-documentation.*` sea `false`), más dev/usuario donde aplique:
    - **TSDoc en el código** (`tsdoc`): cada símbolo público con su comentario
      (intención, params, returns, errores).
    - **Doc técnica / contexto** (`technical-docs`): README del package, `CLAUDE.md`
      del workspace, `.claude/specs/`, ADRs para decisiones de arquitectura.
-   - **Histórico de la tarea** (`context-log`): el session log (paso 6).
+   - **Histórico de la tarea** (`context-log`): el session log (paso 7).
    - **Dev / usuario final** (donde aplique): onboarding, guías, scripts,
      `.env.example`, mensajes de error, entrada de `pnpm changeset`.
 
    Si la tarea no tiene superficie de usuario, el session log lo justifica.
-6. Session log cerrado con: resumen, decisiones técnicas + porqué, tests corridos +
+7. Session log cerrado con: resumen, decisiones técnicas + porqué, tests corridos +
    resultado, docs actualizadas (rutas + motivo), ficheros/commits, tiempo real,
    follow-ups.
-7. Mueve la tarea a `.claude/tasks/completed/<package>/`, `status: done`, rellena
+8. Mueve la tarea a `.claude/tasks/completed/<package>/`, `status: done`, rellena
    `actual:`, bump `updated`.
-8. Marca el `[x]` en la sección **Tasks** del plan y bump el `updated` del plan.
+9. Marca el `[x]` en la sección **Tasks** del plan y bump el `updated` del plan.
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.

@@ -55,6 +55,10 @@ Antes de escribir nada, mira el repo en read-only:
      `legacy` (TDD sobre lo que tocas, sin gate de mutation) o `docs-only` (solo
      planes + docs) y **confírmalo con `AskUserQuestion`** antes de fijarlo. Si hay
      stack de tests sano, deja `full`.
+   - `features.use-cases` (bloque opt-in) se queda **comentado**: no lo actives tú.
+     Si el usuario lo pide, recuérdale declarar `areas:` (alias `<AREA>` del id por
+     package) y que el directorio `use-cases/` **nace con el primer UC** — no lo
+     crees vacío en el esqueleto.
    El usuario puede editarla luego. No la sobrescribas si ya existe.
 4. Lee `../plan-task/templates/honesty-rules.md` con **Read** y escríbela en
    `.claude/honesty-rules.md` **solo si no existe**. Son las reglas de honestidad

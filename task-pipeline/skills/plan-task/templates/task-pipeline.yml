@@ -58,6 +58,29 @@ features:
   # Comentado a propósito: el TEMPLATE no impone coste/comportamiento a repos consumidores.
   # caveman: off
 
+  # Use cases (specs VIVAS de producto — bloque OPCIONAL, opt-in, default off). Mantiene
+  # en .claude/specs/<package>/use-cases/UC-<AREA>-<slug>.md el comportamiento que el
+  # software tiene HOY. Resuelve una asimetría del pipeline: planes y tareas son
+  # EFÍMEROS (se archivan al cerrar, con su Gherkin dentro); el UC es donde ese
+  # comportamiento sobrevive. Con el flag on: el plan declara `## Use cases`, cada
+  # tarea referencia en `use_cases:` los UC que crea/modifica, scenario-coverage usa
+  # los UCs como baseline y la DoD exige consolidar los escenarios de producto como
+  # ACs al cerrar. NO forma parte de ningún preset (mode: full NO lo enciende) y su
+  # AUSENCIA no es drift para /doctor (default off, como caveman/github-tracking).
+  # RESOLUCIÓN FAIL-SAFE: SOLO `enabled: true` (booleano) lo activa. Ausente /
+  # enabled: false / valor no-canónico ("true" string, yes, 1, comentado) → off.
+  # `areas:` declara el alias <AREA> por package (MAYÚSCULAS sin guiones); un package
+  # SIN entrada usa el default mecánico: el nombre del package en MAYÚSCULAS sin
+  # guiones (shop-cart → SHOPCART). Declarar el alias evita colisiones y juicio por sesión.
+  # RECONCILIA ANTES DE DESACTIVAR: con el flag off, /doctor ignora los UCs (quedan
+  # huérfanos, sin vigilancia) — misma regla que github-tracking.
+  # Artefacto y reglas: skills/plan-task/templates/use-case.md; README → "Use cases (opcional)".
+  # Comentado a propósito: el TEMPLATE no impone coste a repos consumidores.
+  # use-cases:
+  #   enabled: false
+  #   areas:                 # opcional; alias por package — sin entrada → default mecánico
+  #     shop-cart: CART
+
   # GitHub tracking (integración OPCIONAL, opt-in, default off). Proyecta el trabajo a
   # GitHub Issues/Projects one-way (md→GitHub): plan → issue PADRE, tarea → SUB-ISSUE.
   # El .md sigue siendo la ÚNICA fuente de verdad; GitHub es una proyección.
