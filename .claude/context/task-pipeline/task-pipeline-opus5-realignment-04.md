@@ -17,7 +17,10 @@
 
 ### Corrección de Spec detectada en el arranque (verificada por `grep -rn "trivial" --include=*.md`)
 
-La Spec afirma que los criterios viven en **CUATRO** sitios. Verificado: **no es exacto en dos puntos**.
+La Spec afirma que los criterios viven en **CUATRO** sitios. Verificado: el **número era correcto; la
+membresía, no** — falla en dos puntos. (Corrección posterior del gate `fact-checker`, ver más abajo: en
+el arranque enuncié esto como "son cinco los que enumeran", y era inexacto. Antes del cambio enumeraban
+**cuatro** ficheros, pero **no los cuatro de la tabla**.)
 
 | Sitio | Realidad |
 |---|---|

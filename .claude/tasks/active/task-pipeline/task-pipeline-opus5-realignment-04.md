@@ -24,10 +24,13 @@ Mejor ratio valor/coste del plan y sin dependencias: **candidata a ir primera**.
 
 ## Spec
 
-**Los criterios viven en CINCO sitios** (corregido en ejecución — la Spec original decía CUATRO y era
-inexacta en dos puntos: `website/guia/pipeline.md` **no** enumeraba criterios y
-`task-pipeline/docs/flujo-del-pipeline.md` **sí** los enumeraba y faltaba de la tabla). Los cinco deben
-quedar coherentes, y el segundo es el que llega a los consumidores:
+**Tras esta tarea, los criterios viven en CINCO sitios.** Corregido en ejecución: la Spec original decía
+CUATRO y el **número era correcto, pero no la membresía** — `website/guia/pipeline.md` estaba listado y
+**no** enumeraba criterios (solo "criterios estrictos"), mientras que
+`task-pipeline/docs/flujo-del-pipeline.md` **sí** los enumeraba y **faltaba de la tabla**. Se añade la
+enumeración a `website/` para que las cuatro copias sean comparables literalmente por `grep`; de ahí que
+el total pase de cuatro a cinco. Los cinco deben quedar coherentes, y el segundo es el que llega a los
+consumidores:
 
 | Fichero | Rol |
 |---|---|

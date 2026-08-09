@@ -393,10 +393,12 @@ Entregable: `.claude/specs/task-pipeline/opus5-audit.md`, incluyendo los hallazg
 - 2026-08-09: **plan arrancado** (`active`), rama `plan/task-pipeline/opus5-realignment`. Primera tarea:
   la **04** (sin `depends_on`, mejor ratio valor/coste), no la 01.
 - 2026-08-09: **corrección de Spec de la tarea 04 durante su ejecución** (`grep -rn "trivial"`
-  verificado). La Spec decía que los criterios de salto viven en **CUATRO** sitios; son **CINCO** y la
-  tabla fallaba en dos puntos: `website/guia/pipeline.md` estaba listado pero **no enumeraba** criterios
-  (solo "criterios estrictos"), y `task-pipeline/docs/flujo-del-pipeline.md:80-83` **sí los enumeraba** y
-  **faltaba**. Sin corregirlo, los docs del plugin habrían quedado contradiciendo la skill tras calibrar
+  verificado). La Spec decía que los criterios de salto viven en **CUATRO** sitios. El **número era
+  correcto; la membresía no**: `website/guia/pipeline.md` estaba listado pero **no enumeraba** criterios
+  (solo "criterios estrictos"), y `task-pipeline/docs/flujo-del-pipeline.md:80-84` **sí los enumeraba** y
+  **faltaba de la tabla**. Tras el cambio son **cinco**, porque se añade la enumeración a `website/` para
+  que las cuatro copias sean comparables literalmente por `grep`. Sin corregirlo, los docs del plugin
+  habrían quedado contradiciendo la skill tras calibrar
   — justo el fallo que el escenario "Los criterios no divergen entre copias" existe para impedir.
   `README.md:16,109` solo referencian, no enumeran → fuera del barrido. Ajustados en la tarea 04: tabla
   de Spec, `Provides`, DoD (cuatro→cinco) y dos escenarios (uno nuevo: un sitio que enumera no puede
