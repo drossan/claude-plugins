@@ -201,7 +201,7 @@ gate de mutation de la DoD son **N/A**; el gate de `fact-checker` **sí** aplica
 - [ ] `task-pipeline-opus5-realignment-01` (P1) — Disciplina de alcance, delegación y longitud + fixes de plantilla + drift por versión en `/doctor` + aviso `@import`  · depends_on: —
 - [ ] `task-pipeline-opus5-realignment-02` (P1) — Hipótesis/evidencia y anti-bucle, con la defensa escrita + drift en `/doctor`  · depends_on: `task-pipeline-opus5-realignment-01`
 - [ ] `task-pipeline-opus5-realignment-03` (P2) — `scenario-coverage` recibe el plan y reporta los huecos fuera de alcance marcados  · depends_on: `task-pipeline-opus5-realignment-01`
-- [ ] `task-pipeline-opus5-realignment-04` (P2) — Tensar los criterios del "Salto en planes triviales"  · depends_on: —
+- [x] `task-pipeline-opus5-realignment-04` (P2) — Tensar los criterios del "Salto en planes triviales"  · depends_on: —
 - [ ] `task-pipeline-opus5-realignment-05` (P3) — Docs (README/website/lifecycle) + CHANGELOG + bump 0.14.0  · depends_on: `…-02`, `…-03`, `…-04`
 - [ ] `task-pipeline-opus5-realignment-06` (P3) — Baseline: valor a ciegas → coste → veredicto con la regla corregida  · depends_on: —
 

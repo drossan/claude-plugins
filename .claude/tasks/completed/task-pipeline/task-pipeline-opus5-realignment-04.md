@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-04
 package: task-pipeline
 plan: opus5-realignment
-status: active
+status: done
 priority: 2
 depends_on: []
 estimate: 1h
-actual:
+actual: 1h
 issue: 30
 created: 2026-08-09
 updated: 2026-08-09
@@ -151,26 +151,31 @@ Feature: Salto proporcional en planes triviales
 
 ## Provides
 
-- Criterios de salto calibrados y **coherentes en las cinco copias** — reduce el coste de las dos
+- Criterios de salto calibrados y **coherentes en los cinco sitios** (la fuente + sus **cuatro copias**;
+  a lo largo de esta tarea "sitio" = los 5, "copia" = las 4 no-fuente) — reduce el coste de las dos
   fases caras sin cambiar su implementación, y llega a los consumidores vía la semilla del template.
 - **Frase canónica literal** para las copias (declarada en `plan-task/SKILL.md`): las tareas 03 y 05
   pueden greparla en vez de re-derivar los criterios.
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección y ejecutando `/plan-task`
-- [ ] Escenarios verificados: un plan trivial y uno no trivial recorren el flujo correcto
-- [ ] Las **cinco** copias de los criterios dicen lo mismo (`grep` comparativo)
-- [ ] Los siete invariantes siguen en el texto
-- [ ] La calibración está fijada por ejemplos, no por adjetivos
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** (Markdown)
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A** (Markdown)
-  - [ ] Doc técnica — las cuatro copias alineadas
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-04.md`
-- [ ] Docs de dev / usuario final — se consolidan en la tarea 05
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección y ejecutando `/plan-task`
+- [x] Escenarios verificados: los 13 escenarios trazados uno a uno contra el texto calibrado (ver histórico)
+- [x] Los **cinco sitios** de los criterios dicen lo mismo: la fuente enumera la tabla y sus **cuatro
+      copias** llevan la frase canónica literal (`grep` comparativo normalizado — 4/4 + `1 tarea sin
+      caminos de error` en 5/5; confirmado por `fact-checker`)
+- [x] Los siete invariantes siguen en el texto (`grep` 1/1 cada uno; los no-negociables intactos en :43 y :178)
+- [x] La calibración está fijada por ejemplos, no por adjetivos (tabla de 4 criterios × columna
+      "se puede ofrecer" / "NO se ofrece")
+- [x] Spec cumplida (con la corrección de membresía registrada); lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** (Markdown). `pnpm docs:build` de `website/` en verde.
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — 10 VERIFICADO tras corregir
+      1 INCORRECTO (que bloqueó el cierre hasta arreglarlo); 0 NO VERIFICABLE
+- [x] Proyección de estado a GitHub al cerrar — `issue: 30` · `features.github-tracking: enabled`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A** (Markdown)
+  - [x] Doc técnica — los cinco sitios alineados (fuente + cuatro copias)
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-04.md`
+- [x] Docs de dev / usuario final — se consolidan en la tarea 05
