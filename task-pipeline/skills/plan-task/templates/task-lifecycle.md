@@ -227,8 +227,12 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 
 > `grilling` (paso 2) y la aprobación (paso 4) son **no negociables**. `design-review`
 > y `scenario-coverage` (pasos 3 y 6) corren por defecto pero admiten un **salto solo en
-> planes triviales** (un fichero/área, sin superficie nueva ni decisión arquitectónica):
-> lo confirma el owner y se registra en el Plan change log. Nunca un salto silencioso.
+> planes triviales**: una sola decisión replicada, sin contrato nuevo ni decisión
+> arquitectónica (y, para `scenario-coverage`, 1 tarea sin caminos de error reales).
+> Lo confirma el owner **una vez por pasada** (aceptar una no arrastra la otra), se
+> registra en el Plan change log y caduca si una re-planificación rompe los criterios.
+> Nunca un salto silencioso; sin canal para preguntar, la pasada se ejecuta. Los
+> criterios completos, con su frontera resuelta por ejemplo, están en la skill `plan-task`.
 
 ## Arrancar un plan
 

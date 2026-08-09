@@ -390,4 +390,25 @@ Entregable: `.claude/specs/task-pipeline/opus5-audit.md`, incluyendo los hallazg
   (concurrencia en artefactos Markdown de una sola rama; input adversario donde la entrada es el
   propio repo versionado). Motivo del rechazo, escrito aquí a propósito: absorber los ~45 habría
   sido la deriva de alcance que este plan existe para frenar.
+- 2026-08-09: **plan arrancado** (`active`), rama `plan/task-pipeline/opus5-realignment`. Primera tarea:
+  la **04** (sin `depends_on`, mejor ratio valor/coste), no la 01.
+- 2026-08-09: **corrección de Spec de la tarea 04 durante su ejecución** (`grep -rn "trivial"`
+  verificado). La Spec decía que los criterios de salto viven en **CUATRO** sitios; son **CINCO** y la
+  tabla fallaba en dos puntos: `website/guia/pipeline.md` estaba listado pero **no enumeraba** criterios
+  (solo "criterios estrictos"), y `task-pipeline/docs/flujo-del-pipeline.md:80-83` **sí los enumeraba** y
+  **faltaba**. Sin corregirlo, los docs del plugin habrían quedado contradiciendo la skill tras calibrar
+  — justo el fallo que el escenario "Los criterios no divergen entre copias" existe para impedir.
+  `README.md:16,109` solo referencian, no enumeran → fuera del barrido. Ajustados en la tarea 04: tabla
+  de Spec, `Provides`, DoD (cuatro→cinco) y dos escenarios (uno nuevo: un sitio que enumera no puede
+  quedarse fuera del barrido aunque no esté en la Spec).
+- 2026-08-09: **decisión de calibración (tarea 04)** — de los cuatro criterios, **dos se ensanchan y dos
+  se afilan**, no los cuatro. Se ensancha "un solo fichero/área" → **"un solo eje de decisión"** (N
+  ficheros valen si son la misma decisión replicada), que era el criterio que bloqueaba de facto a los
+  planes de este repo, donde una decisión se propaga a 4-5 copias por convención. Se afila "no crea
+  superficie/API nueva" → **`Provides` vacío en todas las tareas**, test mecánico en vez de juicio del
+  propio autor. **NO se amplía el conteo de tareas** de `scenario-coverage` pese a ser el candidato
+  obvio: el valor de esa pasada es la dimensión 8 (*requisito que ninguna tarea contempla*) y crece con
+  el número de tareas — evidencia en este mismo plan, donde `scenario-coverage` sobre un set de tareas
+  **de solo texto** detectó seis defectos de Spec. Ampliarlo habría saltado la pasada que produjo el
+  hallazgo más valioso del plan.
 <!-- Toda re-planificación in-place se registra aquí: qué cambió y por qué. -->

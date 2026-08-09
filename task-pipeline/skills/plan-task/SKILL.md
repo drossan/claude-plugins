@@ -45,13 +45,22 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 ### Salto en planes triviales (`design-review` / `scenario-coverage`)
 
 - **Default = ejecutar.** El salto es la excepción y **lo decide el usuario**, nunca tú en silencio: si tú decides que "es pequeño" para ahorrarte la pasada, has convertido la gate en su propio agujero. No lo hagas.
-- **Solo puedes OFRECER saltar** si el plan cumple **TODOS** estos criterios (si falla cualquiera, ni lo ofreces y ejecutas la pasada):
-  - toca un solo fichero/área;
-  - **no** crea superficie/API pública nueva (nada que iría en `Provides`);
-  - **no** hay decisión arquitectónica ni nada transversal;
-  - (solo para `scenario-coverage`) 1 tarea sin caminos de error/borde reales.
-- **Confirma con `AskUserQuestion`**, con la opción por defecto = **ejecutar la pasada**. No fuerces el salto con el framing.
-- **Registra el salto y su motivo en el Plan change log** (p. ej. *"`design-review` omitida: plan de un fichero, sin superficie nueva — aprobado por owner"*). Una gate saltada deja rastro; nunca desaparece en silencio.
+- **Por qué el salto se calibra por ejemplos y no por adjetivos.** La guía de migración a **Opus 5** documenta dos cosas relevantes: el modelo **delega más** que la generación anterior, y las instrucciones que le piden verificar ("usa un subagente para verificar", "revisa tu respuesta") ahora provocan **sobre-verificación**. En un plan donde no hay nada que revisar, una pasada con subagente repite cara lo que la sesión ya hace. Lo que **no** está medido es el rendimiento relativo de estas dos pasadas: por eso aquí se **afila el criterio**, no se amplía el salto a ojo.
+- **Solo puedes OFRECER saltar** si el plan cumple **TODOS** los criterios de abajo. Cada uno trae su **frontera resuelta con un ejemplo**: si tu caso no encaja en la columna izquierda, **no lo estires** — no lo ofreces y ejecutas la pasada.
+
+  | Criterio | Se puede ofrecer | NO se ofrece |
+  |---|---|---|
+  | **Un solo eje de decisión.** No cuentes ficheros: cuenta decisiones. N ficheros son **un** eje si son la *misma* decisión replicada; son **dos** si podrían razonablemente resolverse distinto. | cambiar un criterio en un `SKILL.md` y propagarlo a sus copias de docs/README/website: **4 ficheros, una decisión** | añadir una clave de config **y** el lector que la interpreta: **2 decisiones** que pueden divergir |
+  | **`Provides` vacío en todas las tareas.** Test mecánico, no juicio: si una tarea declara algo distinto de `—`, hay un contrato del que otro puede depender — y quien lo escribió no es quien decide si "cuenta". | una sección nueva en un README, con `Provides: —` | cualquier `Provides` no vacío: una clave de `task-pipeline.yml`, un flag, una ruta o un fichero que otra tarea (o un repo consumidor) lea |
+  | **Sin decisión arquitectónica ni nada transversal.** | cambiar el texto de un aviso ya existente | cambiar **cuál** es la fuente de verdad, o tocar algo que heredan los repos consumidores |
+  | **(solo `scenario-coverage`) 1 tarea sin caminos de error/borde reales.** El conteo **no se amplía**: el valor de la pasada es detectar el *requisito que ninguna tarea contempla*, y eso crece con el número de tareas. | 1 tarea cuyo `Then` es "el fichero X dice Y", verificable leyendo un texto | 2+ tareas, **o** una sola que añade una rama condicional, un error nuevo o un estado |
+
+  > **Frase canónica para las copias.** Los docs no repiten la tabla: llevan este resumen **literal** — *una sola decisión replicada, sin contrato nuevo ni decisión arquitectónica (y, para `scenario-coverage`, 1 tarea sin caminos de error reales)*. Está en `templates/task-lifecycle.md`, `docs/guides/task-lifecycle.md`, `docs/flujo-del-pipeline.md` y `website/guia/pipeline.md`. Si tocas la tabla, tocas las cuatro.
+
+- **Confirma con `AskUserQuestion`**, con la opción por defecto = **ejecutar la pasada**. No fuerces el salto con el framing. **Sin canal para preguntar** (no puedes lanzar `AskUserQuestion`) → **ejecutas la pasada** y no registras ningún salto.
+- **Las dos decisiones son independientes.** Aceptar el salto de `design-review` (Paso 4.5) **no** es consentimiento para `scenario-coverage` (Paso 5.5): se pregunta otra vez.
+- **Registra el salto y su motivo en el Plan change log** (p. ej. *"`design-review` omitida: una sola decisión replicada en 4 copias, sin contrato nuevo — aprobado por owner"*). Una gate saltada deja rastro; nunca desaparece en silencio.
+- **La trivialidad caduca.** Si una re-planificación in-place (Paso 0) hace que el plan deje de cumplir los criterios, la pasada **se ejecuta** antes de continuar y el Plan change log registra que **el salto anterior quedó invalidado**.
 
 ## Paso 0 — ¿Plan nuevo o re-plan?
 

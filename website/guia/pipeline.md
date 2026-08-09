@@ -19,7 +19,10 @@ fire-and-forget**: hay checkpoints humanos por diseño.
 - **`grilling`** y **la aprobación del plan** son **no negociables**: baratos y nucleares. Ningún preset ni
   flag los apaga.
 - **`design-review`** y **`scenario-coverage`** corren por defecto, con un **salto proporcional** solo en
-  planes triviales (criterios estrictos + confirmación del owner + registro).
+  planes triviales: una sola decisión replicada, sin contrato nuevo ni decisión arquitectónica (y, para
+  `scenario-coverage`, 1 tarea sin caminos de error reales). Lo confirma el owner **una vez por pasada**,
+  se registra en el Plan change log y caduca si una re-planificación rompe los criterios. Los criterios
+  completos, con su frontera resuelta por ejemplo, están en la skill `plan-task`.
 
 ## Los gates de cierre
 

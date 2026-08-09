@@ -24,15 +24,22 @@ Mejor ratio valor/coste del plan y sin dependencias: **candidata a ir primera**.
 
 ## Spec
 
-**Los criterios viven en CUATRO sitios** (verificado). Los cuatro deben quedar coherentes, y el
-segundo es el que llega a los consumidores:
+**Los criterios viven en CINCO sitios** (corregido en ejecución — la Spec original decía CUATRO y era
+inexacta en dos puntos: `website/guia/pipeline.md` **no** enumeraba criterios y
+`task-pipeline/docs/flujo-del-pipeline.md` **sí** los enumeraba y faltaba de la tabla). Los cinco deben
+quedar coherentes, y el segundo es el que llega a los consumidores:
 
 | Fichero | Rol |
 |---|---|
 | `task-pipeline/skills/plan-task/SKILL.md:45-52` | fuente que ejecuta el orquestador |
 | `task-pipeline/skills/plan-task/templates/task-lifecycle.md:229-231` | **semilla que reciben los repos consumidores** |
 | `docs/guides/task-lifecycle.md:221-224` | copia materializada de **este** repo |
-| `website/guia/pipeline.md:22` | portal de documentación |
+| `website/guia/pipeline.md:22` | portal de documentación (**no** enumeraba: solo "criterios estrictos") |
+| `task-pipeline/docs/flujo-del-pipeline.md:80-83` | **añadido**: docs del plugin; enumeraba los criterios viejos |
+
+`task-pipeline/README.md:16,109` solo **referencian** la regla ("criterios estrictos + confirmación +
+log") sin enumerarla → no divergen y quedan fuera. Las menciones del `CHANGELOG.md` son histórico
+narrativo (allowlist de `CLAUDE.md`).
 
 **Calibración**: revisar los criterios actuales (un solo fichero/área; sin superficie nueva en
 `Provides`; sin decisión arquitectónica ni transversal; y para `scenario-coverage`, 1 tarea sin
@@ -116,8 +123,15 @@ Feature: Salto proporcional en planes triviales
 
   Scenario: Los criterios no divergen entre copias
     Given los criterios en skills/plan-task/SKILL.md
-    When se comparan con templates/task-lifecycle.md, docs/guides/task-lifecycle.md y website/guia/pipeline.md
+    When se comparan con templates/task-lifecycle.md, docs/guides/task-lifecycle.md, task-pipeline/docs/flujo-del-pipeline.md y website/guia/pipeline.md
     Then ninguna copia describe criterios distintos
+    And las cuatro copias llevan la misma frase canónica literal
+
+  Scenario: Un sitio que enumera criterios no puede quedarse fuera del barrido
+    Given un fichero del repo que enumera los criterios de trivialidad
+    When se calibran los criterios en la fuente
+    Then ese fichero se actualiza aunque no estuviera listado en la Spec
+    And la Spec se corrige registrando el sitio omitido
 
   Scenario Outline: Los checkpoints humanos permanecen intactos
     Given un plan de cualquier tamaño
@@ -134,15 +148,17 @@ Feature: Salto proporcional en planes triviales
 
 ## Provides
 
-- Criterios de salto calibrados y **coherentes en las cuatro copias** — reduce el coste de las dos
+- Criterios de salto calibrados y **coherentes en las cinco copias** — reduce el coste de las dos
   fases caras sin cambiar su implementación, y llega a los consumidores vía la semilla del template.
+- **Frase canónica literal** para las copias (declarada en `plan-task/SKILL.md`): las tareas 03 y 05
+  pueden greparla en vez de re-derivar los criterios.
 
 ## Definition of Done
 
 - [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
 - [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección y ejecutando `/plan-task`
 - [ ] Escenarios verificados: un plan trivial y uno no trivial recorren el flujo correcto
-- [ ] Las **cuatro** copias de los criterios dicen lo mismo (`grep` comparativo)
+- [ ] Las **cinco** copias de los criterios dicen lo mismo (`grep` comparativo)
 - [ ] Los siete invariantes siguen en el texto
 - [ ] La calibración está fijada por ejemplos, no por adjetivos
 - [ ] Spec cumplida; lo declarado en `Provides` disponible
