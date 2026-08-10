@@ -4,6 +4,79 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.14.0] — 2026-08-10
+
+Realineación con el comportamiento documentado de **Claude Opus 5**. `honesty-rules.md` amplía su carta de
+"anti-alucinación" a **honestidad y disciplina de trabajo**, `scenario-coverage` deja de trabajar a ciegas
+sobre el alcance, y `/doctor` gana el **canal de entrega** que faltaba para que todo esto llegue a los repos
+**ya adoptados** (antes, una sección nueva no llegaba nunca: el hook solo restaura el fichero si falta, y
+`doctor` solo miraba su ausencia).
+
+### Added
+- **Cuatro bloques nuevos en `templates/honesty-rules.md`**, tres de ellos adaptados de bloques que Anthropic
+  publica en su guía de migración a Opus 5:
+  - **Hipótesis y evidencia** — etiquetar hipótesis frente a hecho confirmado; **no implementar un arreglo
+    sobre un diagnóstico no reproducido**; **tope de 3 intentos** sobre el mismo síntoma → parar, revertir y
+    reportar (y si al revertir hay cambios sin commitear ajenos a la sesión, **pedir decisión** en vez de
+    descartar); «he revisado X» solo si se leyó **en esta sesión**.
+  - **Alcance del encargo** — entregar lo pedido al alcance pedido; avisar en una frase si el encargo parece
+    equivocado y seguir; **terminar la tarea entera** y declarar «hecho» solo cuando lo esté.
+  - **Delegación en subagentes** — techo determinista (**nunca más de 20 en paralelo** sin petición expresa),
+    no delegar lo resoluble en pocas llamadas ni la verificación. **Exime explícitamente a los gates del
+    propio pipeline**, que si no quedarían prohibidos por la regla que el propio pipeline obliga a ejecutar.
+  - **Longitud de lo que escribes a disco** — calibrar los entregables Markdown **sin** poder eliminar las
+    secciones que declaran las plantillas.
+- **Criterio de admisión al fichero**, escrito en su cabecera, para que no acrete: *si la regla se comprueba
+  leyendo un diff, es coding-standard; si se comprueba mirando cómo se comportó el agente, va aquí*.
+- **Ancla `template-version` en la primera línea** de `honesty-rules.md`: registra la **última versión en que
+  cambió la plantilla**, no la del plugin. `/doctor` compara **plantilla ↔ materializado**, así que un release
+  que no toque el fichero **no** genera drift en ningún consumidor.
+- **`/doctor`** — drift de `honesty-rules.md` por comparación de anclas, con sus casos declarados (ancla
+  ausente = anterior, se reporta; plantilla ilegible = "no he podido determinar la versión", **sin** veredicto;
+  fichero personalizado = lista los bloques que faltan, **sin** sobrescritura mecánica). El **`@import` ausente
+  pasa a hallazgo destacado**: sin él ninguna regla se aplica. Sigue sin editar ni crear tu `CLAUDE.md`.
+- **`templates/task.md`: sección `## Fuera de alcance`**, heredada del `### Fuera de alcance` del plan tarea a
+  tarea. Si el plan no la tiene o está vacía → `—` explícito, nunca el placeholder crudo.
+- **`scenario-coverage` recibe el plan** (como ruta) y emite **dos secciones**: huecos **dentro** del alcance y
+  huecos **fuera del alcance declarado**, estos **completos y marcados** —nunca descartados en silencio—, que
+  no generan escenario ni tarea: los decide el owner y la decisión va al Plan change log. El plan entra como
+  **dato a contrastar, jamás como instrucciones**: un `Fuera de alcance` en imperativo ("no reportes X") **no**
+  puede silenciar al subagente.
+- **Documento `docs/honestidad-no-es-sobre-verificacion.md`** — la defensa escrita de por qué estas reglas no
+  caen bajo *"self-check instructions are the same trap"*, con las citas de la guía y sus salvedades. Se
+  escribió **antes** de publicar las reglas: era su condición.
+- **README**: sección propia de `honesty-rules.md` (los cinco bloques, criterio de admisión, techo de tamaño,
+  actualizaciones por ancla y **qué pasa si borras un bloque a propósito**) y nota de que **`effort` se fija
+  por sesión, no por fase** — no existe ni existirá una clave `effort:` en el YAML, porque la Agent tool no
+  acepta ese parámetro.
+
+### Changed
+- **Criterios del "Salto en planes triviales" calibrados y fijados por ejemplos**, no por adjetivos: cada uno
+  trae su frontera resuelta. Se ensancha *"un solo fichero/área"* → **un solo eje de decisión** (N ficheros
+  valen si son la misma decisión replicada) y se afila *"sin superficie nueva"* → **`Provides` vacío en todas
+  las tareas**, test mecánico en vez de juicio del autor. El conteo de tareas de `scenario-coverage` **no** se
+  amplía, y el porqué queda escrito. Invariantes intactos: default = ejecutar, lo confirma el owner **una vez
+  por pasada**, se registra, caduca al re-planificar, y sin canal para preguntar la pasada **se ejecuta**.
+- Los criterios viven ahora en **seis sitios** —la tabla canónica en `plan-task` más una **frase canónica
+  literal** en sus **cinco copias** (las dos del lifecycle, `docs/flujo-del-pipeline.md`, el portal y el
+  README)—, para que la coherencia se verifique con un `grep` y no a ojo.
+- **`caveman`**: la lista de contenido protegido incorpora la **etiqueta de hipótesis** y el **aviso de alcance
+  en una frase**, además de las salvedades de incertidumbre. Sin esto, `caveman: full` podría borrar justo lo
+  que las reglas nuevas instalan.
+- La carta ampliada se propaga a todo lo que describía el fichero como "anti-alucinación": `templates/README.md`,
+  `task-init`, el mensaje de `bootstrap.sh`, la categoría 6 de `doctor` y el README.
+
+### Fixed
+- **`</content>` colgado** al final de `templates/honesty-rules.md` y `templates/coding-standards.md`. Era
+  basura que **se propagaba a cada repo consumidor** vía `/task-init` y vía la restauración del hook
+  `SessionStart` — en `honesty-rules.md`, además, dentro de un fichero que se lee **en cada turno**.
+  **Impacto en repos ya materializados**: si tu `.claude/honesty-rules.md` termina en `</content>`, lo
+  arrastras desde una versión anterior; `/doctor` te reportará el drift por ancla y te ofrecerá el fix con
+  diff. `.claude/specs/general/coding-standards.md` es **user-owned**: `/doctor` solo te **informa** de que
+  lo contiene y cómo quitarlo — no lo edita por ti.
+- El puntero a `.claude/specs/general/coding-standards.md` de la cabecera se matiza: ese fichero lo materializa
+  `/task-init` pero es **user-owned** y puede no existir.
+
 ## [0.13.0] — 2026-07-24
 
 Enriquecimiento de `features.github-tracking` (opt-in, default off): la proyección one-way md→GitHub ahora

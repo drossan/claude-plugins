@@ -9,7 +9,7 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand.
 | `/plan-task` | Orquestador del pipeline completo (incl. re-plan de un plan activo). |
 | `grilling` | Interrogatorio para refinar un plan/diseño, una pregunta a la vez. Skill de terceros (© Matt Pocock, MIT). |
 | `design-review` | Revisión holística adversaria del plan vía subagente fresco (coherencia, tamaño, mantenibilidad, reversibilidad). |
-| `scenario-coverage` | Endurece los escenarios Gherkin por dimensiones (fronteras, errores, estado, requisitos ausentes…). |
+| `scenario-coverage` | Endurece los escenarios Gherkin por dimensiones (fronteras, errores, estado, requisitos ausentes…). Recibe el **plan** como dato a contrastar y separa la salida en dos: huecos **dentro** del alcance y huecos **fuera del alcance declarado**, estos últimos completos y marcados, para que decida el owner. |
 | `/mutation` | Gate de mutation testing (Stryker): mata survivors hasta superar el umbral. |
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin (drift, ids duplicados). |
 | `fact-checker` | Gate de cierre: verifica la veracidad de las afirmaciones de la sesión (subagente de solo lectura). |

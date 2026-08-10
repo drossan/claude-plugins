@@ -79,9 +79,13 @@ Feature: <capacidad de la tarea>
   desactiva.
 - ⚙️ **Por defecto ON, salto solo en planes triviales**: `design-review` y
   `scenario-coverage` (las dos pasadas caras por subagente). El salto **lo decide
-  el usuario** (no Claude en silencio), exige criterios estrictos (un solo
-  fichero, sin API pública nueva, sin decisión arquitectónica) y **se loguea** en
-  el Plan change log.
+  el usuario** (no Claude en silencio), exige criterios estrictos —una sola
+  decisión replicada, sin contrato nuevo ni decisión arquitectónica; y, para
+  `scenario-coverage`, 1 tarea sin caminos de error reales— y **se loguea** en el
+  Plan change log. Se pregunta **una vez por pasada**, caduca si una
+  re-planificación rompe los criterios, y sin canal para preguntar la pasada se
+  ejecuta. Los criterios completos, con su frontera resuelta por ejemplo, están en
+  la skill `plan-task`.
 
 ## Configuración por repo (`.claude/task-pipeline.yml`)
 

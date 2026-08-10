@@ -25,6 +25,22 @@ el contrato y los anti-patrones.>
 <El contrato concreto: qué se crea/toca, ficheros, firmas, reglas, límites.
 Lista de bullets verificables, no prosa. Enlaza la(s) spec(s) del artefacto.>
 
+## Fuera de alcance
+
+<!-- HEREDADO del `## Alcance y fuera de alcance` → `### Fuera de alcance` del plan: acota qué NO
+     toca ESTA tarea, para que la sesión que la ejecute no expanda el encargo.
+
+     REGLAS de materialización (las aplica /plan-task al crear la tarea):
+     1. Copia del plan solo los bullets que **acotan esta tarea**. No los inventes ni los
+        parafrasees en algo más amplio.
+     2. Si el plan no tiene la sección, la tiene vacía, o solo contiene el placeholder → escribe
+        `—` explícito. **Nunca dejes el placeholder crudo** en la tarea materializada.
+     3. Si la tarea se crea **sin plan** (suelta) → `—` más una nota de que no hay plan del que heredar.
+     4. Un bullet aquí **no** es una excusa para dejar la tarea a medias: acota el encargo, no el
+        esfuerzo. Lo que sí está dentro se termina entero. -->
+
+<Los bullets del plan que acotan esta tarea, o `—`.>
+
 ## Scenarios (Gherkin)
 
 <!-- Cada escenario es la fuente 1:1 de un test TDD — el `Then` es el assert.
