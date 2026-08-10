@@ -1,11 +1,11 @@
 ---
 id: task-pipeline-opus5-realignment
 package: task-pipeline
-status: active           # pending | active | completed | cancelled
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/opus5-realignment
 issue: 27                # issue PADRE proyectada (features.github-tracking)
 created: 2026-08-09
-updated: 2026-08-09
+updated: 2026-08-10
 ---
 
 # Realineación del pipeline con el comportamiento documentado de Opus 5
@@ -203,7 +203,7 @@ gate de mutation de la DoD son **N/A**; el gate de `fact-checker` **sí** aplica
 - [x] `task-pipeline-opus5-realignment-03` (P2) — `scenario-coverage` recibe el plan y reporta los huecos fuera de alcance marcados  · depends_on: `task-pipeline-opus5-realignment-01`
 - [x] `task-pipeline-opus5-realignment-04` (P2) — Tensar los criterios del "Salto en planes triviales"  · depends_on: —
 - [x] `task-pipeline-opus5-realignment-05` (P3) — Docs (README/website/lifecycle) + CHANGELOG + bump 0.14.0  · depends_on: `…-02`, `…-03`, `…-04`
-- [ ] `task-pipeline-opus5-realignment-06` (P3) — Baseline: valor a ciegas → coste → veredicto con la regla corregida  · depends_on: —
+- [x] `task-pipeline-opus5-realignment-06` (P3) — Baseline: valor a ciegas → coste → veredicto con la regla corregida  · depends_on: —
 
 ### Detalle por tarea
 
@@ -450,4 +450,34 @@ Entregable: `.claude/specs/task-pipeline/opus5-audit.md`, incluyendo los hallazg
   **Límite que arrastra todo el plan**: la instalación cacheada del plugin es la **0.13.0**, así que
   `/doctor` y `/task-init` no se han podido ejercitar con el código de las tareas 01-03. Se verifican
   por inspección y por el mecanismo (anclas); se ejercitarán tras publicar el tag `v0.14.0`.
-<!-- Toda re-planificación in-place se registra aquí: qué cambió y por qué. -->
+- 2026-08-10: **tarea 06 cerrada y PLAN COMPLETADO** (6/6). El baseline dio un veredicto formal —
+  *plan de reducción para `design-review`* (3,21× ≥ 3×)— y una razón argumentada para **no abrirlo
+  ahora**: se invierte según la métrica de coste (solo-output = 2,57×, por debajo del umbral), bastan
+  **~2 hallazgos más** sobre 26 para tumbarlo, y **los datos son de `claude-opus-4-8`, no de Opus 5**.
+  Actuar sobre eso sería un diagnóstico no reproducido — lo que prohíbe la regla que este plan publicó.
+  El gate de `fact-checker` cazó un **doble conteo de `usage`** que inflaba las cifras absolutas ~2,8×
+  (el transcript escribe una entrada por bloque de contenido con el mismo `message.id` y el mismo
+  `usage` acumulado); recalculado con deduplicación, los ratios aguantan y el veredicto no cambia.
+
+## Nota retro
+
+- **Estimación vs real**: 5–7 sesiones estimadas → **1 sesión**, ~7,5h efectivas (04 1h · 01 1,5h ·
+  02 1h · 03 1h · 05 1h · 06 2h) frente a 16h estimadas. La sobreestimación es la de siempre en este
+  repo: Markdown/instrucciones sobre patrones ya establecidos, sin código ejecutable.
+- **Orden**: 04 → 01 → 02 → 03 → 05 → 06. Empezar por la 04 (sin dependencias, mejor ratio) fue
+  acertado; la 06 al final, como reordenó `design-review`, evitó gastar la sesión más cara antes de la
+  mitigación real.
+- **Qué cazaron los gates** (el dato más útil de la retro): `fact-checker` produjo **un hallazgo real
+  por tarea** en 4 de 6 — membresía equivocada de los sitios de criterios (04), «Tres casos» con cuatro
+  en la lista (03), recuento de copias stale en el CHANGELOG (05) y el **doble conteo de `usage`** (06),
+  este último material. Ninguno era evidente por inspección propia.
+- **Sorpresas**: (a) el puntero a `coding-standards.md` **no** estaba colgado para un consumidor —
+  `/task-init` sí lo materializa; colgaba solo en este repo; (b) los criterios de salto vivían en un
+  sitio más del que decía la Spec, y en otro que la Spec listaba pero no los enumeraba; (c) la exención
+  del cap de spawn **relaja** una regla publicada por Anthropic — deliberado, registrado.
+- **Límite que arrastra el plan entero**: la instalación cacheada del plugin es la **0.13.0**, así que
+  `/doctor` y `/task-init` **no se han podido ejercitar** con el código de las tareas 01-03. Se
+  verificaron por inspección y por el mecanismo (anclas). **Es lo primero a hacer tras publicar.**
+- **Pendiente del owner**: pushear la rama (el sandbox no tiene acceso al remoto), abrir el PR a `main`
+  y, tras el merge, cortar el tag **`v0.14.0`** (que además publica el portal).
+

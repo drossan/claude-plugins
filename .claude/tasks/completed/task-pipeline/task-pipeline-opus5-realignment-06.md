@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-06
 package: task-pipeline
 plan: opus5-realignment
-status: active
+status: done
 priority: 3
 depends_on: []
 estimate: 4h
-actual:
+actual: 2h
 issue: 32
 created: 2026-08-09
 updated: 2026-08-09
@@ -62,7 +62,7 @@ entre medias**; si se consultó, lo clasificado después se marca **no ciego**.
 
 **Veredicto — con casos degenerados declarados.** Rankear por **coste por cambio material**.
 Si la peor cuesta **≥3×** que la mejor → plan de reducción para **esa** fase. Si no → se cierran
-como justificadas. **Ninguna división por cero**: si una fase tiene 0 cambios materiales, o coste
+como justificadas. **Ninguna división por cero**: si una fase tiene 0 cambios materiales, o coste — los tres comprobados; **ninguno aplica** (ambas fases con numerador y denominador > 0)
 atribuido 0, o ambos → **"no rankeable"**, se declara como tal y **no** se convierte en ratio
 infinito ni en condena automática. Un veredicto de "plan de reducción" debe dejar registrado
 **dónde** se abre ese plan o por qué se pospone.
@@ -185,20 +185,20 @@ Feature: Baseline de coste y valor de las fases con subagente
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`; la tarea no produce código
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: se verifican contra el informe producido
-- [ ] La mitad A cerrada y fechada **antes** de la primera consulta de tokens (verificable en el session log)
-- [ ] Ninguna división por cero: los tres casos degenerados declarados como "no rankeable"
-- [ ] El informe declara las dos limitaciones con las palabras exigidas en la Spec
-- [ ] El veredicto se deriva de la regla escrita; cualquier desviación va argumentada
-- [ ] Ningún fichero del plugin modificado por `prompt-audit`
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** (Markdown)
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A**
-  - [ ] Doc técnica — el propio informe en `.claude/specs/task-pipeline/`
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-06.md`
-- [ ] Docs de dev / usuario final — **N/A**: artefacto interno
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`; la tarea no produce código
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: se verifican contra el informe producido
+- [x] La mitad A cerrada y fechada **antes** de la primera consulta de tokens (verificable en el session log) — cierre fechado en el session log, con declaración de ceguera; ningún transcript leído ni agregación ejecutada antes de esa línea
+- [x] Ninguna división por cero: los tres casos degenerados declarados como "no rankeable"
+- [x] El informe declara las dos limitaciones con las palabras exigidas en la Spec — auto-reportado n=6 y **73,3% del gasto sin atribuir**; más dos que no pedía la Spec: datos de **Opus 4.8** (no Opus 5) y sesgo de granularidad
+- [x] El veredicto se deriva de la regla escrita; cualquier desviación va argumentada — `plan de reducción para design-review` (3,21× ≥ 3×), con la desviación argumentada: **no se abre ahora** porque la señal se invierte según la métrica, bastan ~2 hallazgos para tumbarla, y los datos son de Opus 4.8
+- [x] Ningún fichero del plugin modificado por `prompt-audit` — `git status --porcelain task-pipeline/` vacío (verificado por el gate)
+- [x] Spec cumplida; lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** (Markdown)
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — **9 VERIFICADO / 3 INCORRECTO (corregidos) / 0 NO VERIFICABLE**. El gate cazó un **doble conteo de `usage`** que inflaba las cifras absolutas ~2,8×; recalculado con deduplicación por `(message.id, requestId)`
+- [x] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking` — `issue: 32`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A**
+  - [x] Doc técnica — el propio informe en `.claude/specs/task-pipeline/` — `.claude/specs/task-pipeline/opus5-audit.md`
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-06.md`
+- [x] Docs de dev / usuario final — **N/A**: artefacto interno

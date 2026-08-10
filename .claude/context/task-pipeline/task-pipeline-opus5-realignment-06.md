@@ -114,3 +114,112 @@ Dos decisiones derivadas, declaradas:
 **MITAD A CERRADA — 2026-08-10.** Hasta esta línea no se ha consultado ninguna cifra de tokens, coste
 ni `usage`, ni se ha leído ningún transcript. Todo lo anterior sale exclusivamente de los seis
 `.claude/plans/completed/task-pipeline/*.md`.
+
+## 2026-08-10 — Mitad B: coste (tras cerrar A)
+
+**Mapeo transcript → plan** construido con menciones del `<name-plan>` y umbral de dominancia **≥2×**
+sobre el segundo. De **21** transcripts: **13 mapeados** a los 6 planes cerrados, **1 excluido por
+ambiguo** (`40d189f7`: usage 97 / collision 56 = 1,7×, bajo el umbral — se excluye declarándolo en vez
+de repartirlo con un criterio inventado), **4 sin ninguna mención** (todos ≤3 KB) y **3 fuera de
+población** (son de este plan, que no está cerrado). **5 de 21 sin mapear.** Ningún plan cerrado se
+quedó sin transcript, así que no hubo que declarar "plan sin coste" ni extrapolar.
+
+**Agregador propio**, como anticipaba la Spec: `pipeline-usage` emite "POR SUBAGENTE" **sin clave de
+fase**. La clave que sí existe es `subagents/<id>.meta.json` → `description`. El coste se calcula
+**solo sobre transcripts de subagente**, donde la fase es identificable con certeza — en el hilo
+principal el **73,3%** del gasto no lleva `attributionSkill`.
+
+**Precios verificados en la fuente** (no asumidos): `model-migration.md:908` y `models.md:73` →
+Opus 4.8 = **$5/$25 por MTok**; `prompt-caching.md:141` → caché read **≈0,1×**, write **1,25×** (TTL 5m).
+
+| Fase | n | $ | tokens | output |
+|---|---:|---:|---:|---:|
+| `design-review` | 6 | 17,90 | 9 027 681 | 106 636 |
+| `scenario-coverage` | 6 | 22,29 | 9 822 198 | 175 827 |
+| `fact-checker` (reportada, **no rankeada**) | 30 | 39,25 | 15 786 076 | 192 997 |
+
+### Hallazgo que condiciona todo el informe
+
+**Las 42 ejecuciones de subagente medidas corrieron en `claude-opus-4-8`**, no en Opus 5. La línea base
+describe el coste **histórico**; **no** mide el comportamiento del modelo que motivó el plan.
+
+## 2026-08-10 — Veredicto y por qué no se abre el plan de reducción
+
+Regla aplicada tal cual: coste por cambio material, puerta ≥3×.
+
+| Métrica | DR | SC | Ratio | Resultado |
+|---|---:|---:|---:|---|
+| **$ ponderado** (la usada) | 0,6885 | 0,2008 | **3,43×** | ≥3× |
+| Tokens totales | 347 218 | 88 488 | 3,92× | ≥3× |
+| Solo output | 4 101 | 1 584 | **2,59×** | **<3×** |
+
+**Casos degenerados: los tres comprobados, ninguno aplica.** Ambas fases tienen numerador y denominador
+estrictamente positivos; cero divisiones por cero, cero "no rankeable".
+
+**Veredicto formal: plan de reducción para `design-review`.** Y tres razones verificadas para no
+tratarlo como concluyente: (1) **se invierte con la métrica** —solo-output da 2,59× y absuelve—; (2)
+**bastan 4 hallazgos más** (>29,7 frente a 26) para bajar de 3×, dentro del error de un conteo manual
+sobre prosa heterogénea; (3) el **sesgo de granularidad declarado a ciegas** empuja en la misma
+dirección que el veredicto.
+
+**Dónde se abre el plan de reducción — registrado: NO se abre ahora.** Motivo: la señal es débil y los
+datos son de **Opus 4.8**, mientras la decisión que interesa es sobre Opus 5. Abrirlo con esta evidencia
+sería **actuar sobre un diagnóstico no reproducido**, justo lo que prohíbe la regla que este mismo plan
+acaba de publicar. Secuencia registrada en el informe: re-medir sobre Opus 5 (≥3 planes) → usar antes la
+palanca ya calibrada (salto en planes triviales, tarea 04) → y solo si el ratio se sostiene con **ambas**
+métricas, acotar el prompt de `design-review`, no eliminar la fase.
+
+## 2026-08-10 — Auditoría de prompts
+
+`prompt-audit` (target `claude-opus-5`) sobre los 9 `SKILL.md` (1 087 líneas) y las plantillas.
+**Superficie limpia, diff propuesto: ninguno** — la propia guía contempla ese resultado (*"an audit that
+finds nothing should change nothing"*). Las 6 coincidencias de lenguaje de presión son legítimas por su
+keep list (format-pinning de salida, operación frágil, y verbos que **describen** la tarea del
+subagente). **0 instrucciones de auto-verificación**: la única coincidencia es el texto que *explica* la
+trampa. **`git status task-pipeline/` limpio**: la auditoría no modificó nada.
+
+## 2026-08-10 — Gate `fact-checker`: un error de método REAL, corregido
+
+**9 VERIFICADO · 3 INCORRECTO (corregidos) · 0 NO VERIFICABLE**, más un **hallazgo transversal
+material** que el verificador levantó por su cuenta y que obligó a recalcular medio informe.
+
+### El hallazgo que importa: doble conteo del `usage`
+
+Mi agregador sumaba **toda** entrada con `message.usage`. El transcript escribe **una entrada por bloque
+de contenido**, todas con el **mismo `message.id`/`requestId` y el mismo `usage` acumulado` — así que
+sumarlas multiplica el gasto. Ejemplo que citó: cinco entradas consecutivas con el mismo `msg id`, todas
+con `cache_creation=16307`, contadas cinco veces.
+
+**Recalculado deduplicando por `(message.id, requestId)`** (última observación de cada request):
+
+| Fase | Antes ($) | **Ahora ($)** | Requests reales |
+|---|---:|---:|---:|
+| `design-review` | 17,90 | **6,47** | 50 |
+| `scenario-coverage` | 22,29 | **8,62** | 50 |
+| `fact-checker` | 39,25 | **13,14** | 140 |
+
+Las cifras absolutas estaban **infladas ~2,8×**. Los **ratios aguantan** (3,43→**3,21×**;
+3,92→**3,94×**; 2,59→**2,57×**) y el **veredicto formal no cambia**. Pero un dato sí cambia, y a peor
+para el veredicto: el punto de equilibrio baja de 29,7 a **27,79**, o sea **bastan ~2 cambios materiales
+más** —no 4— para invertirlo. Refuerza el argumento del propio informe de que la señal es frágil.
+
+### Los otros dos INCORRECTO
+
+1. **`attributionSkill` SÍ existe en los `.jsonl` de subagente** — 598 entradas en 20 de 57 ficheros,
+   con valores `task-pipeline:design-review` / `…:scenario-coverage` / `…:fact-checker`. Mi
+   comprobación inicial no lo vio porque busqué en `*/*.jsonl` y los subagentes cuelgan de
+   `*/subagents/*.jsonl`. Corregido en el informe: se mantiene `description` como clave (cobertura
+   57/57 frente al 35% de `attributionSkill`) pero se **declara que existe la alternativa**.
+2. **57 ficheros `agent-*.jsonl`, no 56** (subieron durante esta propia sesión). Sin efecto en el
+   cálculo: los 13 mapeados aportan 46 subagentes.
+
+**Un tercer "INCORRECTO" que no lo era del informe**: le pregunté si *todas* las ejecuciones eran
+`claude-opus-4-8` y encontró 86 entradas de `claude-haiku-4-5-20251001` en el bucket **"otros"** (tres
+subagentes de verificación técnica ajenos a las tres fases). La afirmación **del informe** —"las **42
+ejecuciones medidas** corrieron todas en `claude-opus-4-8`"— la confirmó **exacta**. Falló mi pregunta,
+más amplia que el texto. Lo dejo escrito para no apuntarme una precisión que no tuve.
+
+**Verificó además, recomputando por su cuenta**: las tres tablas de tokens dígito a dígito, los precios
+contra la fuente, los tres ratios, el punto de equilibrio, el 26,7% de cobertura de atribución, el
+ratio 1,73× de `40d189f7`, que `git status --porcelain task-pipeline/` está vacío, y los seis puntos que
+el informe debe declarar.
