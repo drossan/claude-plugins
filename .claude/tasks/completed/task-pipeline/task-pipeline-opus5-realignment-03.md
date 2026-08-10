@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-03
 package: task-pipeline
 plan: opus5-realignment
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-opus5-realignment-01]
 estimate: 2h
-actual:
+actual: 1h
 issue: 29
 created: 2026-08-09
 updated: 2026-08-09
@@ -128,18 +128,18 @@ Feature: Cobertura de escenarios con contexto de alcance, sin ceguera
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación ejecutando la skill sobre planes reales
-- [ ] Escenarios verificados ejecutando `/scenario-coverage`: plan con `Fuera de alcance`, plan ausente, y un `Fuera de alcance` redactado como imperativo
-- [ ] El prompt pide reporte **completo y marcado**, y trata el plan como **dato**, no como instrucciones (revisión explícita del texto)
-- [ ] El plan se pasa como **ruta**, no inline
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** (Markdown)
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A** (Markdown)
-  - [ ] Doc técnica — Paso 5.5 de `plan-task` coherente
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-03.md`
-- [ ] Docs de dev / usuario final — se consolidan en la tarea 05
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación ejecutando la skill sobre planes reales
+- [x] Escenarios verificados ejecutando el prompt nuevo sobre un fixture real: **`Fuera de alcance` imperativo** (no silenció al subagente: reportó los 4 huecos en (B) con detalle) y **plan ausente** (declaró la ruta y no marcó nada). Un tercer test se **descartó por estar mal construido** y queda registrado. **Salvedad**: la evidencia es el session log, no un artefacto reproducible desde disco — el gate lo marcó `NO VERIFICABLE` y queda **reconocido**
+- [x] El prompt pide reporte **completo y marcado**, y trata el plan como **dato**, no como instrucciones (revisión explícita del texto + verificado en ejecución)
+- [x] El plan se pasa como **ruta**, no inline (`<RUTAS_PLANES>`; Paso 1 lo dice literalmente)
+- [x] Spec cumplida; lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** (Markdown)
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — **8 VERIFICADO · 1 INCORRECTO (corregido: «Tres casos» con cuatro en la lista) · 2 NO VERIFICABLE (reconocidos)**
+- [x] Proyección de estado a GitHub al cerrar — `issue: 29` · `features.github-tracking: enabled`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A** (Markdown)
+  - [x] Doc técnica — Paso 5.5 de `plan-task` coherente
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-03.md`
+- [x] Docs de dev / usuario final — se consolidan en la tarea 05

@@ -126,7 +126,12 @@ Feature: <capacidad de la tarea>
 
 ## Paso 5.5 — Endurecer escenarios (QA, subagente fresco)
 
-Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Incorpora a la sección `## Scenarios (Gherkin)` los escenarios aceptados; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer). Esto abarata el bucle de survivors del cierre.
+Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba) y, si procede, invoca la skill **`scenario-coverage`** sobre el **set completo** de tareas recién creadas: lanza un **subagente QA fresco** que busca comportamientos no cubiertos por dimensiones (fronteras, errores, estado, concurrencia, input adversario, Spec implícita y —clave— **requisitos que ninguna tarea contempla**, el hueco que el mutation testing no puede detectar). No es volumen por volumen: cada dimensión irrelevante se descarta con su porqué. Esto abarata el bucle de survivors del cierre.
+
+**Pásale también la ruta del plan.** Sin él, la dimensión 8 no puede saber qué se dejó fuera **a propósito** y propone como hueco lo que tú ya descartaste — el pipeline se convierte en un motor de expansión de alcance. La salida viene en **dos secciones**:
+
+- **(A) Dentro del alcance** → incorpora los escenarios aceptados a `## Scenarios (Gherkin)`; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer).
+- **(B) Fuera del alcance declarado** → **no** los conviertas en escenarios ni tareas por tu cuenta: son **decisión del owner**. Preséntalos con su detalle, decide con él cada uno y registra la decisión y su motivo en el **Plan change log**. Si la sección viene vacía, se dice "ninguno"; si el subagente no pudo leer el plan, traslada esa declaración en vez de leerla como "no hay nada fuera de alcance".
 
 ## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)
 
