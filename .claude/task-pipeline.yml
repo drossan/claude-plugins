@@ -95,6 +95,6 @@ features:
 #   valor inválido (typo / id inexistente) → aviso + inherit (no se lanza roto)
 #   clave para una fase inline             → se ignora (esa fase hereda la sesión)
 models:
-  design-review: opus        # este repo es el source del plugin: review adversaria en el mejor modelo
-  # scenario-coverage:       # inherit (ausente) → hereda el modelo de la sesión
-  # fact-checker:            # inherit (verificar es barato; pínealo a sonnet si quieres)
+  design-review: opus
+  scenario-coverage: sonnet
+  fact-checker: sonnet
