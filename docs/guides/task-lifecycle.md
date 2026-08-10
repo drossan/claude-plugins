@@ -156,6 +156,10 @@ updated: YYYY-MM-DD
 
 ## Description
 ## Spec
+## Fuera de alcance
+<!-- Heredado del `### Fuera de alcance` del plan: los bullets que acotan ESTA tarea. Si el plan no
+     lo tiene, está vacío, o la tarea se crea sin plan → `—` explícito, nunca el placeholder crudo.
+     Acota el encargo, no el esfuerzo: lo que sí está dentro se termina entero. -->
 ## Scenarios (Gherkin)
 <!-- Cada escenario es la fuente 1:1 de un test TDD — el `Then` es el assert.
      Cubre camino feliz Y bordes/errores (el mutation testing los exige). Si la

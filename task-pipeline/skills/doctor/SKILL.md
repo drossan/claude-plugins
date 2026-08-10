@@ -65,17 +65,60 @@ artefacto del plugin — ver "Propiedad" abajo).
    mencionan** el gate, repórtalo (repo-owned): en Fase 2 ofrece añadir la línea / re-materializar la
    sección desde la plantilla actual (`../plan-task/templates/`), con diff + aprobación. Es un gate
    no-negociable: **no** busques ni propongas un flag para desactivarlo — no existe.
-6. **Reglas de honestidad ausentes o sin `@import`** (repo-owned, opt-in) — dos comprobaciones
-   independientes:
-   - Si `.claude/honesty-rules.md` **falta**, repórtalo y ofrece **materializarlo** desde la plantilla
-     (`../plan-task/templates/honesty-rules.md`) en Fase 2 (diff + aprobación).
-   - Si el fichero existe pero el `CLAUDE.md` (raíz o de workspace) **no lo `@importa`**
-     (`@.claude/honesty-rules.md`), repórtalo y **SUGIERE** añadir la línea — pero **no** edites el
-     `CLAUDE.md` (invariante: nunca tocas su prosa/config; el `@import` es opt-in del usuario). Si el repo
-     **no tiene** `CLAUDE.md`, no lo crees: solo nota que el `@import` es opt-in.
-   **No** vigiles `.claude/specs/general/coding-standards.md` ni las otras specs generales
-   (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y su ausencia
-   **no es drift**.
+6. **Reglas de honestidad: ausencia, desactualización y `@import`** (repo-owned, opt-in) — **tres**
+   comprobaciones independientes. Se hacen las tres; una no cancela a las otras.
+
+   **6a. Fichero ausente.** Si `.claude/honesty-rules.md` **falta**, repórtalo y ofrece
+   **materializarlo** desde la plantilla (`../plan-task/templates/honesty-rules.md`) en Fase 2
+   (diff + aprobación).
+
+   **6b. Fichero desactualizado — drift por ANCLA DE PLANTILLA.** El fichero materializado y la
+   plantilla llevan, en su primera línea, un ancla con la **última versión en que cambió la plantilla**:
+
+   ```
+   <!-- task-pipeline template-version: 0.14.0 — … -->
+   ```
+
+   El check es **comparar las dos anclas**, no comparar prosa:
+
+   - Lee el ancla de la **plantilla** (`../plan-task/templates/honesty-rules.md`) y la del **fichero
+     materializado** (`.claude/honesty-rules.md`).
+   - **Ancla del materializado < ancla de la plantilla** → **drift**: repórtalo **nombrando las dos
+     versiones** ("tu fichero es de la 0.13.0; la plantilla actual es 0.14.0").
+   - **Ancla ausente en el materializado** → se materializó **antes de que existiera el ancla**: cuenta
+     como **anterior** y **se reporta**. No te lo saltes por no poder parsear una versión.
+   - **Anclas iguales** → **no hay drift**, aunque la versión del plugin sea posterior. Por eso el ancla
+     registra la versión de la **plantilla** y no la del plugin: un release que no toque este fichero
+     **no** debe marcar a todos los consumidores.
+   - **No puedes leer el ancla de la plantilla** (plantilla ilegible/ausente) → di *"no he podido
+     determinar la versión de la plantilla"* y **no emitas veredicto de drift** para este fichero. Un
+     veredicto sin referencia no es un veredicto.
+   - **Nunca uses `plugin.json`** como referencia: no está al alcance de este skill (solo llegas a
+     `../plan-task/templates/`) y la versión del plugin no es la de la plantilla.
+
+   **Fichero personalizado + ancla vieja** (frecuente: el consumidor adaptó la prosa): **no** ofrezcas
+   sobrescritura mecánica. Reporta **qué bloques de la plantilla actual no aparecen** en su fichero
+   (compara por encabezado de sección) y deja la edición al owner — es la regla 4 de la Fase 2.
+
+   **Alcance del drift-check: solo `honesty-rules.md`.** Las **tareas ya materializadas** (`.claude/tasks/**`)
+   **no** se drift-checkean: son histórico, hay decenas de copias y reportar una por cada tarea vieja
+   sería ruido, no diagnóstico. Las secciones nuevas de `templates/task.md` (p.ej. `## Fuera de alcance`)
+   aplican a las tareas **nuevas**, vía plantilla.
+
+   **6c. `@import` ausente — HALLAZGO DESTACADO.** Si el fichero existe pero ningún `CLAUDE.md` (raíz o de
+   workspace) lo `@importa` (`@.claude/honesty-rules.md`), **destácalo por encima del resto de la lista**
+   y explica el porqué con estas palabras: **sin ese `@import`, el fichero no se lee cada turno y
+   NINGUNA regla de comportamiento del plugin se aplica** — las reglas están en disco pero muertas. No es
+   un aviso menor: es el punto único de fallo de todo lo que materializa el plugin.
+   - **SUGIERE** la línea a añadir; **nunca** edites el `CLAUDE.md` (invariante: no tocas su prosa ni su
+     config; el `@import` es opt-in del usuario).
+   - Si el repo **no tiene** `CLAUDE.md`, emite **el mismo hallazgo destacado** y **no lo crees**.
+
+   **Specs generales user-owned.** **No** vigiles la *ausencia* de `.claude/specs/general/coding-standards.md`
+   ni de las otras (`testing.md`/`error-handling.md`/`security.md`/`git-workflow.md`): son **user-owned** y
+   su ausencia **no es drift**. Excepción de **solo-reporte**: si `coding-standards.md` **existe** y
+   contiene la cadena `</content>` (basura que versiones antiguas de la plantilla propagaron),
+   **infórmalo y di cómo quitarlo a mano** — **no lo auto-edites**, es del usuario.
 7. **Ids de tarea/plan duplicados** (repo-owned) — red de seguridad del esquema de id plan-scoped
    (`<task-id> = <plan-id>-<nn>`; ver `docs/guides/task-lifecycle.md`). El id es único por diseño, pero el
    residual honesto (mismo `<name-plan>`, o dos ramas extendiendo el mismo plan) puede colar duplicados al
@@ -164,6 +207,11 @@ desde la plantilla) **cuando el doc no esté personalizado** — si lo está, ap
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
 `CLAUDE.md` **no** se aplica: solo se sugiere).
 
+**Drift de `honesty-rules.md` por ancla (cat. 6b):** si el fichero **no** está personalizado, el fix
+mecánico es **re-materializarlo desde la plantilla actual**, con diff + aprobación. El ancla viaja en la
+copia, así que una **segunda pasada de `doctor` ya no reporta drift** de ese fichero. Si **sí** está
+personalizado, aplica la regla 4: lista los bloques que faltan y **no sobrescribas**.
+
 **Ids duplicados / `filename` ≠ `id:` (no mecánico → aviso, regla 4):** renumerar un id **no** es un fix
 seguro — rompería los `depends_on` y los enlaces que apuntan a él, y hay que elegir cuál de los ficheros en
 conflicto cambia. Trátalo como **aviso**: nombra los ficheros implicados y **sugiere** la resolución
@@ -192,5 +240,10 @@ entre ejecuciones: la verdad es el repo.
 - **No edita el plugin** (hooks, SKILLs, plantillas del plugin): eso es solo-reporte + actualizar el plugin.
 - **No toca** el CHANGELOG ni la atribución (menciones históricas legítimas).
 - **No sobrescribe** prosa que el usuario personalizó: la reporta como aviso.
-- **No edita el `CLAUDE.md`** del usuario: sugiere el `@import` de `honesty-rules.md`, nunca lo añade.
-- **No vigila** `coding-standards.md` ni las demás specs generales user-owned: su ausencia no es drift.
+- **No edita el `CLAUDE.md`** del usuario: sugiere el `@import` de `honesty-rules.md` (como **hallazgo
+  destacado** si falta), nunca lo añade — ni lo crea si no existe.
+- **No vigila** la *ausencia* de `coding-standards.md` ni de las demás specs generales user-owned: no es
+  drift. Si existe y arrastra `</content>`, lo **informa** sin auto-editarlo.
+- **No drift-checkea las tareas ya materializadas**: son histórico. Las secciones nuevas de la plantilla
+  de tarea llegan a las tareas **nuevas**.
+- **No usa `plugin.json`** para decidir drift: compara **ancla de plantilla ↔ ancla del materializado**.

@@ -57,8 +57,11 @@ Antes de escribir nada, mira el repo en read-only:
      stack de tests sano, deja `full`.
    El usuario puede editarla luego. No la sobrescribas si ya existe.
 4. Lee `../plan-task/templates/honesty-rules.md` con **Read** y escríbela en
-   `.claude/honesty-rules.md` **solo si no existe**. Son las reglas de honestidad
-   (anti-alucinación / anti-slop) pensadas para leerse **cada turno**. Para que surtan
+   `.claude/honesty-rules.md` **solo si no existe**. Son las reglas de honestidad **y de
+   disciplina de trabajo** (verificar antes de afirmar, alcance del encargo, cap de
+   delegación en subagentes, longitud de los entregables escritos), pensadas para leerse
+   **cada turno**. Cópiala **entera, tal cual**: su primera línea es el ancla
+   `template-version` que `/doctor` usa para detectar drift. Para que surtan
    efecto, **SUGIERE** al usuario añadir la línea `@.claude/honesty-rules.md` a su
    `CLAUDE.md` (raíz y/o del workspace) — pero **no** edites el `CLAUDE.md` tú: el
    `@import` es **opt-in** del usuario (misma disciplina que la sugerencia del HOW-TO en

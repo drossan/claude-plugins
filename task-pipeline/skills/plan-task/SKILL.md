@@ -99,6 +99,8 @@ Invoca la skill **`grilling`** sobre el plan. Itera hasta que sobreviva el inter
 
 Divide en tareas pequeñas (un commit lógico / una sesión). Crea cada `.claude/tasks/pending/<package>/<task-id>.md` desde la plantilla **`templates/task.md`** (junto a este skill; ábrela con Read), que incluye la sección obligatoria **`## Scenarios (Gherkin)`**. Rellena la sección **Tasks** del plan (ordenada, con `depends_on`).
 
+**`## Fuera de alcance` se hereda del plan, tarea a tarea.** Del `### Fuera de alcance` del plan, copia a cada tarea **solo los bullets que la acotan a ella** — sin inventarlos ni ensancharlos al parafrasear. Si el plan no tiene la sección, la tiene vacía o solo trae el placeholder, escribe **`—` explícito**; si la tarea se crea **sin plan**, `—` más la nota de que no hay plan del que heredar. **Nunca dejes el placeholder crudo** en una tarea materializada. Acota el **encargo**, no el esfuerzo: lo que sí está dentro se termina entero.
+
 ### Asignación del `<task-id>` (determinista, plan-scoped)
 
 El id de tarea es **`<task-id> = <plan-id>-<nn>`** (`<plan-id> = <package>-<name-plan>`; ver la definición y la acotación de `<name-plan>` en `docs/guides/task-lifecycle.md`, que no repito aquí). Deriva el `<nn>` así:

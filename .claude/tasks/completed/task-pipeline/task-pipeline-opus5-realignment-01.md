@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-01
 package: task-pipeline
 plan: opus5-realignment
-status: pending
+status: done
 priority: 1
 depends_on: []
 estimate: 3h
-actual:
+actual: 1.5h
 issue: 33
 created: 2026-08-09
 updated: 2026-08-09
@@ -193,19 +193,27 @@ Feature: Disciplina de alcance, delegación y longitud entregada a repos nuevos 
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner (`CLAUDE.md`)
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección / `grep` / ejecutando skill y hook
-- [ ] Todos los escenarios verificados a mano (repo nuevo / adoptado / adoptado-personalizado / no adoptado)
-- [ ] `grep -c "</content>"` sobre las dos plantillas → `0`
-- [ ] Puntero a `coding-standards.md` resuelto, con la decisión en el session log
-- [ ] El bloque del cap declara explícitamente la exención de las fases del pipeline
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** (Markdown)
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — si la tarea no tiene `issue:`, se marca **N/A con su motivo**; no se inventa un número · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A** (Markdown; la plantilla es el artefacto)
-  - [ ] Doc técnica — herencia de `Fuera de alcance` en `templates/plan.md`, `templates/task-lifecycle.md` y `docs/guides/task-lifecycle.md`
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-01.md`
-- [ ] Docs de dev / usuario final — se consolidan en la tarea 05
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner (`CLAUDE.md`)
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección / `grep` / ejecutando skill y hook
+- [x] Todos los escenarios verificados: **2 ejecutados** (hook en repo adoptado y en repo ajeno, + `bash -n`)
+      y **14 por inspección**; el ancla además simulada en sus 4 casos. Límite declarado en el session log:
+      la instalación cacheada del plugin es 0.13.0, así que `/doctor` y `/task-init` no se pueden ejercitar
+      con el código editado hasta el release de la tarea 05
+- [x] `grep -c "</content>"` sobre las dos plantillas → `0`
+- [x] Puntero a `coding-standards.md` resuelto, con la decisión en el session log — **no** estaba colgado
+      para un consumidor (`/task-init` lo materializa); se matiza que es user-owned y se materializa aquí
+- [x] El bloque del cap declara explícitamente la exención de las fases del pipeline (`:56-59`), y queda
+      registrado que esa exención **relaja** la regla publicada por Anthropic
+- [x] Spec cumplida; lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** (Markdown)
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — 12 VERIFICADO / 0 INCORRECTO /
+      0 NO VERIFICABLE, incluido el cotejo frase a frase contra la fuente inglesa
+- [x] Proyección de estado a GitHub al cerrar — `issue: 33` · `features.github-tracking: enabled`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A** (Markdown; la plantilla es el artefacto)
+  - [x] Doc técnica — herencia de `Fuera de alcance` en `templates/plan.md`, `templates/task-lifecycle.md`,
+        `docs/guides/task-lifecycle.md` y el Paso 5 de `plan-task/SKILL.md`; + `templates/README.md` y
+        `task-init/SKILL.md` actualizados a la carta ampliada
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-01.md`
+- [x] Docs de dev / usuario final — se consolidan en la tarea 05

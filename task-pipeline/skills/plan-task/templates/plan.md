@@ -30,6 +30,10 @@ hace falta este trabajo.>
 ### Fuera de alcance
 - <… lo que explícitamente NO se toca, para acotar>
 
+<!-- Esta lista NO se queda en el plan: cada tarea materializada hereda en su propia sección
+     `## Fuera de alcance` los bullets que la acotan a ella (ver `task.md`). Escríbelos pensando en
+     que los leerá la sesión que ejecute la tarea, no solo quien apruebe el plan. -->
+
 ## Recursos externos
 
 <Docs del proyecto, specs aplicables, referencias técnicas, decisiones de

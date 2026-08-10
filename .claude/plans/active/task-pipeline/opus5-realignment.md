@@ -198,7 +198,7 @@ gate de mutation de la DoD son **N/A**; el gate de `fact-checker` **sí** aplica
 
 ## Tasks
 
-- [ ] `task-pipeline-opus5-realignment-01` (P1) — Disciplina de alcance, delegación y longitud + fixes de plantilla + drift por versión en `/doctor` + aviso `@import`  · depends_on: —
+- [x] `task-pipeline-opus5-realignment-01` (P1) — Disciplina de alcance, delegación y longitud + fixes de plantilla + drift por versión en `/doctor` + aviso `@import`  · depends_on: —
 - [ ] `task-pipeline-opus5-realignment-02` (P1) — Hipótesis/evidencia y anti-bucle, con la defensa escrita + drift en `/doctor`  · depends_on: `task-pipeline-opus5-realignment-01`
 - [ ] `task-pipeline-opus5-realignment-03` (P2) — `scenario-coverage` recibe el plan y reporta los huecos fuera de alcance marcados  · depends_on: `task-pipeline-opus5-realignment-01`
 - [x] `task-pipeline-opus5-realignment-04` (P2) — Tensar los criterios del "Salto en planes triviales"  · depends_on: —
@@ -413,4 +413,15 @@ Entregable: `.claude/specs/task-pipeline/opus5-audit.md`, incluyendo los hallazg
   el número de tareas — evidencia en este mismo plan, donde `scenario-coverage` sobre un set de tareas
   **de solo texto** detectó seis defectos de Spec. Ampliarlo habría saltado la pasada que produjo el
   hallazgo más valioso del plan.
+- 2026-08-09: **tarea 01 cerrada**. Dos matices que corrigen supuestos del plan:
+  1. El **puntero a `coding-standards.md` no estaba colgado** para un repo consumidor: `/task-init` **sí**
+     materializa ese fichero (`task-init/SKILL.md`, paso 5). Colgaba solo en **este** repo. Decisión: no se
+     borra la cita de la plantilla; se matiza que el fichero es *user-owned* y se materializa aquí.
+  2. La **exención del cap de spawn RELAJA la regla publicada** por Anthropic (*"Verification belongs in
+     your main agent loop"*, sin excepciones). Es deliberada y la exigía la Spec —sin ella enviaríamos a
+     cada consumidor una regla que contradice a `/plan-task`—, pero queda escrito que es **decisión de
+     este repo**. Si la tarea **06** concluye que las fases con subagente no se justifican, esta exención
+     es lo primero a revisar.
+  - Límite declarado: la instalación cacheada del plugin es **0.13.0**, así que `/doctor` y `/task-init`
+    no se han podido ejercitar con el código editado; se verifican por inspección hasta el release (05).
 <!-- Toda re-planificación in-place se registra aquí: qué cambió y por qué. -->
