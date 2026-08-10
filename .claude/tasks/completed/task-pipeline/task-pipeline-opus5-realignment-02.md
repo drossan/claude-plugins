@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-02
 package: task-pipeline
 plan: opus5-realignment
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-opus5-realignment-01]
 estimate: 3h
-actual:
+actual: 1h
 issue: 28
 created: 2026-08-09
 updated: 2026-08-09
@@ -149,20 +149,20 @@ Feature: Disciplina hipótesis/evidencia entregada, acotada y defendida
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección / ejecutando skill y hook
-- [ ] Todos los escenarios verificados a mano
-- [ ] El tope de intentos está escrito como número concreto
-- [ ] El techo de tamaño está declarado y el fichero materializado lo respeta
-- [ ] `bash -n hooks/caveman.sh` tras tocarlo
-- [ ] **Cada regla publicada tiene su defensa escrita**; las que no se sostienen, retiradas y registradas
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** (Markdown + Bash)
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A** (Markdown + Bash)
-  - [ ] Doc técnica — la justificación escrita, enlazable desde el README en la tarea 05
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-02.md`
-- [ ] Docs de dev / usuario final — se consolidan en la tarea 05
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección / ejecutando skill y hook
+- [x] Todos los escenarios verificados: **6 ejecutados** (4 casos reales de `caveman.sh`/`bootstrap.sh` + techo + tope) y el resto por inspección
+- [x] El tope de intentos está escrito como número concreto — **3** (`templates/honesty-rules.md:37`)
+- [x] El techo de tamaño está declarado (**7 000 B / 110 líneas**) y el materializado lo respeta: **6 191 B / 93 líneas**, margen 809 B
+- [x] `bash -n hooks/caveman.sh` tras tocarlo — OK, + JSON-safety de las dos directivas (sin `"` ni `\\`)
+- [x] **Cada regla publicada tiene su defensa escrita** — tabla regla a regla en `docs/honestidad-no-es-sobre-verificacion.md`. **0 retiradas por la defensa**; la 5ª (*causa raíz*) **absorbida** en la 2ª, con su motivo registrado (no verificable suelta + redundante)
+- [x] Spec cumplida; lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** (Markdown + Bash)
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — 12 VERIFICADO / 0 INCORRECTO / 0 NO VERIFICABLE
+- [x] Proyección de estado a GitHub al cerrar — `issue: 28` · `features.github-tracking: enabled`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A** (Markdown + Bash)
+  - [x] Doc técnica — `task-pipeline/docs/honestidad-no-es-sobre-verificacion.md` (nuevo) + README (contenido protegido)
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-02.md`
+- [x] Docs de dev / usuario final — se consolidan en la tarea 05

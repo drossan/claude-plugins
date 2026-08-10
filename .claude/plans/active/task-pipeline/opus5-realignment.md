@@ -199,7 +199,7 @@ gate de mutation de la DoD son **N/A**; el gate de `fact-checker` **sí** aplica
 ## Tasks
 
 - [x] `task-pipeline-opus5-realignment-01` (P1) — Disciplina de alcance, delegación y longitud + fixes de plantilla + drift por versión en `/doctor` + aviso `@import`  · depends_on: —
-- [ ] `task-pipeline-opus5-realignment-02` (P1) — Hipótesis/evidencia y anti-bucle, con la defensa escrita + drift en `/doctor`  · depends_on: `task-pipeline-opus5-realignment-01`
+- [x] `task-pipeline-opus5-realignment-02` (P1) — Hipótesis/evidencia y anti-bucle, con la defensa escrita + drift en `/doctor`  · depends_on: `task-pipeline-opus5-realignment-01`
 - [ ] `task-pipeline-opus5-realignment-03` (P2) — `scenario-coverage` recibe el plan y reporta los huecos fuera de alcance marcados  · depends_on: `task-pipeline-opus5-realignment-01`
 - [x] `task-pipeline-opus5-realignment-04` (P2) — Tensar los criterios del "Salto en planes triviales"  · depends_on: —
 - [ ] `task-pipeline-opus5-realignment-05` (P3) — Docs (README/website/lifecycle) + CHANGELOG + bump 0.14.0  · depends_on: `…-02`, `…-03`, `…-04`
@@ -424,4 +424,17 @@ Entregable: `.claude/specs/task-pipeline/opus5-audit.md`, incluyendo los hallazg
      es lo primero a revisar.
   - Límite declarado: la instalación cacheada del plugin es **0.13.0**, así que `/doctor` y `/task-init`
     no se han podido ejercitar con el código editado; se verifican por inspección hasta el release (05).
+- 2026-08-09: **tarea 02 cerrada — la justificación SE SOSTIENE**, y con más respaldo del que el plan
+  suponía. El plan citaba un apoyo publicado (el bloque de Fable 5 *"audit each claim…"*, `:1456`);
+  verificado que hay **dos**: `:1460` (*"check that the evidence actually supports that specific action.
+  A signal that pattern-matches to a known failure may have a different cause"*) **es** la regla del
+  diagnóstico no reproducido, publicada por Anthropic. Añadido `:1454`, que da su eficacia medida.
+  **Resultado: 4 reglas publicadas, 0 retiradas por la defensa.** La 5ª candidata (*causa raíz antes que
+  síntoma*) se **absorbe** en la 2ª — no por fallar la defensa, sino por **no ser verificable suelta**
+  (¿quién decide qué es «la raíz»?) y ser redundante una vez exiges reproducir la causa. Su contenido
+  operativo sí se entrega. Salvedad registrada en el doc: `:1456`/`:1460` son de la sección de **Fable
+  5**, no de Opus 5; soportan que *una regla de evidencia no es auto-verificación*, no que Anthropic las
+  prescriba para Opus 5.
+  **Techo del fichero de cada turno fijado en 7 000 B / 110 líneas** (1 698 B antes del plan → 5 097 tras
+  la 01 → **6 191 / 93** ahora; margen 809 B). El ancla **no se movió**: 01 y 02 comparten release.
 <!-- Toda re-planificación in-place se registra aquí: qué cambió y por qué. -->

@@ -68,10 +68,14 @@ case "$phase" in
 esac
 
 # --- inyectar la directiva mínima (sin comillas dobles ni backslashes: JSON seguro) ---
+# El contenido PROTEGIDO no es negociable: si la compresion pudiera borrarlo, el modo caveman
+# desactivaria justo las reglas que honesty-rules.md instala (etiqueta de hipotesis, aviso de
+# alcance en una frase). Cualquier regla nueva de honesty-rules.md que dependa de aparecer en la
+# RESPUESTA (no solo en el comportamiento) tiene que anadirse aqui tambien.
 if [ "$level" = "full" ]; then
-  directive="Modo caveman (full): responde en prosa comprimida y telegrafica — elimina relleno, cortesias, preambulos y transiciones; usa fragmentos. NO comprimas ni alteres codigo, comandos, rutas, mensajes de error ni cifras: van byte a byte. Conserva las salvedades de incertidumbre (p.ej. no verificado): no son relleno."
+  directive="Modo caveman (full): responde en prosa comprimida y telegrafica — elimina relleno, cortesias, preambulos y transiciones; usa fragmentos. NO comprimas ni alteres codigo, comandos, rutas, mensajes de error ni cifras: van byte a byte. Conserva SIEMPRE: las salvedades de incertidumbre (p.ej. no verificado), la etiqueta de lo que es hipotesis frente a hecho confirmado, el aviso de alcance en una frase, y lo que quede sin hacer o sin verificar. No son relleno."
 else
-  directive="Modo caveman (lite): responde de forma concisa — elimina relleno y cortesias, manten la gramatica legible. NO comprimas ni alteres codigo, comandos, rutas, mensajes de error ni cifras: van byte a byte. Conserva las salvedades de incertidumbre (p.ej. no verificado): no son relleno."
+  directive="Modo caveman (lite): responde de forma concisa — elimina relleno y cortesias, manten la gramatica legible. NO comprimas ni alteres codigo, comandos, rutas, mensajes de error ni cifras: van byte a byte. Conserva SIEMPRE: las salvedades de incertidumbre (p.ej. no verificado), la etiqueta de lo que es hipotesis frente a hecho confirmado, el aviso de alcance en una frase, y lo que quede sin hacer o sin verificar. No son relleno."
 fi
 
 printf '{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"%s"}}\n' "$directive"

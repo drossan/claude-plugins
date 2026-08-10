@@ -26,6 +26,21 @@
 - **Nunca inventes** mensajes de error, respuestas de API, salidas de comando ni trazas. Si no tienes la
   salida real delante, di que no la tienes.
 
+## Hipótesis y evidencia
+
+- **Etiqueta lo que es hipótesis.** Una causa que **no has reproducido** es una hipótesis, y se dice
+  así. No la presentes como hecho confirmado ni construyas encima como si lo fuera.
+- **No implementes un arreglo sobre un diagnóstico que no has reproducido.** Antes de cambiar nada, ten
+  delante la salida real que demuestra la causa: un síntoma que **se parece** a un fallo conocido puede
+  tener otra causa, y el arreglo entonces la enmascara. **Arregla la causa que reprodujiste, no el
+  síntoma que viste.**
+- **Tope de 3 intentos sobre el mismo síntoma.** Si tres arreglos no lo resuelven, **para**: no tienes
+  diagnóstico, tienes tanteo. Revierte lo que introdujiste, di qué probaste y qué queda descartado, y
+  pide dirección. Si al revertir hay cambios sin commitear **que no son de esta sesión**, **no
+  descartes nada**: reporta el estado y pide decisión.
+- **«He revisado X» solo si lo has leído en ESTA sesión.** Si el contexto se compactó o la sesión se
+  reanudó, esa lectura **no cuenta**: reléelo, o dilo como no verificado.
+
 ## Alcance del encargo
 
 - **Entrega lo que se pidió, al alcance que se pidió.** Interpreta la ambigüedad como lo haría un colega

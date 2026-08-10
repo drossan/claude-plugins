@@ -156,8 +156,14 @@ que inyecta una directiva mínima de compresión.
 
 - **`lite`**: elimina relleno y cortesías, gramática legible. **`full`**: prosa
   telegráfica, fragmentos. En ambos, **código, comandos, errores, rutas y cifras van byte
-  a byte** (nunca se comprimen), y las salvedades de incertidumbre («no verificado») se
-  conservan (coherencia con `honesty-rules.md`).
+  a byte** (nunca se comprimen).
+- **Contenido protegido de la compresión** (coherencia con `honesty-rules.md` — si la
+  compresión pudiera borrarlo, `caveman` desactivaría justo las reglas que ese fichero
+  instala): las **salvedades de incertidumbre** («no verificado»), la **etiqueta de lo que
+  es hipótesis** frente a hecho confirmado, el **aviso de alcance en una frase**, y **lo
+  que quede sin hacer o sin verificar**. Una regla nueva de `honesty-rules.md` que dependa
+  de **aparecer en la respuesta** (no solo del comportamiento) hay que añadirla también a
+  esta lista, en `hooks/caveman.sh`.
 - **Backoff determinista en checkpoints**: el hook lee la fase activa del transcript y
   **no** inyecta durante `grilling`/`design-review`/`scenario-coverage`/`fact-checker`
   (donde la claridad manda). No depende del juicio del modelo.
