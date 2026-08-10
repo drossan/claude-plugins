@@ -2,11 +2,11 @@
 id: task-pipeline-opus5-realignment-05
 package: task-pipeline
 plan: opus5-realignment
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-opus5-realignment-02, task-pipeline-opus5-realignment-03, task-pipeline-opus5-realignment-04]
 estimate: 3h
-actual:
+actual: 1h
 issue: 31
 created: 2026-08-09
 updated: 2026-08-09
@@ -155,20 +155,20 @@ Feature: Release 0.14.0 documentado, dogfoodeado y coherente
 
 ## Definition of Done
 
-- [ ] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
-- [ ] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección y comandos
-- [ ] `.claude/honesty-rules.md` de **este** repo actualizado; `/doctor` aquí no reporta drift
-- [ ] `claude plugin validate .` pasa
-- [ ] `pnpm docs:build` **ejecutado** y en verde — si pnpm no está disponible, el ítem queda **no verificado y bloquea el cierre**; no se afirma que pasa
-- [ ] Ancla de la plantilla = `0.14.0` y no posterior a `plugin.json`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos vivos, respetando la allowlist de `CLAUDE.md`
-- [ ] Spec cumplida; lo declarado en `Provides` disponible
-- [ ] Lint / format / typecheck — **N/A** para el pipeline; el build del portal cubre `website/`
-- [ ] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
-- [ ] Gate de `fact-checker` superado · **no-negociable, sin flag**
-- [ ] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking`
-- [ ] Documentación — tres capas:
-  - [ ] Doc en el código — **N/A** (Markdown)
-  - [ ] Doc técnica — README, website y **las dos** copias del lifecycle alineadas
-  - [ ] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-05.md`
-- [ ] Docs de dev / usuario final — es el objeto de esta tarea
+- [x] Tests escritos ANTES de la implementación (TDD) — **N/A**: stack `none`, sin runner
+- [x] Cada escenario Gherkin tiene al menos un test — **N/A**: verificación por inspección y comandos
+- [x] `.claude/honesty-rules.md` de **este** repo actualizado; `/doctor` aquí no reporta drift — idéntico byte a byte a la plantilla; el drift por ancla no aplica (ambas en `0.14.0`). Verificado **por el mecanismo**, no ejecutando `/doctor`: la instalación cacheada es 0.13.0 y no tiene la categoría 6b
+- [x] `claude plugin validate .` pasa — **ejecutado**: ✔ Validation passed
+- [x] `pnpm docs:build` **ejecutado** y en verde — si pnpm no está disponible, el ítem queda **no verificado y bloquea el cierre**; no se afirma que pasa — **ejecutado**: build complete, exit 0
+- [x] Ancla de la plantilla = `0.14.0` y no posterior a `plugin.json` — ancla `0.14.0` = `plugin.json` `0.14.0`
+- [x] Barrido `grep` reforzado: sin identificadores muertos vivos, respetando la allowlist de `CLAUDE.md` — limpio; los hits en ficheros vivos son `templates/task.md` (nombre de fichero, falso positivo documentado)
+- [x] Spec cumplida; lo declarado en `Provides` disponible
+- [x] Lint / format / typecheck — **N/A** para el pipeline; el build del portal cubre `website/`
+- [x] Gate de mutation testing — **N/A**: `stack.mutation-tool: none`
+- [x] Gate de `fact-checker` superado · **no-negociable, sin flag** — **14 VERIFICADO / 0 INCORRECTO / 0 NO VERIFICABLE**, más un hallazgo incidental corregido (recuento de copias en el CHANGELOG)
+- [x] Proyección de estado a GitHub al cerrar — sin `issue:` se marca **N/A con su motivo** · solo si `features.github-tracking` — `issue: 31`
+- [x] Documentación — tres capas:
+  - [x] Doc en el código — **N/A** (Markdown)
+  - [x] Doc técnica — README, website y **las dos** copias del lifecycle alineadas
+  - [x] Histórico — session log en `.claude/context/task-pipeline/task-pipeline-opus5-realignment-05.md`
+- [x] Docs de dev / usuario final — es el objeto de esta tarea

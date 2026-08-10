@@ -79,7 +79,7 @@ if [ "$restored_features" -eq 1 ]; then
   msg="$msg Restaurado .claude/task-pipeline.yml (config de features, defaults ON) desde la plantilla del plugin."
 fi
 if [ "$restored_honesty" -eq 1 ]; then
-  msg="$msg Restaurado .claude/honesty-rules.md desde la plantilla del plugin (el @import a tu CLAUDE.md es opt-in; el hook no lo añade)."
+  msg="$msg Restaurado .claude/honesty-rules.md (honestidad y disciplina de trabajo: evidencia, alcance, delegacion, longitud) desde la plantilla del plugin. El @import a tu CLAUDE.md es opt-in y sin el las reglas no se leen; el hook no lo anade."
 fi
 msg="$msg Para inicializar un package nuevo (su HOW-TO-START-A-TASK.md) usa /task-init <package>."
 

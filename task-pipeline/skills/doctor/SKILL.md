@@ -65,7 +65,7 @@ artefacto del plugin — ver "Propiedad" abajo).
    mencionan** el gate, repórtalo (repo-owned): en Fase 2 ofrece añadir la línea / re-materializar la
    sección desde la plantilla actual (`../plan-task/templates/`), con diff + aprobación. Es un gate
    no-negociable: **no** busques ni propongas un flag para desactivarlo — no existe.
-6. **Reglas de honestidad: ausencia, desactualización y `@import`** (repo-owned, opt-in) — **tres**
+6. **Reglas de honestidad y disciplina de trabajo: ausencia, desactualización y `@import`** (repo-owned, opt-in) — **tres**
    comprobaciones independientes. Se hacen las tres; una no cancela a las otras.
 
    **6a. Fichero ausente.** Si `.claude/honesty-rules.md` **falta**, repórtalo y ofrece

@@ -29,7 +29,7 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grilling`. |
 | `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
-| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, gate/reglas de honestidad ausentes) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
+| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
 | `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
 
@@ -106,7 +106,12 @@ con Jest, npm, no-TS, etc.).
 
 `grilling` y la aprobación del plan **no** son configurables: no negociables por
 diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
-el opt-out en planes triviales (criterios + confirmación + log), no por flag de repo.
+el opt-out en planes triviales, no por flag de repo. El criterio es **una sola decisión
+replicada, sin contrato nuevo ni decisión arquitectónica** (y, para `scenario-coverage`,
+1 tarea sin caminos de error reales); se pregunta **una vez por pasada**, lo confirma el
+owner, se registra en el Plan change log y **caduca** si una re-planificación rompe los
+criterios. Cada criterio trae su frontera resuelta con un ejemplo en la skill `plan-task`
+— la calibración se fija por ejemplos, no por adjetivos.
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/plan-task` también avisa/ayuda si te la saltas.
 
@@ -129,6 +134,18 @@ models:
 **Limitación de plataforma.** Solo las fases con **subagente** se pueden rutar, porque el modelo se fija por invocación de la Agent tool. Las fases **inline** —`grilling`, `mutation` y el propio `/plan-task`— corren en la sesión actual y **heredan su modelo**: no hay forma robusta de cambiárselo desde una skill, ni existe un "modelo óptimo" automático que el pipeline pueda elegir por ti (verificado contra `code.claude.com/docs`). Si quieres una fase inline en otro modelo, cambia el modelo de la sesión.
 
 > El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
+
+### `effort`: se fija por sesión, no por fase
+
+**No existe —ni existirá— una clave `effort:` en `.claude/task-pipeline.yml`.** No es un olvido: la
+Agent tool **no acepta un parámetro `effort`** (solo `description`, `isolation`, `model`, `prompt`,
+`run_in_background`, `subagent_type`), así que una skill no puede fijárselo a la fase que lanza. Es la
+misma limitación de plataforma de arriba, con un grado más: `model` **sí** se puede pasar por
+invocación; `effort`, no.
+
+La palanca real es **el `effort` de tu sesión**, y merece la pena usarla: en Opus 5, `low` y `medium`
+rinden inusualmente bien y son el principal control de coste y latencia. Si una fase te parece cara,
+baja el effort de la sesión antes de tocar `models:`.
 
 ## Analítica de uso (`/pipeline-usage`)
 
@@ -219,6 +236,61 @@ Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Iss
 - **Sync best-effort (C3)**: la reconciliación de `/doctor` **no garantiza** consistencia (paginación, rate-limit, auth caída, issue borrada a mano); ante duda **reporta** y deja la decisión al humano.
 - **Huérfanas al desactivar (I3, ampliado)**: con el flag `off` la reconciliación **no corre**, así que **no** detecta huérfanas. Desactivar deja además huérfanas las **definiciones** de labels `pkg:*`/`status:*`, los **items** del Project y las `status:*` pegadas a issues in-flight. Por eso: **reconcilia/limpia ANTES de desactivar** `github-tracking`; lo que quede tras apagarlo se resuelve a mano. (Misma historia que la categoría de reconciliación de `/doctor`.)
 
+## Reglas de honestidad y disciplina de trabajo (`honesty-rules.md`)
+
+`/task-init` materializa `.claude/honesty-rules.md` en tu repo. Su carta va más allá de la veracidad:
+cubre **honestidad y disciplina de trabajo**, en cinco bloques.
+
+| Bloque | Qué acota |
+|---|---|
+| **Verificar antes de afirmar** | no inventar símbolos, rutas ni salidas; no decir que los tests pasan sin haberlos corrido |
+| **Hipótesis y evidencia** | etiquetar hipótesis frente a hecho; **no implementar sobre un diagnóstico no reproducido**; **tope de 3 intentos** sobre el mismo síntoma → parar, revertir y reportar; «he revisado X» solo si se leyó en esta sesión |
+| **Alcance del encargo** | entregar lo pedido al alcance pedido; avisar en una frase si el encargo parece equivocado y seguir; **terminar la tarea entera** |
+| **Delegación en subagentes** | techo explícito (**nunca más de 20 en paralelo** sin petición expresa); no delegar lo resoluble en pocas llamadas; **no delegar la verificación**. Exime a los gates del propio pipeline |
+| **Longitud de lo que escribes a disco** | calibrar los entregables Markdown sin eliminar secciones obligatorias |
+
+Los tres últimos son adaptaciones de bloques que **Anthropic publica** en su guía de migración a
+Opus 5. Los dos primeros son de evidencia, y su defensa está escrita:
+[**por qué estas reglas no son sobre-verificación**](docs/honestidad-no-es-sobre-verificacion.md)
+— importa porque la misma guía dice que hay que **borrar** el scaffolding de verificación.
+
+**Criterio de admisión al fichero** (está en su propia cabecera, para que no acrete): entra lo que
+impide **afirmar o actuar sin evidencia** y lo que acota **lo que el agente hace por su cuenta**.
+No entra lo que juzga el código ya escrito —naming, complejidad, no-duplicación—: eso es un
+coding-standard y vive en `.claude/specs/general/coding-standards.md`. Ante la duda: *si la regla se
+comprueba leyendo un diff, es coding-standard; si se comprueba mirando cómo se comportó el agente, va
+aquí*.
+
+**Coste, dicho claro.** El fichero se inyecta en **cada turno** de cada sesión. Por eso lleva un techo
+declarado de **7 000 bytes**: superarlo no es motivo para subir el techo, sino para recortar o mover la
+regla a un coding-standard.
+
+**El `@import` es tuyo.** El plugin **nunca** edita tu `CLAUDE.md`. Sin `@.claude/honesty-rules.md` en
+él, el fichero está en disco pero **no se lee**, y **ninguna** de estas reglas se aplica. `/task-init` y
+`/doctor` lo **sugieren**; `/doctor` lo reporta como hallazgo destacado si falta. Añadirlo es decisión
+tuya y es el único paso que hace que todo lo anterior exista.
+
+### Actualizaciones y opt-out deliberado
+
+La primera línea del fichero es un ancla:
+
+```
+<!-- task-pipeline template-version: 0.14.0 — … -->
+```
+
+Registra **la última versión en que cambió la plantilla**, no la del plugin. `/doctor` compara **tu
+ancla contra la de la plantilla instalada**: si la tuya es anterior, te reporta el drift nombrando ambas
+y te ofrece el fix **con diff y aprobación**. Un release que no toque el fichero **no** genera drift.
+
+**Si borras un bloque a propósito, se queda borrado.** El check es por ancla, no por contenido: en
+cuanto aceptes una actualización, tu ancla se pone al día y `/doctor` **dejará de decirte nada** sobre
+ese bloque — ni que falta, ni que la plantilla lo ha mejorado después. Es el precio de no marcar como
+drift la personalización legítima. Qué pierdes: las mejoras futuras de **ese** bloque llegan al fichero
+de la plantilla pero no a tu copia, y nadie te avisa. Si quieres desactivar una regla sin perder el
+canal, **coméntala en vez de borrarla**: sigue siendo texto tuyo, pero al re-materializar verás el diff
+completo. Y si `/doctor` detecta que tu fichero está personalizado, **no** ofrece sobrescritura
+mecánica: lista qué bloques faltan y te deja la edición.
+
 ## Bootstrap del repo (tras instalar)
 
 Dos mecanismos, complementarios:
@@ -242,7 +314,7 @@ El plugin trae las **semillas** que `/plan-task` materializa en el repo (no se i
 |---|---|
 | `skills/plan-task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
 | `skills/plan-task/templates/task-pipeline.yml` | `.claude/task-pipeline.yml` (config del repo: preset/stack/features, una vez) |
-| `skills/plan-task/templates/honesty-rules.md` | `.claude/honesty-rules.md` (reglas de honestidad; `@import` opt-in al `CLAUDE.md`, una vez) |
+| `skills/plan-task/templates/honesty-rules.md` | `.claude/honesty-rules.md` (honestidad **y disciplina de trabajo**; lleva el ancla `template-version`; `@import` opt-in al `CLAUDE.md`, una vez) |
 | `skills/plan-task/templates/coding-standards.md` | `.claude/specs/general/coding-standards.md` (no-duplicación; user-owned, una vez) |
 | `skills/plan-task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |
 | `skills/plan-task/templates/plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` (por plan) |

@@ -15,8 +15,12 @@ features:
 - **`lite`**: elimina relleno y cortesías; gramática legible.
 - **`full`**: prosa telegráfica, fragmentos.
 
-En ambos, **código, comandos, errores, rutas y cifras van byte a byte** (nunca se comprimen), y las
-salvedades de incertidumbre ("no verificado") se conservan.
+En ambos, **código, comandos, errores, rutas y cifras van byte a byte** (nunca se comprimen).
+
+**Contenido protegido de la compresión** — coherente con `honesty-rules.md`: si la compresión pudiera
+borrarlo, `caveman` desactivaría justo las reglas que ese fichero instala. Se conservan siempre las
+**salvedades de incertidumbre** ("no verificado"), la **etiqueta de lo que es hipótesis** frente a hecho
+confirmado, el **aviso de alcance en una frase**, y **lo que quede sin hacer o sin verificar**.
 
 ## Garantías
 

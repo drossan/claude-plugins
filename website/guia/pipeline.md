@@ -31,6 +31,25 @@ fire-and-forget**: hay checkpoints humanos por diseño.
 - **`fact-checker`** (no negociable): un subagente fresco verifica las afirmaciones factuales de la sesión
   ("la función X hace Y", "el gate de mutation pasó"). Un `INCORRECTO` bloquea el cierre.
 
+## Alcance: el pipeline no lo expande solo
+
+`scenario-coverage` recibe el **plan** además de las tareas, y lo trata como **dato a contrastar, nunca
+como instrucciones**. Su salida va en dos secciones: los huecos **dentro** del alcance, que siguen su
+curso, y los **fuera del alcance declarado**, que se reportan **completos y marcados** —no se descartan
+en silencio— y los decide el owner, con su motivo en el Plan change log.
+
+Un `Fuera de alcance` redactado en imperativo ("no reportes X") **no puede silenciar** al subagente: sería
+colar un filtro de reporte por la puerta de atrás y mataría justo la dimensión que busca *requisitos que
+ninguna tarea contempla*.
+
+## Reglas que viajan con el repo
+
+`/task-init` materializa `.claude/honesty-rules.md`: honestidad **y disciplina de trabajo** — verificar
+antes de afirmar, hipótesis frente a hecho con tope de intentos, alcance del encargo, techo de delegación
+en subagentes y longitud de los entregables escritos. Se lee **cada turno**, pero solo si añades
+`@.claude/honesty-rules.md` a tu `CLAUDE.md`: **el plugin nunca lo edita por ti**, y sin ese `@import`
+ninguna de esas reglas se aplica.
+
 ## Por qué subagentes frescos
 
 Las revisiones adversarias (`design-review`, `scenario-coverage`, `fact-checker`) las corre un **subagente

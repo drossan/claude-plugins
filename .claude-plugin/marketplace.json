@@ -8,7 +8,7 @@
     {
       "name": "task-pipeline",
       "source": "./task-pipeline",
-      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grilling -> design-review -> tareas en Gherkin -> scenario-coverage -> TDD -> gate de mutation testing -> gate de cierre fact-checker (verifica afirmaciones). Ids de tarea plan-scoped (sin colisión en equipo). Skills /task-init, /plan-task, /mutation, /doctor, /fact-checker, /pipeline-usage, grilling, design-review y scenario-coverage. Analítica de uso on-demand y modos opcionales caveman y github-tracking (proyección one-way a GitHub Issues/Projects: body, labels pkg/status, Status del Project y assignee)."
+      "description": "Flujo de trabajo guiado: bootstrap con /task-init -> plan mode -> plan en pending -> grilling -> design-review -> tareas en Gherkin -> scenario-coverage -> TDD -> gate de mutation testing -> gate de cierre fact-checker (verifica afirmaciones). Ids de tarea plan-scoped (sin colisión en equipo). Skills /task-init, /plan-task, /mutation, /doctor, /fact-checker, /pipeline-usage, grilling, design-review y scenario-coverage. Materializa reglas de honestidad y disciplina de trabajo (evidencia e hipótesis, alcance del encargo, techo de delegación en subagentes, longitud de entregables), con detección de drift por ancla en /doctor. Analítica de uso on-demand y modos opcionales caveman y github-tracking (proyección one-way a GitHub Issues/Projects: body, labels pkg/status, Status del Project y assignee)."
     }
   ]
 }
