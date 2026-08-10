@@ -2,7 +2,7 @@
 id: task-pipeline-opus5-realignment-06
 package: task-pipeline
 plan: opus5-realignment
-status: pending
+status: active
 priority: 3
 depends_on: []
 estimate: 4h
