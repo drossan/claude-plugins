@@ -13,6 +13,9 @@ export default withMermaid(defineConfig({
   // project-site de GitHub Pages: el sitio vive en drossan.github.io/claude-plugins/.
   // OJO (footgun): base está atado al nombre del repo; un rename/fork/dominio custom lo rompe.
   base: '/claude-plugins/',
+  // El href del favicon NO recibe `base` automáticamente: se prefija a mano
+  // (mismo footgun que `base` — atado al nombre del repo).
+  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/claude-plugins/favicon.svg' }]],
   lastUpdated: true,
   // El README de dev de website/ no es contenido del sitio: excluirlo de las páginas.
   srcExclude: ['**/README.md'],
