@@ -194,7 +194,9 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo si `features.sdd`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
+- [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo si `features.sdd`
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
@@ -296,10 +298,14 @@ particular:
    `false`. `features.mutation-gate` **no** es per-package (solo `stack.*` lo es). Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
+3b. **Gate `sdd-lint`** (solo con `features.sdd` on): **entre** el gate de mutation y `fact-checker`, corre
+   la skill `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de
+   formato/completitud **bloquea** el cierre hasta corregir (como `fact-checker` `INCORRECTO`); un **AVISO**
+   se reconoce, no bloquea. Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
 4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
    `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
    resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
-   (incluida «el gate de mutation pasó»). `INCORRECTO` **bloquea** el cierre hasta
+   (incluida «el gate de mutation pasó» y, con SDD on, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
    corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
    (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
    en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
@@ -423,6 +429,36 @@ Es el registro canónico; no lo dupliques.
 |---|---|---|
 | Plan | `pending → active → completed` | `cancelled` desde cualquier estado. |
 | Tarea | `pending → active → in-review → done` | `blocked` desde `active` (motivo en el session log) → vuelve a `active` al desbloquear. `cancelled` desde cualquier estado. |
+
+**Plan:**
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> completed
+    completed --> [*]
+    pending --> cancelled
+    active --> cancelled
+    completed --> cancelled
+```
+
+**Tarea** (`blocked` y la reapertura `done → active` son transiciones laterales):
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> in_review
+    in_review --> done
+    active --> blocked
+    blocked --> active
+    done --> active
+    done --> [*]
+    active --> cancelled
+```
 
 ## Re-planificación, bloqueos, cancelación
 

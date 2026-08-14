@@ -8,11 +8,12 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 
 **Stack multi-lenguaje por-package (#35)** y **capa de SDD nativo opt-in (#36)**, del plan
 `sdd-y-stack-poliglota` (+ su extensión: **activación asistida de SDD** y **git-automation /
-conventional-commits**). Todo lo nuevo es **opt-in con default off** (`features.sdd`, `stack.packages`,
-`features.git-automation`) o **preserva el default histórico** (`features.conventional-commits` = ON): el
-**comportamiento por defecto es idéntico al de 0.14.0** — un repo que no toque su `.claude/task-pipeline.yml`
-no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferido** a un plan follow-up; y un
-**gate de validación de formato/completitud SDD** queda registrado como follow-up `sdd-validation-gate`.)
+conventional-commits**) y el plan **`sdd-validation-gate`** (**gate `/sdd-lint`** de validación de formato +
+completitud de los artefactos SDD). Todo lo nuevo es **opt-in con default off** (`features.sdd`,
+`stack.packages`, `features.git-automation`) o **preserva el default histórico**
+(`features.conventional-commits` = ON): el **comportamiento por defecto es idéntico al de 0.14.0** — un repo
+que no toque su `.claude/task-pipeline.yml` no cambia en nada. (El seed ejecutable de sitio VitePress de #36
+queda **diferido** a un plan follow-up.)
 
 ### Added
 - **Schema `stack.packages.<pkg>`** (#35) — override de stack **por-workspace** para monorepos poliglotas.
@@ -91,6 +92,39 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   commit/PR automático falla, se avisa y **no** se bloquea el cambio de `status:` del `.md`. `/doctor`
   reconoce los flags (ausencia ≠ drift). Con los flags **off** (default), commit y PR son **manuales**,
   idéntico a hoy. Cableado en las dos `task-lifecycle` y `plan-task`.
+- **Skill `sdd-lint`** (#36) — gate de **validación de formato + completitud** de los artefactos SDD (spec
+  **EARS** · caso-de-uso **Gherkin** · ADR **MADR**), la pieza que faltaba: valida que estén **bien formados,
+  completos y trazables**, no solo que existan (eso es `/doctor`). **Fuente autoritativa** model-driven —
+  mecánico vía comandos `grep`/`test` fijos (vocabulario MADR cerrado case-insensitive, `[NECESITA
+  ACLARACIÓN]` sin resolver, secciones, ids `FR-00x`/`SC-00x`, enlaces rotos, huérfanos/duplicados por-package)
+  + semántico por juicio de un subagente fresco (EARS bien-formado, coherencia de estado MADR, disciplina
+  Gherkin, trazabilidad). **ERROR bloquea / AVISO no** (como `fact-checker`; ante duda de parseo → AVISO).
+  Invocable `/sdd-lint [package]`; con `features.sdd` off, no-op. (El cableado como gate de cierre y el helper
+  Bash opcional llegan en las tareas siguientes del plan.)
+- **`scripts/sdd-lint.sh`: helper Bash opcional** (#36) — subconjunto **mecánico** de `sdd-lint` (estado MADR,
+  `[NECESITA ACLARACIÓN]`, ids `FR`/`SC`, sección EARS, enlace ADR roto) para que un repo consumidor **con
+  runner/CI** lo cablee y tenga validación **desatendida** (`exit 2` = ERROR). **NO bloqueante y no es el
+  gate**: la skill `/sdd-lint` es la autoritativa (incluye lo semántico). **Bash 3.2+** (macOS), `grep -E`
+  portable, cero dependencias, cero-verde-falso. Con **fixtures aseverados** known-good/known-bad + doc de
+  cableado a CI.
+- **`sdd-lint` cableado como gate de cierre** (#36) — con `features.sdd` on, corre **entre `mutation` y
+  `fact-checker`**; un **ERROR** de formato/completitud **bloquea** el cierre (como `fact-checker`
+  `INCORRECTO`), un **AVISO** se reconoce. Línea de DoD gated en `task.md` + las dos `task-lifecycle`; paso
+  "3b" en "Cerrar una tarea"; `fact-checker` **atestigua** "el gate `sdd-lint` pasó"; `plan-task` gana el
+  Paso 7.5; `/doctor` lo reconoce (parte de la capa SDD, intrínseco a `features.sdd`, ausencia ≠ drift con
+  SDD off, plugin-owned solo-reporte). Con `features.sdd` **off**, no corre (byte-idéntico a hoy).
+- **Las plantillas SDD pasan su propio lint** (#36, rescate GAINUP P7) — `/doctor` declara el invariante de
+  que las semillas (`spec.md`/`caso-de-uso.md`/`adr.md`/`adr-index.md`) pasan `/sdd-lint` limpias, para que
+  **ninguna instancia nueva nazca defectuosa**. Para lograrlo: `spec.md` **reescrito** (describe el marcador
+  de aclaración pendiente **sin** instanciar el literal `[NECESITA ACLARACIÓN`, de modo que la plantilla pasa
+  pero un artefacto real que lo escriba **sí** bloquea); `adr.md` clarifica "MADR = *Markdown Architectural
+  Decision Records*" (revertido de *Any* en la fuente). Verificado: no hay "MADR Any" en la superficie shipeada.
+
+### Fixed
+- **`sdd-lint`: check de ids con frontera de palabra** (#36) — correr `/sdd-lint` sobre las propias plantillas
+  destapó que el check de ids `FR-00x`/`SC-00x` daba **falsos positivos** con `NFR-001` (contiene `FR-001`) y
+  con la notación placeholder `FR-00x`. Corregido con `\b` (frontera de palabra, portable BSD/GNU) en la skill
+  `sdd-lint` y en `scripts/sdd-lint.sh`.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

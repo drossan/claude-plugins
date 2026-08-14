@@ -15,25 +15,34 @@ checkpoints humanos por diseño.
 
 ## El pipeline de un vistazo
 
+Los nodos **amarillos** son checkpoints humanos no negociables; los **azules**, subagentes frescos.
+
+```mermaid
+flowchart TD
+    A["/plan-task 'specs'"] --> P0{"Paso 0: nuevo o re-plan?"}
+    P0 --> P2["Paso 2: plan mode + draft (research read-only)"]
+    P2 --> P3["Paso 3: plan en .claude/plans/pending/"]
+    P3 --> G["Paso 4: grilling"]
+    G --> DR["Paso 4.5: design-review"]
+    DR --> AP["Aprobacion del plan"]
+    AP --> P5["Paso 5: descomponer en tareas + Gherkin"]
+    P5 --> SC["Paso 5.5: scenario-coverage"]
+    SC --> P57["Paso 5.7: proyeccion a GitHub (opcional)"]
+    P57 --> HO["Paso 6: handoff TDD (Red - Green - Refactor)"]
+    HO --> M["Gate: mutation (break 80)"]
+    M --> SL["Gate: sdd-lint (solo si features.sdd)"]
+    SL --> FC["Gate: fact-checker (INCORRECTO bloquea)"]
+    FC --> DONE["tarea done + commit/PR; cierre del plan"]
+
+    classDef human fill:#fde68a,stroke:#b45309,color:#111
+    classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
+    class G,AP,FC human
+    class DR,SC agent
 ```
-/plan-task "<specs>"
-   │
-   ├─ Paso 0  ¿Plan nuevo o re-plan de uno activo?
-   ├─ Paso 1  Identificar package + nombre de plan
-   ├─ Paso 2  Plan mode → draft del plan (research read-only)
-   ├─ Paso 3  Escribir plan en .claude/plans/pending/<package>/
-   │
-   ├─ Paso 4    grilling ........... 🔒 checkpoint humano (no negociable)
-   ├─ Paso 4.5  design-review ...... subagente adversario (zoom-out al diseño)
-   ├─ Paso 5    Descomponer en tareas con escenarios Gherkin
-   ├─ Paso 5.5  scenario-coverage .. subagente QA (cobertura de escenarios)
-   │
-   ├─ Paso 6  Handoff al flujo TDD (Red → Green → Refactor)
-   └─ Paso 7  Cierre de cada tarea (gates):
-              /mutation ........ gate de calidad de tests (Stryker, break 80)
-              fact-checker ..... gate de cierre: verifica las afirmaciones (INCORRECTO bloquea)
-              + aprobación del plan 🔒 checkpoint humano (no negociable)
-```
+
+Los **gates de cierre por tarea** corren en orden: **`mutation` → `sdd-lint` (solo con `features.sdd`) →
+`fact-checker`**. `mutation` y `sdd-lint` son configurables/condicionales; `fact-checker` y los dos
+checkpoints humanos (`grilling`, aprobación del plan) **no son negociables**.
 
 ## Las skills
 
@@ -47,6 +56,7 @@ checkpoints humanos por diseño.
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
 | `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
 | `fact-checker` | **Gate de cierre** (no fase de plan): verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía subagente fresco → VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD al cerrar cada tarea (tras `/mutation`), no se auto-ejecuta. Frontera con `/doctor`: veracidad de afirmaciones vs drift de convención. |
+| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec EARS · caso-de-uso Gherkin · ADR MADR) — mecánico (comandos `grep`/`test`) + semántico (subagente fresco). ERROR bloquea / AVISO no; corre **entre `/mutation` y `fact-checker`**. Invocable a mano (`/sdd-lint [package]`); helper Bash opcional para CI en `scripts/sdd-lint.sh`. |
 | `/pipeline-usage` | **Analítica de uso** on-demand (read-only): tokens/modelo/tiempo, desglose **por fase** y **por subagente** de la sesión, leyendo el transcript. Best-effort (formato interno no soportado; titular = total de sesión). **No** es una fase del pipeline: invocarla es el opt-in. |
 
 ## Las dos ideas clave
@@ -80,8 +90,8 @@ Feature: <capacidad de la tarea>
 - ⚙️ **Por defecto ON, salto solo en planes triviales**: `design-review` y
   `scenario-coverage` (las dos pasadas caras por subagente). El salto **lo decide
   el usuario** (no Claude en silencio), exige criterios estrictos —una sola
-  decisión replicada, sin contrato nuevo ni decisión arquitectónica; y, para
-  `scenario-coverage`, 1 tarea sin caminos de error reales— y **se loguea** en el
+  decisión replicada, sin contrato nuevo ni decisión arquitectónica (y, para
+  `scenario-coverage`, 1 tarea sin caminos de error reales)— y **se loguea** en el
   Plan change log. Se pregunta **una vez por pasada**, caduca si una
   re-planificación rompe los criterios, y sin canal para preguntar la pasada se
   ejecuta. Los criterios completos, con su frontera resuelta por ejemplo, están en
@@ -100,15 +110,30 @@ prioridad): `defaults (full)` → preset `mode:` → claves explícitas en
 | `docs-only` | OFF | ON | OFF | solo orquestar planes + documentar |
 
 `stack:` (`language` / `package-manager` / `test-runner` / `mutation-tool`) hace
-que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker.
+que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker. En
+**monorepos poliglotas**, `stack.packages.<pkg>` pisa el stack **por-workspace**
+(herencia parcial), y `/mutation` elige la herramienta por package (Stryker verificado ·
+`mutmut` · escape `mutation-command`). Regla de resolución canónica en el README del plugin.
 
 `models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
+`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
 en el README del plugin.
 
-`features.caveman` (`off` default / `lite` / `full`) activa el **modo caveman**:
-comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en los
-checkpoints. Opt-in, no forma parte de ningún preset. Ver [Modo caveman](../README.md#modo-caveman-featurescaveman).
+## Capas opt-in (default off, salvo que se diga)
+
+Sin tocar `.claude/task-pipeline.yml`, **nada de esto se activa** — el comportamiento por defecto es el
+pipeline base de arriba. Cada capa se enciende con su flag:
+
+| Capa | Flag | Qué aporta |
+|---|---|---|
+| **SDD nativo** | `features.sdd` | Specs vivas: requisitos **EARS** (`spec.md`), casos de uso **Gherkin** (`caso-de-uso.md`, única fuente del Gherkin), decisiones **ADR/MADR**. Con activación asistida (`/task-init`/`/doctor` preguntan) y **gate `/sdd-lint`** de formato + completitud al cerrar. |
+| **Git automation** | `features.git-automation` | `auto-commit` al cerrar la tarea, `auto-pr` al cerrar el plan, `co-author` configurable. |
+| **Conventional commits** | `features.conventional-commits` | **Default ON**: exige `<task-id>: <conventional commit>`; `false` lo relaja. |
+| **GitHub tracking** | `features.github-tracking` | Proyección one-way `.md`→GitHub: plan→issue **padre**, tarea→**sub-issue**, con estado (label + Project) y assignee. |
+| **Modo caveman** | `features.caveman` | Comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en los checkpoints. |
+
+Todas son **opt-in fuera de preset**; su **ausencia no es drift** para `/doctor`. Detalle y garantías de cada
+una en el [README del plugin](../README.md).
 
 ## Estructura que asume en el repo
 

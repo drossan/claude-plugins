@@ -125,6 +125,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Spec cumplida; lo declarado en `Provides` queda realmente disponible para las tareas dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); corre **tras `mutation`, antes de `fact-checker`**  · solo si `features.sdd`
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD** — spec (EARS) + caso de uso (Gherkin) creados/actualizados en esta tarea, **o** declarado **"sin cambios de spec/CU"** (aquí y en el session log). El Gherkin vive **solo en el CU**  · solo si `features.sdd`

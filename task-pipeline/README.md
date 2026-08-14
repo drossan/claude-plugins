@@ -1,16 +1,26 @@
 # task-pipeline (plugin de Claude Code)
 
-Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
+Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad. Nodos **amarillos** = checkpoints
+humanos no negociables; **azules** = subagentes frescos:
 
-```
-/plan-task "<specs>"  →  plan mode  →  plan en .claude/plans/pending/<package>/
-                 →  grilling (refinar rama a rama, checkpoint humano)
-                 →  design-review (zoom-out adversario vía subagente, checkpoint)
-                 →  descomponer en tareas con escenarios Gherkin
-                 →  scenario-coverage (QA adversario de escenarios vía subagente)
-                 →  handoff al flujo TDD (Red → Green → Refactor)
-                 →  /mutation (gate de calidad de tests, Stryker break 80)
-                 →  fact-checker (gate de cierre: verifica las afirmaciones de la sesión)
+```mermaid
+flowchart TD
+    A["/plan-task 'specs'"] --> B["plan mode + plan en .claude/plans/pending/"]
+    B --> G["grilling"]
+    G --> DR["design-review"]
+    DR --> AP["aprobacion del plan"]
+    AP --> T["descomponer en tareas + Gherkin"]
+    T --> SC["scenario-coverage"]
+    SC --> HO["handoff TDD (Red - Green - Refactor)"]
+    HO --> M["gate: mutation (break 80)"]
+    M --> SL["gate: sdd-lint (solo si features.sdd)"]
+    SL --> FC["gate: fact-checker (INCORRECTO bloquea)"]
+    FC --> D["tarea done + commit/PR"]
+
+    classDef human fill:#fde68a,stroke:#b45309,color:#111
+    classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
+    class G,AP,FC human
+    class DR,SC agent
 ```
 
 Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
@@ -31,6 +41,7 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
+| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec **EARS** · caso-de-uso **Gherkin** · ADR **MADR**) por inspección — mecánico (comandos `grep`/`test` fijos) + semántico (subagente fresco). **ERROR bloquea / AVISO no**; corre entre `/mutation` y `fact-checker`. Invocable `/sdd-lint [package]`. Helper Bash opcional para CI en `scripts/sdd-lint.sh`. Frontera con `/doctor` (presencia) y `fact-checker` (afirmaciones): `sdd-lint` = **contenido** de los artefactos. |
 | `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
 
 ## Convención que asume el plugin
@@ -121,6 +132,7 @@ sede canónica de la regla de resolución; las demás sedes (el YAML seed, los d
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
+| `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. Ver [GitHub tracking](#github-tracking-opcional). |
 | `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): activa la capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. Ver [SDD nativo](#sdd-nativo-opcional). |
 | `features.conventional-commits` | `true`(default)/`false` | Exige el formato `<task-id>: <conventional commit>`. Es el comportamiento **histórico**, ahora configurable: `false` lo relaja. **Ausencia = ON** (no cambia nada). |
 | `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in (no gate de DoD): `auto-commit` (commit al cerrar tarea), `auto-pr` (PR al cerrar el **plan**; requiere `auto-commit`), `co-author` (default **false** = sin trailer de co-autor). **Fuera de todo preset**; fail-safe (solo `true` activa; no-canónico → off); **ausencia ≠ drift**. Ver [Git automation](#git-automation-opcional). |
@@ -246,6 +258,12 @@ se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-
 
 El flujo completo, paso a paso, vive en `docs/guides/task-lifecycle.md` → "Flujo SDD".
 
+**Gate de validación (`/sdd-lint`).** Con SDD on, al **cerrar una tarea** (entre `/mutation` y `fact-checker`)
+corre `sdd-lint`: valida **formato + completitud** de los artefactos (EARS bien-formado, estado MADR
+coherente, disciplina Gherkin, `[NECESITA ACLARACIÓN]` sin resolver, enlaces/trazabilidad). **ERROR bloquea**
+el cierre; **AVISO** se reconoce. Invocable a mano (`/sdd-lint [package]`) para auditar; y un **helper Bash
+opcional** (`scripts/sdd-lint.sh`) que un repo con CI puede cablear para validación desatendida.
+
 ## Git automation (opcional)
 
 Automatiza el **commit** al cerrar una tarea y la **PR** al cerrar el plan. **Opt-in** (default `off`): sin
@@ -307,6 +325,17 @@ Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Iss
 - **Estados** — proyectados en cada transición en **dos sitios**: label `status:*` en la issue + campo **Status del Project**: `active` → `In progress` + `status: in-progress` (+ **assignee** según `assignee`) · `in-review` → `In review` + `status: in-review` · `blocked` → `status: blocked` (el Project queda en `In progress`) · `done` → cerrada + Project `Done` + `status:*` retirada · `cancelled` → cerrada "not planned" + `Done`. Recipe **add-then-remove** (añade la nueva antes de quitar las demás `status:*`). Mecánica canónica en [`docs/guides/task-lifecycle.md`](../docs/guides/task-lifecycle.md) → "Cerrar una tarea".
 - **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`) + Project `Done`; GitHub **no** la auto-cierra al cerrar sus sub-issues. El padre **no** lleva `status:*` ni assignee.
 - `depends_on` **no** se proyecta como dependencia nativa (a lo sumo nota de texto en el body).
+
+```mermaid
+flowchart LR
+    PLAN["plan.md"] -->|"crea: body + label pkg"| PADRE["issue PADRE"]
+    TASK["task.md"] -->|"crea: --parent"| SUB["sub-issue"]
+    PADRE -.->|"jerarquia"| SUB
+    TASK -->|"cada cambio de status:"| ST["label status:* + Status del Project"]
+    PADRE -->|"plan completed"| CLOSE["gh issue close + Project Done"]
+```
+
+Proyección **one-way** (`.md` → GitHub); el `.md` es la única fuente de verdad. `/doctor` reconcilia el drift.
 
 **Límites (honestos):**
 

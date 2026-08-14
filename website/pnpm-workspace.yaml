@@ -1,2 +1,21 @@
+# Config de pnpm 11+ (los settings del campo `pnpm` de package.json viven aquí).
+# Permite que esbuild (dependencia de VitePress) corra su build script — sin esto, pnpm 11
+# lo ignora y `vitepress build` falla (ERR_PNPM_IGNORED_BUILDS) porque `strictDepBuilds` es true.
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
+
+# mermaid (vía vitepress-plugin-mermaid) declara estos deps transitivos en el
+# `optimizeDeps.include` del plugin. Bajo el node_modules estricto de pnpm no se
+# hoistean donde Vite los resuelve → en `docs:dev` falla la interop CJS/ESM de dayjs
+# ("does not provide an export named 'default'") y la página queda en blanco.
+# `docs:build` no se ve afectado (Rollup bundlea todo). En pnpm 11 este setting
+# vive aquí, NO en `.npmrc` (que pnpm ignora). Ref: vitepress-plugin-mermaid#47 y #70.
+# Nota: el plugin también incluye `debug` en optimizeDeps, pero mermaid 11 ya no lo
+# usa (no está instalado) → Vite deja un aviso benigno "Failed to resolve dependency:
+# debug" que no se puede hoistear (no existe) y no afecta al render.
+publicHoistPattern:
+  - '@braintree/sanitize-url'
+  - cytoscape
+  - cytoscape-cose-bilkent
+  - cytoscape-fcose
+  - dayjs

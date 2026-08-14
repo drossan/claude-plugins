@@ -44,5 +44,26 @@ features:
 - **Enlace roto** → se reporta. **Toggle a mitad**: las tareas inline previas conviven y no se migran a la
   fuerza; la regla aplica a las tareas nuevas.
 
+## Gate de validación (`/sdd-lint`)
+
+```mermaid
+flowchart LR
+    M["gate: mutation"] --> SL{"sdd-lint<br/>formato + completitud"}
+    SL -->|"ERROR"| BLOCK["bloquea el cierre"]
+    SL -->|"AVISO"| ACK["se reconoce y sigue"]
+    SL -->|"limpio"| FC["gate: fact-checker"]
+    ACK --> FC
+    BLOCK -.->|"corregir artefacto"| SL
+
+    classDef stop fill:#fecaca,stroke:#b91c1c,color:#111
+    class BLOCK stop
+```
+
+Con SDD on, al **cerrar una tarea** (entre `/mutation` y `fact-checker`) corre `sdd-lint`: valida **formato +
+completitud** de los artefactos — EARS bien-formado, estado MADR coherente, disciplina Gherkin, `[NECESITA
+ACLARACIÓN]` sin resolver, enlaces/trazabilidad. **ERROR bloquea** el cierre; **AVISO** se reconoce. Invocable
+a mano (`/sdd-lint [package]`) para auditar, y con un **helper Bash opcional** (`scripts/sdd-lint.sh`) que un
+repo con CI puede cablear para validación desatendida.
+
 > **Fuente canónica**: detalle en el
 > [README del plugin → SDD nativo](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).

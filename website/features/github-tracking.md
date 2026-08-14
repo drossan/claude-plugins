@@ -12,6 +12,15 @@ local no cambia).
 
 ## Qué proyecta
 
+```mermaid
+flowchart LR
+    PLAN["plan.md"] -->|"crea: body + label pkg"| PADRE["issue PADRE"]
+    TASK["task.md"] -->|"crea: --parent"| SUB["sub-issue"]
+    PADRE -.->|"jerarquia"| SUB
+    TASK -->|"cada cambio de status:"| ST["label status:* + Status del Project"]
+    PADRE -->|"plan completed"| CLOSE["gh issue close + Project Done"]
+```
+
 - **Plan → issue PADRE**; **tarea → SUB-ISSUE** (`gh issue create --parent`).
 - **Body = cuerpo completo del `.md`** (sin frontmatter) + **banner de espejo** + link al `.md`. Se vuelca al
   crear y se re-vuelca solo en **re-proyección explícita** (`/doctor` / re-run de `/plan-task`), no en cada

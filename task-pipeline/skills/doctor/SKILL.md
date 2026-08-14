@@ -68,6 +68,11 @@ artefacto del plugin — ver "Propiedad" abajo).
    `git-automation` no-booleano → **off** por fail-safe. La lógica que los consume (auto-commit al cerrar
    tarea, auto-pr al cerrar plan) es **comportamiento del ciclo de vida** (plugin-owned, solo-reporte): doctor
    **no** ejecuta commits/PRs.
+   El **gate `sdd-lint`** (skill + helper `scripts/sdd-lint.sh`) es parte de la **capa SDD** e **intrínseco a
+   `features.sdd`** (sin flag propio): con `features.sdd` **off**, su ausencia **no es drift**; la skill/helper
+   son **plugin-owned** (llegan al actualizar el plugin), así que doctor **no** los materializa — si con SDD on
+   faltasen (instalación desalineada), es **solo-reporte** ("actualiza el plugin"). doctor **no** ejecuta
+   `sdd-lint`.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
@@ -183,6 +188,13 @@ artefacto del plugin — ver "Propiedad" abajo).
      (`../plan-task/templates/spec.md`, `caso-de-uso.md`, `adr.md`, `adr-index.md`), **solo tras aprobación
      y con diff**. Tras materializarla, una **segunda pasada no repite** el hallazgo (idempotente). Con el
      flag **off**, esta categoría **no corre**.
+   - **Las plantillas SDD pasan su propio lint (rescate GAINUP P7)**: las semillas
+     (`spec.md`/`caso-de-uso.md`/`adr.md`/`adr-index.md`) están escritas para **pasar `/sdd-lint` limpias**
+     (p.ej. `spec.md` describe el marcador de aclaración pendiente **sin** instanciar el literal, y usa
+     `FR-000`/`SC-000` bien formados) — así **ninguna instancia nueva nace defectuosa**. Es un invariante
+     **plugin-owned** (las plantillas viven en el plugin): si con SDD on una plantilla **materializada** por
+     el consumidor no pasa el lint, es **solo-reporte** ("actualiza el plugin"); doctor no reescribe la
+     semilla del plugin.
 10. **`stack.packages` huérfano o malformado** (repo-owned, aviso) — si una clave `stack.packages.<pkg>`
     **no corresponde a un workspace real** del repo, avísalo (**config muerta por typo**, p.ej.
     `stack.packages.apii`). Si `stack.packages` **no es un mapa** (o una entrada de package no lo es),

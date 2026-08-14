@@ -3,8 +3,10 @@
 > **Plantilla SDD** (GitHub Spec Kit + EARS). Materialízala en `.claude/specs/<package>/spec.md`.
 > **Gated por `features.sdd`** (opt-in, default off): sin el flag, esta capa no existe. Es el **"QUÉ"**
 > (requisitos), fuente de verdad **viva** que cada tarea actualiza. El **"CÓMO"** del actor vive en los
-> **casos de uso** enlazados; las **decisiones** de arquitectura, en los **ADR**. Lo que no sepas, márcalo
-> con **`[NECESITA ACLARACIÓN: <pregunta>]`** en vez de inventar un requisito.
+> **casos de uso** enlazados; las **decisiones** de arquitectura, en los **ADR**. Lo que no sepas, **márcalo**
+> con el marcador de *aclaración pendiente* —el texto `NECESITA ACLARACIÓN` **entre corchetes** seguido de
+> `:` y tu pregunta— en vez de inventar un requisito. El gate `sdd-lint` **bloquea** el cierre mientras quede
+> alguna sin resolver (rescate GAINUP: incompletitud = gate).
 
 ## Resumen
 
@@ -33,7 +35,7 @@
 
 ## Requisitos no funcionales
 
-- **NFR-001** — `<rendimiento / seguridad / accesibilidad / …>`. `[NECESITA ACLARACIÓN: <umbral?>]`
+- **NFR-001** — `<rendimiento / seguridad / accesibilidad / …>`. <!-- si falta un dato (p.ej. el umbral), anótalo como aclaración pendiente — ver §Aclaraciones pendientes -->
 
 ## Criterios de éxito
 
@@ -55,7 +57,8 @@
 
 ## Aclaraciones pendientes
 
-> Consolida aquí los `[NECESITA ACLARACIÓN: …]` abiertos; una spec con aclaraciones pendientes no está
-> cerrada.
+> Consolida aquí las **aclaraciones pendientes** —cada una con el marcador `NECESITA ACLARACIÓN` entre
+> corchetes, `:` y tu pregunta—; una spec con aclaraciones pendientes **no está cerrada** y el gate `sdd-lint`
+> la bloquea. Elimina cada entrada al resolverla.
 
-- `[NECESITA ACLARACIÓN: <pregunta>]`
+- _(una entrada por cada dato sin resolver; vacío = spec cerrada)_
