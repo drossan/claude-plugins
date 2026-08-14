@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-validation-gate
 package: task-pipeline
-status: active           # pending | active | completed | cancelled
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/sdd-validation-gate
 issue: 51                # issue PADRE (github-tracking) — drossan/claude-plugins#51
 created: 2026-08-14
@@ -111,7 +111,7 @@ aseverados para CI de consumidores; `checkTemplate` en `/doctor` + fix "Architec
 - [x] `task-pipeline-sdd-validation-gate-02` (P2) — **Bash helper opcional** `sdd-lint.sh` (subconjunto determinista, NO bloqueante, best-effort) + **fixtures aseverados** known-good/known-bad + doc "cómo cablearlo a tu CI"  · depends_on: 01
 - [x] `task-pipeline-sdd-validation-gate-03` (P1) — Gate en el cierre: línea de DoD gated `features.sdd` en `task.md` + 2×lifecycle + wiring "Cerrar una tarea" (`mutation → sdd-lint → fact-checker`) + nota `plan-task` + reconocimiento en `/doctor` (ausencia ≠ drift)  · depends_on: 01
 - [x] `task-pipeline-sdd-validation-gate-04` (P2) — `/doctor` valida que las **PLANTILLAS** SDD pasan el lint (`checkTemplate`) + fix **"MADR *Any*"→"*Architectural*"** en plantillas/doc shipeadas  · depends_on: 01
-- [ ] `task-pipeline-sdd-validation-gate-05` (P3) — Release: README (sección `sdd-lint`) + portal + CHANGELOG + bump/manifiestos + retro + cierre del plan/PR  · depends_on: 01,02,03,04
+- [x] `task-pipeline-sdd-validation-gate-05` (P3) — Release: README (sección `sdd-lint`) + portal + CHANGELOG + bump/manifiestos + retro + cierre del plan/PR  · depends_on: 01,02,03,04
 
 ## Registro de cambios del plan
 
@@ -170,3 +170,22 @@ aseverados para CI de consumidores; `checkTemplate` en `/doctor` + fix "Architec
       (03); portabilidad `grep` BSD↔GNU del helper (02); known-bad que faltaban (sección ausente, CU huérfano,
       id duplicado, `superseded by` roto) (02); bump como `Scenario Outline` + aclarar "frase canónica" (05).
   - **Pendiente**: materializar el hardening en el Gherkin de cada tarea → handoff.
+- 2026-08-14: **ejecución completa** (tareas 01–05 `done`). Rama **apilada** sobre `sdd-y-stack-poliglota`
+  (PR #46, v0.15.0 sin mergear) por dependencia de la capa SDD. Release **folded en 0.15.0** (sin bump).
+  #52–#56 cerradas; padre #51 → Done/close.
+
+## Retro (plan cerrado)
+
+- **Estimación vs. real**: estimado ~12h (5 tareas), real ~4h45m aprox. La 01 (skill) salió antes por ser un
+  playbook MD; la 02 (Bash) llevó más por el bug de compatibilidad + fixtures aseverados.
+- **Sorpresas / bugs propios**: (1) el helper usó `mapfile` (Bash 4+) → falló en **Bash 3.2 de macOS**;
+  reescrito con `while read < <(...)`. (2) `checkTemplate` (04) —correr el lint sobre las propias plantillas—
+  destapó un **bug de falsos positivos** en el check de ids (`NFR-001` contiene `FR-001`; placeholder
+  `FR-00x`); corregido con `\b` en la skill (01) y el helper (02). **La design-review y scenario-coverage
+  pagaron su coste**: la primera evitó el Bash-como-gate (fallo estructural), la segunda destapó la tensión
+  del token `[NECESITA ACLARACIÓN]` en la plantilla.
+- **Giro del design-review** (híbrido → skill-primario + Bash helper opcional): acertado — el gate encaja con
+  `stack:none`/"skills=playbooks"; el Bash queda donde aporta (CI de consumidores).
+- **Fix MADR = no-op**: la superficie shipeada nunca dijo "Any"; solo se añadió la clarificación "Architectural".
+- **Rama apilada**: residual conocido — cuando #46 mergee a `main`, esta rebasa/mergea limpio; su PR incluye
+  los commits de #46 hasta entonces.

@@ -31,6 +31,7 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
+| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec **EARS** · caso-de-uso **Gherkin** · ADR **MADR**) por inspección — mecánico (comandos `grep`/`test` fijos) + semántico (subagente fresco). **ERROR bloquea / AVISO no**; corre entre `/mutation` y `fact-checker`. Invocable `/sdd-lint [package]`. Helper Bash opcional para CI en `scripts/sdd-lint.sh`. Frontera con `/doctor` (presencia) y `fact-checker` (afirmaciones): `sdd-lint` = **contenido** de los artefactos. |
 | `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
 
 ## Convención que asume el plugin
@@ -245,6 +246,12 @@ se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-
   **conviven** y **no se migran a la fuerza**; la regla aplica a las tareas nuevas.
 
 El flujo completo, paso a paso, vive en `docs/guides/task-lifecycle.md` → "Flujo SDD".
+
+**Gate de validación (`/sdd-lint`).** Con SDD on, al **cerrar una tarea** (entre `/mutation` y `fact-checker`)
+corre `sdd-lint`: valida **formato + completitud** de los artefactos (EARS bien-formado, estado MADR
+coherente, disciplina Gherkin, `[NECESITA ACLARACIÓN]` sin resolver, enlaces/trazabilidad). **ERROR bloquea**
+el cierre; **AVISO** se reconoce. Invocable a mano (`/sdd-lint [package]`) para auditar; y un **helper Bash
+opcional** (`scripts/sdd-lint.sh`) que un repo con CI puede cablear para validación desatendida.
 
 ## Git automation (opcional)
 

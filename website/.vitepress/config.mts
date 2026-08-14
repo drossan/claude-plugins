@@ -32,7 +32,7 @@ export default defineConfig({
       },
       {
         text: 'Skills',
-        items: [{ text: 'Las 9 skills', link: '/skills/' }],
+        items: [{ text: 'Las 10 skills', link: '/skills/' }],
       },
       {
         text: 'Opcional',

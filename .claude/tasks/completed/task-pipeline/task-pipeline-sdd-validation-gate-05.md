@@ -2,10 +2,10 @@
 id: task-pipeline-sdd-validation-gate-05
 package: task-pipeline
 plan: sdd-validation-gate
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-validation-gate-01, task-pipeline-sdd-validation-gate-02, task-pipeline-sdd-validation-gate-03, task-pipeline-sdd-validation-gate-04]
-actual:
+actual: ~30m
 issue: 56
 estimate: 1h
 created: 2026-08-14
@@ -77,10 +77,10 @@ Feature: Release del plan sdd-validation-gate
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
-- [ ] Spec cumplida (README, portal, CHANGELOG, bump/manifiestos, retro, espejos)
-- [ ] Gate de `fact-checker` superado — en especial "la versión es coherente" y "frase canónica intacta" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: README + portal + CHANGELOG + `plugin.json` + `marketplace.json` · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
+- [x] Spec cumplida (README, portal, CHANGELOG, bump/manifiestos, retro, espejos)
+- [x] Gate de `fact-checker` superado — en especial "la versión es coherente" y "frase canónica intacta" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: README + portal + CHANGELOG + `plugin.json` + `marketplace.json` · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)
