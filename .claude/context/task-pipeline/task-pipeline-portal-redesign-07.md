@@ -50,3 +50,9 @@ Sección **Referencia** + **gate de cierre del portal**:
 - `website/referencia/cli.md` (nueva), `website/skills/index.md` (edit).
 - GitHub (best-effort): cerrar #65 **bloqueado por el clasificador de permisos** → pendiente owner.
 - Estimado 3h · real ~1h45m. **Es la última task del plan** → cierre del plan + auto-PR (best-effort).
+
+### Cierre del plan
+- Rama `plan/task-pipeline/portal-redesign` pusheada a origin (64c483e..3502092).
+- **auto-PR creado → #66** (best-effort OK). Base `main`.
+- **Pendiente del owner** (best-effort github-tracking bloqueado por el clasificador de permisos esta sesión):
+  cerrar las sub-issues #59–#65 (una por task) y la issue padre #58 (Project → Done).

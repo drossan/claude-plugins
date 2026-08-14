@@ -177,7 +177,8 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   sin error) + **móvil 375px**; enlaces externos (7 anchors + 4 ficheros) verificados; paridad portal↔GitHub
   del flowchart. Build verde final; **fact-checker 9/10** (matiz: frase canónica = **texto verbatim**, el
   énfasis markdown difiere — formato, no contenido; corregido "byte-idéntica"→"texto verbatim"). **PLAN
-  COMPLETADO** (7/7 tasks). auto-PR intentado (best-effort).
+  COMPLETADO** (7/7 tasks). Rama pusheada; **auto-PR creado → #66** (best-effort OK). Pendiente owner: cerrar
+  las sub-issues #59–#65 y la padre #58 (los cierres los bloqueó el clasificador de permisos esta sesión).
 - 2026-08-14: **task 06 done** (issue #64) — **Capas opcionales**: 4 páginas `features/*` autocontenidas
   (tapón → "Profundizar"); `sdd` con nueva sección "El flujo, con y sin SDD" + diagrama spec/CU/ADR y gate
   `sdd-lint` re-estilado; `github-tracking` con diagrama re-estilado a la paleta por rol. Build verde;
