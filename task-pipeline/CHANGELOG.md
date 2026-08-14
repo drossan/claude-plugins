@@ -125,8 +125,22 @@ queda **diferido** a un plan follow-up.)
   destapó que el check de ids `FR-00x`/`SC-00x` daba **falsos positivos** con `NFR-001` (contiene `FR-001`) y
   con la notación placeholder `FR-00x`. Corregido con `\b` (frontera de palabra, portable BSD/GNU) en la skill
   `sdd-lint` y en `scripts/sdd-lint.sh`.
+- **Portal VitePress: render de Mermaid en `docs:dev` + favicon** — el portal quedaba **en blanco** en modo dev
+  (no en `docs:build`): bajo el node_modules estricto de **pnpm 11**, los deps transitivos que mermaid declara
+  en `optimizeDeps.include` (`dayjs`, `cytoscape*`, `@braintree/sanitize-url`) no se hoisteaban donde Vite los
+  resuelve y `dayjs` fallaba la interop CJS/ESM (*"does not provide an export named 'default'"*). Resuelto con
+  `publicHoistPattern` en `pnpm-workspace.yaml` (en pnpm 11 el setting vive ahí, **no** en `.npmrc`, que pnpm
+  ignora). Añadido `public/favicon.svg` + head link (mata el 404 de `favicon.ico`). `debug` queda como aviso
+  dev **benigno** (mermaid 11 ya no lo instala; no se puede hoistear lo que no existe, no afecta al render).
 
 ### Changed
+- **Revisión de documentación (consistencia + diagramas Mermaid)** — alineadas las tablas de flags y la
+  **DoD-espejo** entre los dos `task-lifecycle`; `docs/flujo-del-pipeline.md` al día (10 skills, `sdd-lint`,
+  frase canónica del salto trivial); **diagramas Mermaid** del flujo / máquinas de estado / gates de cierre /
+  proyección `github-tracking` en README, ambos `task-lifecycle` y el **portal** (con `vitepress-plugin-mermaid`).
+  Nueva página **`website/guia/configuracion.md`** (presets `mode`, stack poliglota `stack.packages`, features,
+  models) + entrada en el sidebar; aclarado que `conventional-commits` es un flag **independiente** de
+  `git-automation`.
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
   "(Stryker, break 80)" a "**con la herramienta del package** (`stack.mutation-tool`)" en `templates/task.md`,
   `templates/task-lifecycle.md` y `docs/guides/task-lifecycle.md`. Se explicita que `features.mutation-gate`
