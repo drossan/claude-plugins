@@ -91,6 +91,15 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   commit/PR automático falla, se avisa y **no** se bloquea el cambio de `status:` del `.md`. `/doctor`
   reconoce los flags (ausencia ≠ drift). Con los flags **off** (default), commit y PR son **manuales**,
   idéntico a hoy. Cableado en las dos `task-lifecycle` y `plan-task`.
+- **Skill `sdd-lint`** (#36) — gate de **validación de formato + completitud** de los artefactos SDD (spec
+  **EARS** · caso-de-uso **Gherkin** · ADR **MADR**), la pieza que faltaba: valida que estén **bien formados,
+  completos y trazables**, no solo que existan (eso es `/doctor`). **Fuente autoritativa** model-driven —
+  mecánico vía comandos `grep`/`test` fijos (vocabulario MADR cerrado case-insensitive, `[NECESITA
+  ACLARACIÓN]` sin resolver, secciones, ids `FR-00x`/`SC-00x`, enlaces rotos, huérfanos/duplicados por-package)
+  + semántico por juicio de un subagente fresco (EARS bien-formado, coherencia de estado MADR, disciplina
+  Gherkin, trazabilidad). **ERROR bloquea / AVISO no** (como `fact-checker`; ante duda de parseo → AVISO).
+  Invocable `/sdd-lint [package]`; con `features.sdd` off, no-op. (El cableado como gate de cierre y el helper
+  Bash opcional llegan en las tareas siguientes del plan.)
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
