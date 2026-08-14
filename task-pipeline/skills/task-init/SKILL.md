@@ -127,6 +127,22 @@ existe, respétala e informa.
 `.claude/tasks|plans/<package>/`). Si el nombre no es una clave YAML válida (espacios, `:`, etc.) →
 **sanea o pregunta**; nunca escribas una clave que rompa el YAML.
 
+## Paso 1.6 — Activación SDD (opcional, opt-in con confirm)
+
+La capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR) es **opt-in** y **default off**. Para que sea
+**descubrible** (no un flag que nadie enciende), al inicializar el repo **ofrécela explícitamente**:
+
+- Si `.claude/task-pipeline.yml` **no** tiene `features.sdd: true`, lanza **`AskUserQuestion`**: "¿Activar la
+  capa SDD (specs EARS + casos de uso Gherkin + ADR MADR)?". **Nunca la actives en silencio.**
+- **Al confirmar** → escribe `features.sdd: true` (descomentado) en `features:` **y** materializa el scaffold
+  ADR inicial: lee `../plan-task/templates/adr-index.md` con **Read** y escríbelo en
+  `.claude/specs/adr/adr-index.md` (crea `.claude/specs/adr/` si falta). El resto (spec/CU por package) lo
+  crea el **flujo SDD** on-demand al trabajar (no lo autogeneres aquí).
+- **Al declinar** → deja `features.sdd` **off** (comentado, como el template), sin materializar nada SDD.
+- **Sin canal para `AskUserQuestion`** (entorno no interactivo) → **no** actives a ciegas: deja el estado y
+  **repórtalo** ("SDD no activado: sin canal para confirmar").
+- **Idempotente**: si `features.sdd` ya es `true`, **no** vuelvas a preguntar.
+
 ## Paso 2 — HOW-TO del package (si aplica)
 
 Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su

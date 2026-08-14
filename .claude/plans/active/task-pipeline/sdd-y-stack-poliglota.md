@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-y-stack-poliglota
 package: task-pipeline
-status: completed        # pending | active | completed | cancelled
+status: active           # pending | active | completed | cancelled  (reabierto: extensión 09-12)
 branch: plan/task-pipeline/sdd-y-stack-poliglota
 issue: 37                # issue PADRE proyectada (github-tracking) — drossan/claude-plugins#37
 created: 2026-08-13
@@ -185,6 +185,12 @@ quien no la quiera.
 - [x] `task-pipeline-sdd-y-stack-poliglota-07` (P2) — `/doctor`: reconoce `features.sdd` + `stack.packages` (ausencia ≠ drift); detecta plantillas SDD ausentes con flag on (referencia la lista canónica de la tarea 04)  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
 - [x] `task-pipeline-sdd-y-stack-poliglota-08` (P3) — **Release only**: sidebar en `config.mts` (nav final) + e2e de coherencia (espejos/`test -d`) + bump SemVer en `plugin.json` + strings de manifiestos + consolidar CHANGELOG + retro  · depends_on: 01,02,03,04,05,06,07
 
+**Extensión (reabierta 2026-08-14) — activación SDD + git-automation + conventional-commits**
+- [x] `task-pipeline-sdd-y-stack-poliglota-09` (P2) — Prompt de activación SDD: `/task-init` (install) y `/doctor` (repo legacy sin `features.sdd`) preguntan con `AskUserQuestion` si activar SDD; al confirmar escriben `features.sdd: true` (+ doctor materializa scaffold ADR). Opt-in, nunca en silencio  · depends_on: task-pipeline-sdd-y-stack-poliglota-05, task-pipeline-sdd-y-stack-poliglota-07 (#47)
+- [ ] `task-pipeline-sdd-y-stack-poliglota-10` (P1) — Schema `features.conventional-commits` (default ON) + bloque `features.git-automation` { `auto-commit`, `auto-pr` (plan-close), `co-author` (default false) } (opt-in, fuera de preset, fail-safe, ausencia ≠ drift) en todas las sedes + portal + preguntar en install  · depends_on: — (#48)
+- [ ] `task-pipeline-sdd-y-stack-poliglota-11` (P2) — Cableado: auto-commit al cerrar tarea (`<task-id>: <conventional>`, respeta `conventional-commits`/`co-author`) + auto-PR al cerrar plan + reconocimiento en `/doctor` (ausencia ≠ drift), en lifecycle/`plan-task`  · depends_on: task-pipeline-sdd-y-stack-poliglota-10 (#49)
+- [ ] `task-pipeline-sdd-y-stack-poliglota-12` (P3) — Release de la extensión: CHANGELOG (bajo 0.15.0, sin mergear) + manifiestos + portal (nav/coherencia) + retro + re-cierre del plan/PR  · depends_on: 09,10,11 (#50)
+
 ## Registro de cambios del plan
 
 - 2026-08-13: creado (plan paraguas: workstream A #35 · B #36 · C cierre).
@@ -236,6 +242,15 @@ quien no la quiera.
   es per-package" reservada a la tarea 02 (F7a), no adelantada aquí.
 - 2026-08-14: **plan completado** (tareas 01–08 `done`). Release **v0.15.0** (minor: features opt-in
   retrocompatibles). #38–#45 cerradas; padre #37 → Done/close.
+- 2026-08-14: **plan REABIERTO** (decisión del owner: extender en vez de plan nuevo). PR #46 aún sin
+  mergear (0.15.0 folding). Añadidas 4 tareas (09–12) para: **prompt de activación SDD** (task-init/doctor
+  preguntan), **git-automation** (auto-commit por tarea + auto-PR al cerrar el PLAN + `co-author` flag
+  default off) y **conventional-commits** (default ON). Decisiones del owner (AskUserQuestion): co-autor =
+  configurable por flag (default no añadir); auto-PR = al cerrar el plan (respeta una-rama-por-plan);
+  conventional = default ON; extender el plan existente. Checkpoints `grilling`/`design-review` **saltados**
+  por decisión del owner (extensión, no plan nuevo); las 4 respuestas son la resolución de diseño. Padre #37
+  reabierto; sub-issues #47–#50. **Aviso**: git-automation/conventional son temáticamente ajenas al título
+  del plan (SDD+stack) — se extiende por petición explícita; un plan aparte sería más coherente.
 
 ## Retro (plan cerrado)
 

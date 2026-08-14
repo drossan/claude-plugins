@@ -68,6 +68,11 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   (materializar desde la semilla, con aprobación + diff); **presencia parcial** = solo la pieza faltante,
   **per-package** para `spec.md`/`casos-de-uso/` y global para `adr/`; idempotente. Además avisa de claves
   `stack.packages` **huérfanas** (typo) o **malformadas** (no-mapa).
+- **Activación asistida de SDD** (#36) — `/task-init` (instalación nueva) y `/doctor` (repo ya adoptado sin
+  el flag) **preguntan** con `AskUserQuestion` si activar la capa SDD, en vez de dejarla como un opt-in que
+  nadie descubre. Al **confirmar** escriben `features.sdd: true` y materializan el scaffold ADR inicial
+  (`.claude/specs/adr/adr-index.md`); al declinar o **sin canal** para preguntar, no tocan nada. **Nunca se
+  auto-activa** (opt-in con confirmación) y es **idempotente** (si ya está on, no re-pregunta).
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

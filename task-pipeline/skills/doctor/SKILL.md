@@ -54,7 +54,10 @@ artefacto del plugin — ver "Propiedad" abajo).
    **plugin-owned**; la **reconciliación** del drift md↔GitHub es una categoría aparte (ver abajo).
    Lo mismo, por último, con **`features.sdd`** (booleano opt-in, default off — capa SDD) y con el schema
    **`stack.packages`** (override de stack por-package): su **ausencia no es drift** (mismo criterio que
-   caveman/github-tracking); doctor puede ofrecerlos comentados como nicety, **nunca** como problema.
+   caveman/github-tracking); doctor puede ofrecerlos comentados como nicety, **nunca** como problema. Para
+   **`features.sdd`** en concreto, en Fase 2 doctor puede ir más allá del comentario y **ofrecer activarla**
+   (`AskUserQuestion` → escribir `features.sdd: true` + materializar el scaffold, ver "Activación SDD" en
+   Fase 2); **nunca** la activa en silencio.
    `features.sdd` con un **valor no-booleano/malformado** (`quizas`, `yes`, `{ enabled: true }`, …) se trata
    como **off** por fail-safe — **no** como "config inválida" que bloquee. La detección del **scaffolding SDD
    ausente** (solo con el flag on) y de **claves `stack.packages` huérfanas/malformadas** son categorías
@@ -247,6 +250,14 @@ conflicto cambia. Trátalo como **aviso**: nombra los ficheros implicados y **su
 auto-editar**. **Aviso extra (T-H)**: si alguna de las tareas en conflicto **ya tiene `issue:`** (proyectada
 en GitHub por `features.github-tracking`), advierte que renumerar **desincroniza** el `.md` de su issue → hay
 que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
+
+**Activación SDD (nicety opt-in — cat. 2 + cat. 9):** si `features.sdd` está **ausente/off**, ofrece
+**activarla** con `AskUserQuestion` ("¿Activar la capa SDD: specs EARS + casos de uso Gherkin + ADR MADR?").
+Al **confirmar**: escribe `features.sdd: true` (con diff + aprobación) **y** materializa el scaffold SDD
+ausente (cat. 9: `.claude/specs/adr/adr-index.md` desde `../plan-task/templates/adr-index.md`; el resto
+—spec/CU por package— lo crea el flujo SDD on-demand). Al **declinar**, o **sin canal** para preguntar, **no**
+actives nada (déjalo off y repórtalo). Si ya está `true`, **no** re-preguntes (idempotente). **Nunca** se
+auto-activa: es opt-in con confirmación humana.
 
 **Reconciliación md↔GitHub (solo con el flag on):** re-proyecta **desde el `.md`** (la fuente de verdad):
 crear la issue que falta, cerrar la que quedó `open`, con **diff + aprobación** problema a problema. Lo **no
