@@ -33,5 +33,9 @@ confirmado, el **aviso de alcance en una frase**, y **lo que quede sin hacer o s
 En flujos con mucho tool-use el ahorro real es modesto (input y tokens de herramientas dominan). Actívalo si
 quieres probarlo; no esperes un ahorro garantizado.
 
-> **Fuente canónica**: detalle en el
-> [README del plugin → Modo caveman](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).
+## Profundizar (opcional)
+
+La lista exacta de contenido protegido de la compresión y la mecánica del hook (`hooks/caveman.sh`) están en
+el
+[README del plugin → Modo caveman](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#modo-caveman-featurescaveman).
+No hace falta para activarlo.

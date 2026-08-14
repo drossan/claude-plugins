@@ -114,7 +114,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   ramas, ids)  · depends_on: 01,02
 - [x] `task-pipeline-portal-redesign-05` (P2) — "El pipeline paso a paso" (recorrido secuencial de fases)  ·
   depends_on: 01,02
-- [ ] `task-pipeline-portal-redesign-06` (P2) — "Capas opcionales" (SDD/git-automation/github-tracking/caveman)
+- [x] `task-pipeline-portal-redesign-06` (P2) — "Capas opcionales" (SDD/git-automation/github-tracking/caveman)
   · depends_on: 01,02
 - [ ] `task-pipeline-portal-redesign-07` (P3) — "Referencia" + barrido de coherencia + render checklist
   claro/oscuro + gate de build  · depends_on: 03,04,05,06
@@ -171,6 +171,10 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   fact-checker 7/7. **task 02 done** (issue #60): **tema Mermaid APROBADO por el owner** (paleta por rol
   ámbar/azul/rojo/gris, texto oscuro explícito → legible claro+oscuro, redondeo, subgraphs); convención en
   `website/DIAGRAM-THEME.md`. Verificado en navegador en ambos modos. **Las tasks 03-06 aplican este tema.**
+- 2026-08-14: **task 06 done** (issue #64) — **Capas opcionales**: 4 páginas `features/*` autocontenidas
+  (tapón → "Profundizar"); `sdd` con nueva sección "El flujo, con y sin SDD" + diagrama spec/CU/ADR y gate
+  `sdd-lint` re-estilado; `github-tracking` con diagrama re-estilado a la paleta por rol. Build verde;
+  diagramas claro+oscuro; **fact-checker 12/12** (+ tapón "Fuente canónica" eliminado en las 4).
 - 2026-08-14: **task 05 done** (issue #63) — **El pipeline paso a paso**: `guia/pipeline` reescrito como
   recorrido secuencial (8 fases con qué haces/qué ves/por qué), flowchart principal re-estilado con el tema de
   la 02 (subgraph de gates) + diagrama de ramas ERROR/AVISO. **Frase canónica intacta** (byte-idéntica);

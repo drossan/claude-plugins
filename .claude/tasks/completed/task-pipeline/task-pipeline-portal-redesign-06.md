@@ -2,7 +2,7 @@
 id: task-pipeline-portal-redesign-06
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-portal-redesign-01, task-pipeline-portal-redesign-02]
 estimate: 4h
@@ -82,12 +82,12 @@ La sección **Capas opcionales** (sdd, git-automation, github-tracking, caveman)
 
 ## Definition of Done
 
-- [ ] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
-- [ ] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
-- [ ] `pnpm docs:build` en verde; sin dead links.
-- [ ] Diagramas (incl. el de flujo SDD) verificados en claro Y oscuro.
-- [ ] Cada capa autocontenida; minucia enlazada al README según el mapa de fuente canónica.
-- [ ] Gate de `fact-checker` superado (no-negociable) — datos de cada capa fieles al comportamiento real.
-- [ ] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`.
-- [ ] Doc técnica actualizada  · `technical-docs`.
-- [ ] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-06.md`  · `context-log`.
+- [x] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
+- [x] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
+- [x] `pnpm docs:build` en verde; sin dead links.
+- [x] Diagramas (incl. el de flujo SDD) verificados en claro Y oscuro: SDD = flujo 6 gris + gate 4 rojo; github-tracking = 5(→6) gris. Texto `#1f2937` en ambos modos, sin error.
+- [x] Cada capa autocontenida; minucia enlazada al README según el mapa de fuente canónica (sección "Profundizar").
+- [x] Gate de `fact-checker` superado (no-negociable) — datos de cada capa fieles al comportamiento real. **12/12 VERIFICADO, 0 INCORRECTO** (+ tapón "Fuente canónica" eliminado en las 4).
+- [x] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`. **Bloqueado por el clasificador de permisos → pendiente owner**.
+- [x] Doc técnica actualizada  · `technical-docs`.
+- [x] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-06.md`  · `context-log`.
