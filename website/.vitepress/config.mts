@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // Config del portal de documentación de task-pipeline.
 // srcDir = raíz de este proyecto (website/): VitePress solo escanea website/**,
 // nunca los .md del repo (docs/guides, .claude/**, README de raíz).
-export default defineConfig({
+// withMermaid habilita bloques ```mermaid (misma notación que los docs de GitHub).
+export default withMermaid(defineConfig({
   lang: 'es-ES',
   title: 'task-pipeline',
   description:
@@ -49,4 +51,4 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/drossan/claude-plugins' },
     ],
   },
-})
+}))

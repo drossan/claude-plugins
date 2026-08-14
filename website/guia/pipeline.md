@@ -3,16 +3,27 @@
 `/plan-task` orquesta el flujo completo, de las specs a tareas listas para ejecutar. **No es
 fire-and-forget**: hay checkpoints humanos por diseño.
 
+```mermaid
+flowchart TD
+    A["/plan-task 'specs'"] --> B["plan mode + plan en .claude/plans/pending/"]
+    B --> G["grilling"]
+    G --> DR["design-review"]
+    DR --> AP["aprobacion del plan"]
+    AP --> T["descomponer en tareas + Gherkin"]
+    T --> SC["scenario-coverage"]
+    SC --> HO["handoff TDD (Red - Green - Refactor)"]
+    HO --> M["gate: mutation (break 80)"]
+    M --> SL["gate: sdd-lint (solo si features.sdd)"]
+    SL --> FC["gate: fact-checker (INCORRECTO bloquea)"]
+    FC --> D["tarea done + commit/PR"]
+
+    classDef human fill:#fde68a,stroke:#b45309,color:#111
+    classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
+    class G,AP,FC human
+    class DR,SC agent
 ```
-/plan-task "<specs>"  →  plan mode  →  plan en .claude/plans/pending/
-                 →  grilling (refinar rama a rama · checkpoint humano)
-                 →  design-review (zoom-out adversario vía subagente · checkpoint)
-                 →  descomponer en tareas con escenarios Gherkin
-                 →  scenario-coverage (QA adversario de escenarios vía subagente)
-                 →  handoff al flujo TDD (Red → Green → Refactor)
-                 →  gates de cierre: /mutation → sdd-lint* → fact-checker
-                    (* sdd-lint solo con features.sdd on)
-```
+
+<small>Amarillo = checkpoint humano · azul = subagente fresco adversario.</small>
 
 Todo el pipeline es **configurable por repo** (`.claude/task-pipeline.yml`): los gates (TDD, mutation) y las
 capas de doc se encienden/apagan por preset (`mode`) o flag. Ver [Configuración](./configuracion.md).
@@ -39,6 +50,41 @@ Al cerrar cada tarea, en orden: **`mutation` → `sdd-lint` → `fact-checker`**
 - **`fact-checker`** (no negociable): un subagente fresco verifica las afirmaciones factuales de la sesión
   ("la función X hace Y", "el gate de mutation pasó", "el gate `sdd-lint` pasó"). Un `INCORRECTO` bloquea el
   cierre.
+
+## Estados del trabajo
+
+El `status:` del frontmatter es la **fuente de verdad**; al cambiarlo, el `.md` **se mueve** de carpeta
+(`pending/` → `active/` → `completed/` | `cancelled/`) en una sola operación.
+
+**Plan:**
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> completed
+    completed --> [*]
+    pending --> cancelled
+    active --> cancelled
+    completed --> cancelled
+```
+
+**Tarea** (ciclo más rico: `in_review`, `blocked`, reapertura desde `done`):
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> in_review
+    in_review --> done
+    active --> blocked
+    blocked --> active
+    done --> active
+    done --> [*]
+    active --> cancelled
+```
 
 ## Alcance: el pipeline no lo expande solo
 

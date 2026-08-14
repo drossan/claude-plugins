@@ -46,6 +46,19 @@ features:
 
 ## Gate de validación (`/sdd-lint`)
 
+```mermaid
+flowchart LR
+    M["gate: mutation"] --> SL{"sdd-lint<br/>formato + completitud"}
+    SL -->|"ERROR"| BLOCK["bloquea el cierre"]
+    SL -->|"AVISO"| ACK["se reconoce y sigue"]
+    SL -->|"limpio"| FC["gate: fact-checker"]
+    ACK --> FC
+    BLOCK -.->|"corregir artefacto"| SL
+
+    classDef stop fill:#fecaca,stroke:#b91c1c,color:#111
+    class BLOCK stop
+```
+
 Con SDD on, al **cerrar una tarea** (entre `/mutation` y `fact-checker`) corre `sdd-lint`: valida **formato +
 completitud** de los artefactos — EARS bien-formado, estado MADR coherente, disciplina Gherkin, `[NECESITA
 ACLARACIÓN]` sin resolver, enlaces/trazabilidad. **ERROR bloquea** el cierre; **AVISO** se reconoce. Invocable
