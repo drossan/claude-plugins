@@ -36,6 +36,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+| `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in, **no** gate de DoD: comprime el output del hilo principal (hook `UserPromptSubmit`). **Fuera de todo preset**; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD: proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
 | `features.sdd` | booleano; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD (salvo la línea de DoD gated con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); su **ausencia no es drift** para `/doctor`. |
 | `features.conventional-commits` | booleano; default **ON** | Formato `<task-id>: <conventional commit>`; `false` lo relaja. Ausencia = ON (histórico, no opt-in silencioso). |
