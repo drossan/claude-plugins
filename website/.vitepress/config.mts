@@ -40,6 +40,7 @@ export default defineConfig({
           { text: 'github-tracking', link: '/features/github-tracking' },
           { text: 'caveman', link: '/features/caveman' },
           { text: 'SDD nativo', link: '/features/sdd' },
+          { text: 'Git automation', link: '/features/git-automation' },
         ],
       },
     ],

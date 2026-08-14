@@ -73,6 +73,13 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   nadie descubre. Al **confirmar** escriben `features.sdd: true` y materializan el scaffold ADR inicial
   (`.claude/specs/adr/adr-index.md`); al declinar o **sin canal** para preguntar, no tocan nada. **Nunca se
   auto-activa** (opt-in con confirmación) y es **idempotente** (si ya está on, no re-pregunta).
+- **Flags `features.conventional-commits` y `features.git-automation`** — `conventional-commits` (**default
+  ON**, ausencia = comportamiento histórico) hace **configurable** la exigencia del formato `<task-id>:
+  <conventional commit>`. `git-automation` es un **bloque opt-in** (default off, fuera de preset, fail-safe,
+  ausencia ≠ drift) con `auto-commit` (commit al cerrar la tarea), `auto-pr` (PR al cerrar el **plan**;
+  **requiere** `auto-commit`) y `co-author` (default **false** = sin trailer de co-autor en los commits
+  automáticos). Presentes en todas las sedes del schema + portal (`website/features/git-automation.md`). El
+  **comportamiento** (ejecución de commit/PR) se cablea en la tarea siguiente.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

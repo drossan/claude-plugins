@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-10
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 1
 depends_on: []
 estimate: 2h
-actual:
+actual: ~40m
 issue: 48
 created: 2026-08-14
 updated: 2026-08-14
@@ -102,10 +102,10 @@ superficie de doc; el contrato que lee el cableado de la tarea 11 y el reconocim
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; `Provides` disponible para 11
-- [ ] Gate de `fact-checker` superado — en especial "conventional-commits default ON" y "git-automation ausencia ≠ drift" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: tabla de flags (README + 2×lifecycle) + `plan-task/SKILL.md` + seed YAML + `website/features/git-automation.md` + `config.mts` + CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Barrido `grep` reforzado: tablas de flags espejo consistentes
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; `Provides` disponible para 11
+- [x] Gate de `fact-checker` superado — en especial "conventional-commits default ON" y "git-automation ausencia ≠ drift" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: tabla de flags (README + 2×lifecycle) + `plan-task/SKILL.md` + seed YAML + `website/features/git-automation.md` + `config.mts` + CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Barrido `grep` reforzado: tablas de flags espejo consistentes

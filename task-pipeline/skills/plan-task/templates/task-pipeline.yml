@@ -103,6 +103,25 @@ features:
   # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
   # sdd: false
 
+  # Conventional commits (default ON). Exige el formato `<task-id>: <conventional commit>` en commits/DoD.
+  # Es el comportamiento HISTÓRICO, ahora configurable: `false` lo relaja a `<task-id>: <mensaje libre>`.
+  # Ausente = ON (NO es opt-in silencioso; su ausencia no cambia el comportamiento actual del pipeline).
+  # conventional-commits: true
+
+  # Git automation (bloque OPCIONAL opt-in, default off). Automatiza commit/PR al cerrar tarea/plan.
+  # NO forma parte de ningún preset (mode: full NO lo enciende) y su AUSENCIA no es drift (como caveman/
+  # github-tracking). FAIL-SAFE: solo `true` booleano activa cada toggle; ausente / false / "true" / yes /
+  # 1 / TRUE / no-canónico → off. Comportamiento y límites en el README del plugin → "Git automation".
+  #   auto-commit → al cerrar una tarea (tras pasar la DoD), commitea automáticamente.
+  #   auto-pr     → al cerrar el PLAN (última tarea), abre la PR. REQUIERE auto-commit (si no → inerte + aviso).
+  #   co-author   → default false: los commits de la AUTOMATIZACIÓN no añaden el trailer de co-autor; `true`
+  #                 lo añade. Solo afecta a los commits de la automatización, no a los manuales.
+  # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
+  # git-automation:
+  #   auto-commit: false
+  #   auto-pr: false          # requiere auto-commit: true
+  #   co-author: false        # true = añade el trailer de co-autor a los commits automáticos
+
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
 # `scenario-coverage` y `fact-checker`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan

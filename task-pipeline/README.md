@@ -122,6 +122,8 @@ sede canónica de la regla de resolución; las demás sedes (el YAML seed, los d
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
 | `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): activa la capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. Ver [SDD nativo](#sdd-nativo-opcional). |
+| `features.conventional-commits` | `true`(default)/`false` | Exige el formato `<task-id>: <conventional commit>`. Es el comportamiento **histórico**, ahora configurable: `false` lo relaja. **Ausencia = ON** (no cambia nada). |
+| `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in (no gate de DoD): `auto-commit` (commit al cerrar tarea), `auto-pr` (PR al cerrar el **plan**; requiere `auto-commit`), `co-author` (default **false** = sin trailer de co-autor). **Fuera de todo preset**; fail-safe (solo `true` activa; no-canónico → off); **ausencia ≠ drift**. Ver [Git automation](#git-automation-opcional). |
 
 `grilling` y la aprobación del plan **no** son configurables: no negociables por
 diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
@@ -243,6 +245,38 @@ se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-
   **conviven** y **no se migran a la fuerza**; la regla aplica a las tareas nuevas.
 
 El flujo completo, paso a paso, vive en `docs/guides/task-lifecycle.md` → "Flujo SDD".
+
+## Git automation (opcional)
+
+Automatiza el **commit** al cerrar una tarea y la **PR** al cerrar el plan. **Opt-in** (default `off`): sin
+el bloque, commit y PR son **manuales** exactamente como hoy. Se activa con `features.git-automation` en
+`.claude/task-pipeline.yml`:
+
+```yaml
+features:
+  git-automation:
+    auto-commit: true     # commit `<task-id>: <mensaje>` al cerrar cada tarea
+    auto-pr: true         # PR de la rama del plan al cerrar el PLAN (requiere auto-commit)
+    co-author: false      # default: NO añade el trailer de co-autor a los commits automáticos
+  conventional-commits: true   # default ON: formato `<task-id>: <conventional commit>`
+```
+
+- **`auto-commit`**: al cerrar una tarea (tras pasar su DoD, incluido `fact-checker`), la sesión commitea
+  `<task-id>: <mensaje>`.
+- **`auto-pr`**: al cerrar la **última** tarea del plan, abre la PR a la rama de integración. **Requiere
+  `auto-commit`**; con `auto-pr: true` y `auto-commit: false` queda **inerte** + aviso.
+- **`co-author`** (default `false`): gobierna si los commits **de la automatización** llevan el trailer de
+  co-autor. Los commits **manuales** no los rige este flag.
+- **`features.conventional-commits`** (default `true`): formato del mensaje; `false` lo relaja a mensaje
+  libre (mantiene el prefijo `<task-id>:`).
+
+**Garantías opt-in:**
+- **Fail-safe**: solo `true` booleano activa cada toggle; ausente / `false` / `"true"` / `yes` / `1` /
+  no-canónico → **off**.
+- **Fuera de todo preset**; **ausencia ≠ drift** (`/doctor` no la reporta).
+- **Off = comportamiento idéntico al de hoy** (commit y PR manuales).
+- **Best-effort**: si el commit/PR automático falla (git/gh), se avisa y **no** se bloquea el cambio de
+  `status:` del `.md` (el `.md` manda).
 
 ## GitHub tracking (opcional)
 

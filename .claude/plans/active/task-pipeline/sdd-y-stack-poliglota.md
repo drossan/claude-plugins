@@ -187,7 +187,7 @@ quien no la quiera.
 
 **Extensión (reabierta 2026-08-14) — activación SDD + git-automation + conventional-commits**
 - [x] `task-pipeline-sdd-y-stack-poliglota-09` (P2) — Prompt de activación SDD: `/task-init` (install) y `/doctor` (repo legacy sin `features.sdd`) preguntan con `AskUserQuestion` si activar SDD; al confirmar escriben `features.sdd: true` (+ doctor materializa scaffold ADR). Opt-in, nunca en silencio  · depends_on: task-pipeline-sdd-y-stack-poliglota-05, task-pipeline-sdd-y-stack-poliglota-07 (#47)
-- [ ] `task-pipeline-sdd-y-stack-poliglota-10` (P1) — Schema `features.conventional-commits` (default ON) + bloque `features.git-automation` { `auto-commit`, `auto-pr` (plan-close), `co-author` (default false) } (opt-in, fuera de preset, fail-safe, ausencia ≠ drift) en todas las sedes + portal + preguntar en install  · depends_on: — (#48)
+- [x] `task-pipeline-sdd-y-stack-poliglota-10` (P1) — Schema `features.conventional-commits` (default ON) + bloque `features.git-automation` { `auto-commit`, `auto-pr` (plan-close), `co-author` (default false) } (opt-in, fuera de preset, fail-safe, ausencia ≠ drift) en todas las sedes + portal + preguntar en install  · depends_on: — (#48)
 - [ ] `task-pipeline-sdd-y-stack-poliglota-11` (P2) — Cableado: auto-commit al cerrar tarea (`<task-id>: <conventional>`, respeta `conventional-commits`/`co-author`) + auto-PR al cerrar plan + reconocimiento en `/doctor` (ausencia ≠ drift), en lifecycle/`plan-task`  · depends_on: task-pipeline-sdd-y-stack-poliglota-10 (#49)
 - [ ] `task-pipeline-sdd-y-stack-poliglota-12` (P3) — Release de la extensión: CHANGELOG (bajo 0.15.0, sin mergear) + manifiestos + portal (nav/coherencia) + retro + re-cierre del plan/PR  · depends_on: 09,10,11 (#50)
 
