@@ -2,11 +2,11 @@
 id: task-pipeline-portal-redesign-01
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 1
 depends_on: []
 estimate: 3h
-actual:
+actual: 1h
 issue: 59                    # sub-issue proyectada (github-tracking)
 created: 2026-08-14
 updated: 2026-08-14

@@ -104,7 +104,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
 
 ## Tasks (borrador — se afina en Paso 5 tras grilling/design-review)
 
-- [ ] `task-pipeline-portal-redesign-01` (P1) — IA + navegación + slugs estables/redirects + mapa de fuente
+- [x] `task-pipeline-portal-redesign-01` (P1) — IA + navegación + slugs estables/redirects + mapa de fuente
   canónica (contrato de estructura)  · depends_on: —
 - [ ] `task-pipeline-portal-redesign-02` (P1) — Tema Mermaid: **spike del mecanismo** (claro+oscuro, paleta por
   rol) + muestra verificada + nota de convención  · depends_on: —
