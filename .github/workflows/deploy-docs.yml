@@ -37,7 +37,9 @@ jobs:
           version: 11.21.0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # pnpm 11 usa `node:sqlite`, builtin solo desde Node 22.5 → Node 20 falla
+          # con ERR_UNKNOWN_BUILTIN_MODULE. Alineado con el Node local (v22.x).
+          node-version: 22
           cache: pnpm
           cache-dependency-path: website/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
