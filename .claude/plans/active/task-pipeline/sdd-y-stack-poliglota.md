@@ -174,7 +174,7 @@ quien no la quiera.
 **Workstream A — #35: stack por-package poliglota**
 - [x] `task-pipeline-sdd-y-stack-poliglota-01` (P1) — Schema `stack.packages.<pkg>` + regla de resolución en 1 sitio canónico (README) + demás sedes apuntando (YAML seed comentado, repo, 2×lifecycle, contrato `plan-task/SKILL.md`)  · depends_on: —
 - [x] `task-pipeline-sdd-y-stack-poliglota-02` (P1) — `/mutation` agnóstico: selector por `stack.mutation-tool` del package + Stryker verificado + `mutmut` + escape `mutation-command` (cosmic-ray/cargo-mutants/gremlins solo ejemplos en docs) + DoD tool-agnóstica + nota "mutation-gate no es per-package"  · depends_on: task-pipeline-sdd-y-stack-poliglota-01
-- [ ] `task-pipeline-sdd-y-stack-poliglota-03` (P2) — `/task-init` detección de lenguaje por-workspace best-effort + `AskUserQuestion` de confirm + materializa `stack.packages` + el HOW-TO refleja el stack  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-02
+- [x] `task-pipeline-sdd-y-stack-poliglota-03` (P2) — `/task-init` detección de lenguaje por-workspace best-effort + `AskUserQuestion` de confirm + materializa `stack.packages` + el HOW-TO refleja el stack  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-02
 
 **Workstream B — #36: SDD nativo opt-in**
 - [ ] `task-pipeline-sdd-y-stack-poliglota-04` (P1) — Set de plantillas SDD: `spec.md`(SpecKit+EARS) · `caso-de-uso.md`(Cockburn+Gherkin) · `adr.md`+`adr-index.md`(MADR 4.0.0, `NNNN` desde `0001`, sin ADR-0000 relleno) + lista canónica de nombres/ubicaciones (para doctor) + mapeo en `templates/README.md`  · depends_on: —

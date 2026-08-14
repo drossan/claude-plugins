@@ -25,6 +25,14 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   que sale con código ≠ 0 **falla** el gate (no se silencia por ser referencia); herramienta desconocida sin
   `mutation-command` = no-op con aviso. **Solo Stryker se afirma verificado**; `cosmic-ray`/`cargo-mutants`/
   `gremlins` quedan como **ejemplos en docs**, no ramas shipeadas.
+- **`/task-init` detecta el lenguaje por-workspace y siembra `stack.packages`** (#35) — infiere el lenguaje
+  de marcadores (`package.json`→JS/TS, `pyproject.toml`/`setup.py`→Python, `Cargo.toml`→Rust, `go.mod`→Go),
+  propone el stack por lenguaje (mapa coherente con `/mutation`: Rust/Go vía escape `mutation-command`) y lo
+  escribe **solo tras `AskUserQuestion`** de confirm. Detección ambigua / en conflicto / sin marcador / sin
+  canal → **no adivina**. La escritura es **aditiva** sobre un `.claude/task-pipeline.yml` ya materializado
+  (no reescribe el fichero; no duplica una entrada existente) y sanea/pregunta ante nombres no válidos como
+  clave YAML. El `HOW-TO-START-A-TASK.md` del package gana un bloque **"Stack de este package"** que
+  **refleja** `stack.packages.<pkg>` (el YAML sigue siendo la fuente de verdad).
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

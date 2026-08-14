@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-03
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-02]
 estimate: 2h
-actual:
+actual: ~40m
 issue: 40                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#40
 created: 2026-08-13
 updated: 2026-08-14
@@ -109,11 +109,11 @@ el stack del package.
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / correr `/task-init` en un repo de prueba poliglota)
-- [ ] Spec cumplida; `Provides` disponible
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `task-init/SKILL.md` + `templates/HOW-TO-START-A-TASK.md` (bloque de stack reflejado) · technical-docs
-- [ ] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-03.md` · context-log
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / correr `/task-init` en un repo de prueba poliglota)
+- [x] Spec cumplida; `Provides` disponible
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `task-init/SKILL.md` + `templates/HOW-TO-START-A-TASK.md` (bloque de stack reflejado) · technical-docs
+- [x] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-03.md` · context-log
+- [x] Barrido `grep` reforzado: sin identificadores muertos
