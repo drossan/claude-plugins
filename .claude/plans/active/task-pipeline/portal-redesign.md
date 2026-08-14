@@ -108,7 +108,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   canónica (contrato de estructura)  · depends_on: —
 - [x] `task-pipeline-portal-redesign-02` (P1) — Tema Mermaid: **spike del mecanismo** (claro+oscuro, paleta por
   rol) + muestra verificada + nota de convención  · depends_on: —
-- [ ] `task-pipeline-portal-redesign-03` (P2) — "Empezar" (Qué es + Instalación + Tu primer plan = walkthrough
+- [x] `task-pipeline-portal-redesign-03` (P2) — "Empezar" (Qué es + Instalación + Tu primer plan = walkthrough
   caso real)  · depends_on: 01,02
 - [ ] `task-pipeline-portal-redesign-04` (P2) — "Conceptos" (modelo estático: plan/task/context/specs, estados,
   ramas, ids)  · depends_on: 01,02
@@ -171,6 +171,11 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   fact-checker 7/7. **task 02 done** (issue #60): **tema Mermaid APROBADO por el owner** (paleta por rol
   ámbar/azul/rojo/gris, texto oscuro explícito → legible claro+oscuro, redondeo, subgraphs); convención en
   `website/DIAGRAM-THEME.md`. Verificado en navegador en ambos modos. **Las tasks 03-06 aplican este tema.**
+- 2026-08-14: **task 03 done** (issue #61) — sección **Empezar** autocontenida: `que-es`/`instalacion`
+  con "Profundizar (opcional)" en vez del tapón al README; **nueva `tu-primer-plan`** = walkthrough e2e del
+  caso real cerrado **`sdd-validation-gate`** (6 pasos + tabla "qué decides tú" + 1 diagrama journey con el
+  tema de la 02, verificado claro+oscuro). 5 extractos congelados fieles (Gherkin verbatim). Build verde;
+  **fact-checker 16/16**.
 
 > **Follow-up separado #2: `canonical-phrase-consistency` (cleanup).** Alinear el string literal de la frase
 > canónica del salto trivial en sus 5 copias (`README.md`, `docs/guides/task-lifecycle.md`,

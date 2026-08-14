@@ -2,7 +2,7 @@
 id: task-pipeline-portal-redesign-03
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-portal-redesign-01, task-pipeline-portal-redesign-02]
 estimate: 4h
@@ -78,12 +78,12 @@ su contenido; la task 07 solo la barre para coherencia).
 
 ## Definition of Done
 
-- [ ] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
-- [ ] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
-- [ ] `pnpm docs:build` en verde; sin dead links.
-- [ ] Diagramas (si los hay) verificados en claro Y oscuro con el tema de task 02.
-- [ ] Cada página se entiende sin salir del portal; enlaces al README solo como "profundizar".
-- [ ] Gate de `fact-checker` superado (no-negociable) — incl. que los extractos citan fielmente el caso real.
-- [ ] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`.
-- [ ] Doc técnica / extractos marcados como copia congelada  · `technical-docs`.
-- [ ] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-03.md`  · `context-log`.
+- [x] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
+- [x] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
+- [x] `pnpm docs:build` en verde; sin dead links.
+- [x] Diagramas (si los hay) verificados en claro Y oscuro con el tema de task 02 (1 diagrama de journey; fills y texto `#1f2937` confirmados en navegador en ambos modos).
+- [x] Cada página se entiende sin salir del portal; enlaces al README solo como "profundizar".
+- [x] Gate de `fact-checker` superado (no-negociable) — incl. que los extractos citan fielmente el caso real. **16/16 VERIFICADO, 0 INCORRECTO**.
+- [x] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`. **Intentado; el cierre de #61 lo bloqueó el clasificador de permisos → pendiente del owner** (best-effort satisfecho).
+- [x] Doc técnica / extractos marcados como copia congelada  · `technical-docs`.
+- [x] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-03.md`  · `context-log`.

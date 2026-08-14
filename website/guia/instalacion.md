@@ -35,11 +35,21 @@ En un proyecto nuevo, corre **`/task-init`** una vez para materializar la conven
 (`.claude/plans|tasks|specs|context/`, `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`). Luego
 ya puedes usar `/plan-task`. El **stack** (runner/gestor/lenguaje) se declara en ese YAML.
 
+`/task-init` **sugiere** —pero nunca edita— añadir `@.claude/honesty-rules.md` a tu `CLAUDE.md`: es una
+decisión opt-in tuya. Sin ese `@import`, las reglas de honestidad no se aplican.
+
 ## Actualizar
 
 ```
 /plugin marketplace update local-plugins
 ```
 
-> **Fuente canónica**: pasos, portabilidad y opciones en el
-> [README del repo](https://github.com/drossan/claude-plugins/blob/main/README.md).
+## Siguiente paso
+
+Con el plugin instalado y `/task-init` corrido, [**Tu primer plan**](./tu-primer-plan.md) recorre un caso
+real de principio a fin: desde `/plan-task` hasta cerrar una tarea con sus gates.
+
+## Profundizar (opcional)
+
+Los pasos de portabilidad (anclar versiones, forks, dominio custom) y las opciones completas están en el
+[README del repo](https://github.com/drossan/claude-plugins/blob/main/README.md). No hace falta para instalar.
