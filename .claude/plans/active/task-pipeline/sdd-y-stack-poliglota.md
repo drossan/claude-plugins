@@ -182,7 +182,7 @@ quien no la quiera.
 - [x] `task-pipeline-sdd-y-stack-poliglota-06` (P2) — Flujo SDD imperativo + línea de DoD gated por `features.sdd` + interacción Gherkin↔CU (CU única fuente, la tarea enlaza, scenario-coverage retro-alimenta el CU; SDD off = intacto)  · depends_on: task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
 
 **Workstream C — cierre compartido**
-- [ ] `task-pipeline-sdd-y-stack-poliglota-07` (P2) — `/doctor`: reconoce `features.sdd` + `stack.packages` (ausencia ≠ drift); detecta plantillas SDD ausentes con flag on (referencia la lista canónica de la tarea 04)  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
+- [x] `task-pipeline-sdd-y-stack-poliglota-07` (P2) — `/doctor`: reconoce `features.sdd` + `stack.packages` (ausencia ≠ drift); detecta plantillas SDD ausentes con flag on (referencia la lista canónica de la tarea 04)  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
 - [ ] `task-pipeline-sdd-y-stack-poliglota-08` (P3) — **Release only**: sidebar en `config.mts` (nav final) + e2e de coherencia (espejos/`test -d`) + bump SemVer en `plugin.json` + strings de manifiestos + consolidar CHANGELOG + retro  · depends_on: 01,02,03,04,05,06,07
 
 ## Registro de cambios del plan

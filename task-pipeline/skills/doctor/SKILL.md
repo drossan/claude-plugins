@@ -52,6 +52,13 @@ artefacto del plugin — ver "Propiedad" abajo).
    no es drift**; doctor puede ofrecerlo comentado como nicety, **nunca** reportarlo como problema.
    La lógica que lo consume (los pasos condicionales de `/plan-task` y del lifecycle) es
    **plugin-owned**; la **reconciliación** del drift md↔GitHub es una categoría aparte (ver abajo).
+   Lo mismo, por último, con **`features.sdd`** (booleano opt-in, default off — capa SDD) y con el schema
+   **`stack.packages`** (override de stack por-package): su **ausencia no es drift** (mismo criterio que
+   caveman/github-tracking); doctor puede ofrecerlos comentados como nicety, **nunca** como problema.
+   `features.sdd` con un **valor no-booleano/malformado** (`quizas`, `yes`, `{ enabled: true }`, …) se trata
+   como **off** por fail-safe — **no** como "config inválida" que bloquee. La detección del **scaffolding SDD
+   ausente** (solo con el flag on) y de **claves `stack.packages` huérfanas/malformadas** son categorías
+   propias (ver abajo).
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
@@ -153,6 +160,26 @@ artefacto del plugin — ver "Propiedad" abajo).
      forma **idempotente** (recipe add-then-remove del ciclo de vida); **no** hay detección nueva del drift
      `status:*`↔`.md`↔Project (es residual aceptado: se re-alinea al re-proyectar, no se diagnostica aparte).
 
+9. **Scaffolding SDD ausente** (repo-owned, **condicional al flag `features.sdd`**) — patrón nuevo en
+   doctor: *detección de presencia de plantillas condicional a un flag*. **Solo** si `features.sdd` está
+   **on** (booleano `true`; cualquier otro valor → off → **no evalúes** esta categoría). Compara los
+   artefactos SDD presentes en el repo contra la **lista canónica de plantillas SDD** — **no la re-listes
+   aquí**: la fija `../plan-task/templates/README.md` (sección "Plantillas SDD (opt-in, `features.sdd`)"),
+   **única fuente** (leerla con `Read`). Reglas:
+   - **Presencia PARCIAL**: reporta **solo la pieza faltante** (p.ej. `.claude/specs/adr/` existe pero sin
+     `adr-index.md`), no un genérico "todo ausente".
+   - **Alcance per-package**: `spec.md` y `casos-de-uso/` se comprueban **por package** (reporta solo el
+     package que no lo tiene); `.claude/specs/adr/` + `adr-index.md` son **globales** (uno por repo).
+   - Es un hallazgo **corregible**: en Fase 2 ofrece **materializar la pieza faltante desde su semilla**
+     (`../plan-task/templates/spec.md`, `caso-de-uso.md`, `adr.md`, `adr-index.md`), **solo tras aprobación
+     y con diff**. Tras materializarla, una **segunda pasada no repite** el hallazgo (idempotente). Con el
+     flag **off**, esta categoría **no corre**.
+10. **`stack.packages` huérfano o malformado** (repo-owned, aviso) — si una clave `stack.packages.<pkg>`
+    **no corresponde a un workspace real** del repo, avísalo (**config muerta por typo**, p.ej.
+    `stack.packages.apii`). Si `stack.packages` **no es un mapa** (o una entrada de package no lo es),
+    repórtalo como **malformado legible** y **sigue** (es el hueco que el schema `stack.packages` declaró).
+    **No auto-edites**: corregir un typo o el tipo es del owner (aviso, regla 4 de Fase 2).
+
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
 - El **CHANGELOG** y cualquier entrada de versión histórica (p.ej. ≤ 0.8.1) que narra el rename.
@@ -205,7 +232,8 @@ una carpeta que falta del esqueleto; añadir la sección `models:` **comentada**
 añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o re-materializar la sección
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
-`CLAUDE.md` **no** se aplica: solo se sugiere).
+`CLAUDE.md` **no** se aplica: solo se sugiere); materializar una **pieza SDD faltante** desde su semilla
+(solo con `features.sdd` on — cat. 9), con diff + aprobación (una segunda pasada ya no la reporta).
 
 **Drift de `honesty-rules.md` por ancla (cat. 6b):** si el fichero **no** está personalizado, el fix
 mecánico es **re-materializarlo desde la plantilla actual**, con diff + aprobación. El ancla viaja en la

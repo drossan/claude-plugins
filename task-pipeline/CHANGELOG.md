@@ -59,6 +59,13 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   el reporte de **enlace roto** y la **convivencia** inline↔CU sin migración forzada al hacer *toggle* a
   mitad. Con el flag **off** (default), el comportamiento es **byte-idéntico** al de hoy. Cableado en
   `task.md`, las dos `task-lifecycle`, `plan-task`, `scenario-coverage`, `mutation`, README y portal.
+- **`/doctor` reconoce `features.sdd` + `stack.packages`** (#35/#36) — su **ausencia no es drift** (como
+  `caveman`/`github-tracking`); `features.sdd` no-booleano → **off** por fail-safe. Estrena una categoría
+  **condicional a flag**: con `features.sdd: true`, detecta el **scaffolding SDD ausente** contra la **lista
+  canónica** de `templates/README.md` (única fuente, no la re-lista) y lo ofrece como hallazgo **corregible**
+  (materializar desde la semilla, con aprobación + diff); **presencia parcial** = solo la pieza faltante,
+  **per-package** para `spec.md`/`casos-de-uso/` y global para `adr/`; idempotente. Además avisa de claves
+  `stack.packages` **huérfanas** (typo) o **malformadas** (no-mapa).
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

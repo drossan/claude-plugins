@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-07
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05]
 estimate: 2h
-actual:
+actual: ~40m
 issue: 44                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#44
 created: 2026-08-13
 updated: 2026-08-14
@@ -114,11 +114,11 @@ ausente con el flag on.
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (correr `/doctor` en repos de prueba: sin flag / flag on sin plantillas / flag on con plantillas)
-- [ ] Spec cumplida; referencia a la lista canónica de la tarea 04 (sin re-listar)
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `doctor/SKILL.md` (categorías nuevas) · technical-docs
-- [ ] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-07.md` · context-log
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (correr `/doctor` en repos de prueba: sin flag / flag on sin plantillas / flag on con plantillas)
+- [x] Spec cumplida; referencia a la lista canónica de la tarea 04 (sin re-listar)
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `doctor/SKILL.md` (categorías nuevas) · technical-docs
+- [x] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-07.md` · context-log
+- [x] Barrido `grep` reforzado: sin identificadores muertos
