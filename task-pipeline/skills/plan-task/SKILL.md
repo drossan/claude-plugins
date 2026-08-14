@@ -183,9 +183,13 @@ Cada tarea documenta en tres capas, **cada una activable por flag** (default ON;
 
 Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), cada tarea no se cierra hasta pasar el gate de **mutation testing** con el umbral configurado (`true` = `break:80`; `<int>` = ese umbral). Ver la skill `/mutation`, que lee el mismo `stack`/umbral del YAML.
 
+## Paso 7.5 — Gate de cierre por tarea: sdd-lint (solo con `features.sdd` on)
+
+**Solo con `features.sdd` on**: **entre** el gate de mutation y `fact-checker`, cada tarea corre `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de formato/completitud **bloquea** el cierre; **AVISO** se reconoce. Es un **gate de cierre** (no una fase de `/plan-task`) e **intrínseco a `features.sdd`** (sin flag propio). Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
+
 ## Paso 8 — Gate de cierre por tarea: fact-checker (no-negociable)
 
-**Tras** el gate de mutation y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
+**Tras** el gate de mutation (y, con SDD on, `sdd-lint`) y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó» y «el gate `sdd-lint` pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
 
 ## Reglas de la sesión
 

@@ -106,6 +106,12 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   gate**: la skill `/sdd-lint` es la autoritativa (incluye lo semántico). **Bash 3.2+** (macOS), `grep -E`
   portable, cero dependencias, cero-verde-falso. Con **fixtures aseverados** known-good/known-bad + doc de
   cableado a CI.
+- **`sdd-lint` cableado como gate de cierre** (#36) — con `features.sdd` on, corre **entre `mutation` y
+  `fact-checker`**; un **ERROR** de formato/completitud **bloquea** el cierre (como `fact-checker`
+  `INCORRECTO`), un **AVISO** se reconoce. Línea de DoD gated en `task.md` + las dos `task-lifecycle`; paso
+  "3b" en "Cerrar una tarea"; `fact-checker` **atestigua** "el gate `sdd-lint` pasó"; `plan-task` gana el
+  Paso 7.5; `/doctor` lo reconoce (parte de la capa SDD, intrínseco a `features.sdd`, ausencia ≠ drift con
+  SDD off, plugin-owned solo-reporte). Con `features.sdd` **off**, no corre (byte-idéntico a hoy).
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

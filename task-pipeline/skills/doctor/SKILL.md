@@ -68,6 +68,11 @@ artefacto del plugin — ver "Propiedad" abajo).
    `git-automation` no-booleano → **off** por fail-safe. La lógica que los consume (auto-commit al cerrar
    tarea, auto-pr al cerrar plan) es **comportamiento del ciclo de vida** (plugin-owned, solo-reporte): doctor
    **no** ejecuta commits/PRs.
+   El **gate `sdd-lint`** (skill + helper `scripts/sdd-lint.sh`) es parte de la **capa SDD** e **intrínseco a
+   `features.sdd`** (sin flag propio): con `features.sdd` **off**, su ausencia **no es drift**; la skill/helper
+   son **plugin-owned** (llegan al actualizar el plugin), así que doctor **no** los materializa — si con SDD on
+   faltasen (instalación desalineada), es **solo-reporte** ("actualiza el plugin"). doctor **no** ejecuta
+   `sdd-lint`.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:

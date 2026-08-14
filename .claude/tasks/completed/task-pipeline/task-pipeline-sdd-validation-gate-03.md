@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-validation-gate-03
 package: task-pipeline
 plan: sdd-validation-gate
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-sdd-validation-gate-01]
 estimate: 2h
-actual:
+actual: ~45m
 issue: 54
 created: 2026-08-14
 updated: 2026-08-14
@@ -97,10 +97,10 @@ El gate `sdd-lint` cableado en el cierre (DoD + lifecycle) — el contrato que s
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; DoD espejo consistente (task.md ↔ 2×lifecycle)
-- [ ] Gate de `fact-checker` superado — en especial "off = idéntico a hoy" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `task.md` + 2×lifecycle + `plan-task/SKILL.md` + `doctor/SKILL.md` + CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Barrido `grep` reforzado: DoD espejo consistente; sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; DoD espejo consistente (task.md ↔ 2×lifecycle)
+- [x] Gate de `fact-checker` superado — en especial "off = idéntico a hoy" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `task.md` + 2×lifecycle + `plan-task/SKILL.md` + `doctor/SKILL.md` + CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Barrido `grep` reforzado: DoD espejo consistente; sin identificadores muertos
