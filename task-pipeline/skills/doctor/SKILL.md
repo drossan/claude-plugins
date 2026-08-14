@@ -62,6 +62,12 @@ artefacto del plugin — ver "Propiedad" abajo).
    como **off** por fail-safe — **no** como "config inválida" que bloquee. La detección del **scaffolding SDD
    ausente** (solo con el flag on) y de **claves `stack.packages` huérfanas/malformadas** son categorías
    propias (ver abajo).
+   Igual con el bloque **`features.git-automation`** (opt-in, default off) y el flag
+   **`features.conventional-commits`**: la **ausencia de `git-automation` no es drift** (ofrecible comentado
+   como nicety, nunca problema); la de `conventional-commits` = **ON** histórico (tampoco drift). Un toggle de
+   `git-automation` no-booleano → **off** por fail-safe. La lógica que los consume (auto-commit al cerrar
+   tarea, auto-pr al cerrar plan) es **comportamiento del ciclo de vida** (plugin-owned, solo-reporte): doctor
+   **no** ejecuta commits/PRs.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:

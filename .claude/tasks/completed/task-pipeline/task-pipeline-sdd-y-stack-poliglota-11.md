@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-11
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-y-stack-poliglota-10]
 estimate: 3h
-actual:
+actual: ~50m
 issue: 49
 created: 2026-08-14
 updated: 2026-08-14
@@ -109,10 +109,10 @@ Nada aguas abajo depende de él salvo la coherencia de release (tarea 12).
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; contradicción con "PR al cerrar el plan" resuelta (auto-pr = plan-close)
-- [ ] Gate de `fact-checker` superado — en especial "off = comportamiento idéntico a hoy" y "co-author default no añade trailer" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: 2×lifecycle (Cerrar tarea/plan) + `plan-task/SKILL.md` + `doctor/SKILL.md` + `website/features/git-automation.md` + CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Barrido `grep` reforzado: DoD/espejos consistentes; sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; contradicción con "PR al cerrar el plan" resuelta (auto-pr = plan-close)
+- [x] Gate de `fact-checker` superado — en especial "off = comportamiento idéntico a hoy" y "co-author default no añade trailer" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: 2×lifecycle (Cerrar tarea/plan) + `plan-task/SKILL.md` + `doctor/SKILL.md` + `website/features/git-automation.md` + CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Barrido `grep` reforzado: DoD/espejos consistentes; sin identificadores muertos

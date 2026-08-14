@@ -80,6 +80,14 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   **requiere** `auto-commit`) y `co-author` (default **false** = sin trailer de co-autor en los commits
   automáticos). Presentes en todas las sedes del schema + portal (`website/features/git-automation.md`). El
   **comportamiento** (ejecución de commit/PR) se cablea en la tarea siguiente.
+- **Comportamiento de `git-automation`** cableado en el ciclo de vida — con `auto-commit` on, al cerrar una
+  tarea (DoD en verde, incluido `fact-checker`) la sesión ejecuta `<task-id>: <mensaje>` automáticamente; con
+  `auto-pr` on (**requiere** `auto-commit`), al cerrar el **plan** abre la PR. El **formato** respeta
+  `conventional-commits` (default ON) y el **trailer de co-autor** solo se añade con `co-author: true`
+  (default off; gobierna los commits de la automatización, no los manuales). **Best-effort**: si el
+  commit/PR automático falla, se avisa y **no** se bloquea el cambio de `status:` del `.md`. `/doctor`
+  reconoce los flags (ausencia ≠ drift). Con los flags **off** (default), commit y PR son **manuales**,
+  idéntico a hoy. Cableado en las dos `task-lifecycle` y `plan-task`.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

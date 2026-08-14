@@ -344,6 +344,16 @@ Es el registro canónico; no lo dupliques.
 >   **conviven** con las nuevas y **no se migran a la fuerza**; la regla aplica a las tareas **nuevas** desde
 >   que el flag está on.
 
+> **Git automation — auto-commit (opcional, `features.git-automation.auto-commit`).** Con el flag **off**
+> (default) el commit de cierre es **manual**, exactamente como hoy. Con **on**: al llegar aquí (DoD en
+> verde, incluido `fact-checker`), la sesión ejecuta automáticamente `<task-id>: <mensaje>`.
+> - **Formato del mensaje**: respeta `features.conventional-commits` — ON (default) = `<task-id>:
+>   <conventional commit>`; `false` = `<task-id>: <mensaje libre>`.
+> - **Trailer de co-autor**: se añade **solo** si `git-automation.co-author: true` (default **false** = no lo
+>   añade). Gobierna los commits de la **automatización**, no los manuales (esos los rige tu `CLAUDE.md`).
+> - **Best-effort**: si el commit falla (git error), **avisa** y **no** bloquees el cambio de `status:` del
+>   `.md` (el `.md` manda).
+
 > **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
 > `enabled` **y** la tarea tiene `issue:` (sin `issue:` → ciclo de vida **local puro**, ni un comando
 > `gh`; tampoco dispara un `create` — eso es Paso 5.7 de `/plan-task`). One-way, **best-effort**,
@@ -398,6 +408,10 @@ Es el registro canónico; no lo dupliques.
      red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
+   - **(Opcional, `features.git-automation.auto-pr`)** con `auto-pr` **y** `auto-commit` on, la sesión abre
+     esta PR **automáticamente** al cerrar la última tarea; `auto-pr: true` con `auto-commit: false` =
+     **inerte** + aviso. Best-effort: si `gh`/la PR falla, avisa y **no** bloquees el cierre del plan. Con el
+     flag off (default), la PR es **manual** como hoy.
    - Borra la rama tras el merge.
 2. Los releases se cortan con **tags SemVer sobre `main`** (`v<x.y.z>`), en ciclos de release, no al cerrar un plan.
 3. Añade una nota retro al plan cerrado: estimación vs. real, sorpresas, dependencias

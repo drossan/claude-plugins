@@ -173,6 +173,8 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.
 
+> **Con `features.git-automation` on (opcional):** el **cierre** de cada tarea puede **auto-commit** y el del **plan** (última tarea) **auto-PR** (`auto-pr` requiere `auto-commit`); el formato lo rige `features.conventional-commits` y el trailer de co-autor `git-automation.co-author` (default off). Detalle en `docs/guides/task-lifecycle.md` → "Cerrar una tarea"/"Cerrar un plan". Con off (default), commit y PR son **manuales**.
+
 ## Documentar todo (tres capas — configurables)
 
 Cada tarea documenta en tres capas, **cada una activable por flag** (default ON; ver la tabla de arriba): (1) **TSDoc en el código** de todo símbolo público (al crearlo, no al final) — `closing-documentation.tsdoc`; (2) **doc técnica/contexto** (README/CLAUDE.md/specs/ADRs) — `closing-documentation.technical-docs`; (3) **histórico de la tarea** (session log en `.claude/context/<package>/<task-id>.md`) — `closing-documentation.context-log`. Docs de dev/usuario + changeset cuando aplique. Una capa con flag `false` no entra en la DoD ni bloquea el cierre.

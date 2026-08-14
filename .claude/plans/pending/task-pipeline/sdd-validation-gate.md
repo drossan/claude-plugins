@@ -49,6 +49,20 @@ ni completo** cuando se escriben/cierran. Hoy solo existen piezas parciales, nin
   contenido** (no solo presencia). Solo corre con `features.sdd` on.
 - **Fuera**: un linter con runner (repo `stack: none`); autogenerar contenido; validar repos sin SDD.
 
+## Restricción del owner: anclar en specs reales, vigentes y muy adoptadas
+
+Las reglas de validación **deben basarse en especificaciones reales, las más usadas por la comunidad y lo
+más actuales posibles** (contexto temporal: **agosto 2026**). No inventar un formato propio ni congelar una
+versión de memoria:
+
+- Candidatas a confirmar **en el momento de planificar** (versión vigente): **EARS** (Mavin et al.),
+  **MADR** (formato ADR; hoy referenciamos 4.0.0 — **verificar** si hay versión posterior en ago-2026),
+  **Gherkin/Cucumber** (disciplina de escenarios), **GitHub Spec Kit**, y convenciones de trazabilidad de
+  requisitos ampliamente adoptadas.
+- **No verificado aún**: la versión *más reciente* de cada estándar a fecha de ago-2026 no está comprobada en
+  esta anotación — es **requisito** hacerlo al arrancar el follow-up (WebSearch/fuentes oficiales), y anclar
+  cada regla a su fuente citada. Evitar reglas "porque sí": cada check trazable a un estándar real y su versión.
+
 ## Decisiones abiertas (para grilling)
 
 - ¿Gate en el **cierre de tarea** (como mutation/fact-checker) o categoría de **`/doctor`** on-demand, o ambas?
