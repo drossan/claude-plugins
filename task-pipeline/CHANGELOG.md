@@ -7,9 +7,12 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 ## [0.15.0] — 2026-08-14
 
 **Stack multi-lenguaje por-package (#35)** y **capa de SDD nativo opt-in (#36)**, del plan
-`sdd-y-stack-poliglota`. Todo lo nuevo es **opt-in con default off** (`features.sdd`, `stack.packages`): el
+`sdd-y-stack-poliglota` (+ su extensión: **activación asistida de SDD** y **git-automation /
+conventional-commits**). Todo lo nuevo es **opt-in con default off** (`features.sdd`, `stack.packages`,
+`features.git-automation`) o **preserva el default histórico** (`features.conventional-commits` = ON): el
 **comportamiento por defecto es idéntico al de 0.14.0** — un repo que no toque su `.claude/task-pipeline.yml`
-no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferido** a un plan follow-up.)
+no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferido** a un plan follow-up; y un
+**gate de validación de formato/completitud SDD** queda registrado como follow-up `sdd-validation-gate`.)
 
 ### Added
 - **Schema `stack.packages.<pkg>`** (#35) — override de stack **por-workspace** para monorepos poliglotas.

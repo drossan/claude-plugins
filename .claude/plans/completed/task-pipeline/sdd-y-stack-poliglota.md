@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-y-stack-poliglota
 package: task-pipeline
-status: active           # pending | active | completed | cancelled  (reabierto: extensión 09-12)
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/sdd-y-stack-poliglota
 issue: 37                # issue PADRE proyectada (github-tracking) — drossan/claude-plugins#37
 created: 2026-08-13
@@ -189,7 +189,7 @@ quien no la quiera.
 - [x] `task-pipeline-sdd-y-stack-poliglota-09` (P2) — Prompt de activación SDD: `/task-init` (install) y `/doctor` (repo legacy sin `features.sdd`) preguntan con `AskUserQuestion` si activar SDD; al confirmar escriben `features.sdd: true` (+ doctor materializa scaffold ADR). Opt-in, nunca en silencio  · depends_on: task-pipeline-sdd-y-stack-poliglota-05, task-pipeline-sdd-y-stack-poliglota-07 (#47)
 - [x] `task-pipeline-sdd-y-stack-poliglota-10` (P1) — Schema `features.conventional-commits` (default ON) + bloque `features.git-automation` { `auto-commit`, `auto-pr` (plan-close), `co-author` (default false) } (opt-in, fuera de preset, fail-safe, ausencia ≠ drift) en todas las sedes + portal + preguntar en install  · depends_on: — (#48)
 - [x] `task-pipeline-sdd-y-stack-poliglota-11` (P2) — Cableado: auto-commit al cerrar tarea (`<task-id>: <conventional>`, respeta `conventional-commits`/`co-author`) + auto-PR al cerrar plan + reconocimiento en `/doctor` (ausencia ≠ drift), en lifecycle/`plan-task`  · depends_on: task-pipeline-sdd-y-stack-poliglota-10 (#49)
-- [ ] `task-pipeline-sdd-y-stack-poliglota-12` (P3) — Release de la extensión: CHANGELOG (bajo 0.15.0, sin mergear) + manifiestos + portal (nav/coherencia) + retro + re-cierre del plan/PR  · depends_on: 09,10,11 (#50)
+- [x] `task-pipeline-sdd-y-stack-poliglota-12` (P3) — Release de la extensión: CHANGELOG (bajo 0.15.0, sin mergear) + manifiestos + portal (nav/coherencia) + retro + re-cierre del plan/PR  · depends_on: 09,10,11 (#50)
 
 ## Registro de cambios del plan
 
@@ -268,3 +268,21 @@ quien no la quiera.
   (F5), añadir `.site` luego es aditivo.
 - **github-tracking modo plano C3** (gh 2.69.0 sin `--parent`): la proyección de estado (label + Status del
   Project) funcionó best-effort en las 8 tareas; la jerarquía nativa padre-hijo sigue como residual.
+- 2026-08-14: **extensión completada** (tareas 09–12 `done`, folded en v0.15.0). #47–#50 cerradas; padre #37
+  → Done/close. Retro de la extensión abajo.
+
+## Retro (extensión 09–12)
+
+- **Estimación vs. real**: estimado ~8h (4 tareas), real ~2h20m aprox. Densa la 11 (cableado en 2 lifecycle
+  con espejos); ligeras 09/12.
+- **Sorpresas**: (1) **fichero de tarea 10 truncado a vacío** por un one-liner python
+  (`open(w).write(open().read())` trunca antes de leer) — reconstruido; aprendizaje: dos sentencias o Edit,
+  nunca ese one-liner. (2) Divergencia **preexistente** template↔docs en "Cerrar un plan" paso 2 (no tocada).
+- **Coherencia del paraguas**: git-automation/conventional-commits son **temáticamente ajenas** a "SDD +
+  stack" — se extendió el plan por decisión del owner; para futuro, un plan aparte sería más limpio en
+  CHANGELOG/PR (aviso ya dado y aceptado).
+- **Checkpoints saltados** (grilling/design-review) por ser extensión: las 4 respuestas del owner
+  (AskUserQuestion) hicieron de resolución de diseño. **Contraste**: el follow-up `sdd-validation-gate` SÍ
+  irá por el pipeline COMPLETO (decisión del owner: "es quizás la más importante").
+- **Follow-ups abiertos**: `sdd-site-vitepress` (seed VitePress) y `sdd-validation-gate` (validación de
+  formato/completitud SDD, anclada en specs reales/vigentes de la comunidad — ago-2026).

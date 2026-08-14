@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-12
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-y-stack-poliglota-09, task-pipeline-sdd-y-stack-poliglota-10, task-pipeline-sdd-y-stack-poliglota-11]
 estimate: 1h
-actual:
+actual: ~20m
 issue: 50
 created: 2026-08-14
 updated: 2026-08-14
@@ -79,10 +79,10 @@ Feature: Cierre de la extensión del plan
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
-- [ ] Spec cumplida (CHANGELOG folded, manifiestos, portal, espejos, retro)
-- [ ] Gate de `fact-checker` superado — en especial "no hay bump nuevo (sigue 0.15.0)" y "frase canónica intacta" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `CHANGELOG.md` + `plugin.json` + `marketplace.json` + `config.mts`/portal · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
+- [x] Spec cumplida (CHANGELOG folded, manifiestos, portal, espejos, retro)
+- [x] Gate de `fact-checker` superado — en especial "no hay bump nuevo (sigue 0.15.0)" y "frase canónica intacta" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `CHANGELOG.md` + `plugin.json` + `marketplace.json` + `config.mts`/portal · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)
