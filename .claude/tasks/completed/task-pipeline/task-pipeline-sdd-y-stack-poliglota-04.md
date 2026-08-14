@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-04
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 1
 depends_on: []
 estimate: 3h
-actual:
+actual: ~50m
 issue: 41                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#41
 created: 2026-08-13
 updated: 2026-08-14
@@ -99,11 +99,11 @@ la **lista canónica** de plantillas SDD que leen las tareas 05 (flag), 06 (fluj
 ## Definition of Done
 
 <!-- TSDoc N/A (Markdown). TDD/mutation N/A (stack none). -->
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; `Provides` (plantillas + lista canónica) disponible para 05/06/07
-- [ ] Gate de `fact-checker` superado — en especial "sin ADR-0000 relleno" y "Gherkin solo en el CU" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: las 4 plantillas + mapeo/lista canónica en `templates/README.md` · technical-docs
-- [ ] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-04.md` · context-log
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; `Provides` (plantillas + lista canónica) disponible para 05/06/07
+- [x] Gate de `fact-checker` superado — en especial "sin ADR-0000 relleno" y "Gherkin solo en el CU" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: las 4 plantillas + mapeo/lista canónica en `templates/README.md` · technical-docs
+- [x] Entrada `### Added` en `CHANGELOG.md` atribuible a esta feature (la consolida la tarea 08) · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-04.md` · context-log
+- [x] Barrido `grep` reforzado: sin identificadores muertos

@@ -15,6 +15,23 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 | `plan.md` | `.claude/plans/pending/<package>/<name-plan>.md` | Por cada plan nuevo (paso 3 de `/plan-task`). |
 | `task.md` | `.claude/tasks/pending/<package>/<task-id>.md` | Por cada tarea de la descomposición (paso 5 de `/plan-task`). |
 
+## Plantillas SDD (opt-in, `features.sdd`)
+
+> **Lista canónica** de las plantillas de la capa **SDD** (Spec-Driven Development). Están **gated por
+> `features.sdd`** (opt-in, default off): sin el flag no se materializan ni se vigilan. Esta tabla es la
+> **única fuente** de sus nombres/ubicaciones — `/doctor` la **referencia** para detectar plantillas SDD
+> ausentes cuando el flag está on (no re-enumera la lista en otro sitio).
+
+| Plantilla | Se materializa en | Qué es |
+|---|---|---|
+| `spec.md` | `.claude/specs/<package>/spec.md` | Requisitos (el "QUÉ"): user stories P1/P2/P3 + requisitos **EARS** + criterios `SC-00x` (GitHub Spec Kit + EARS). |
+| `caso-de-uso.md` | `.claude/specs/<package>/casos-de-uso/<id>.md` | Caso de uso (el "CÓMO" del actor): Cockburn *fully-dressed* + **el Gherkin de aceptación** (única fuente del Gherkin). |
+| `adr.md` | `.claude/specs/adr/NNNN-titulo.md` | Decisión de arquitectura (MADR 4.0.0, `NNNN` desde `0001`). |
+| `adr-index.md` | `.claude/specs/adr/adr-index.md` | Índice de ADR (numeración `NNNN` desde `0001`, **sin `ADR-0000`** de relleno). |
+
+Con `features.sdd` **off** (default) esta capa no existe: el Gherkin vive en la tarea (`task.md`), como hoy.
+El flag lo introduce su propia tarea del plan; el flujo imperativo (Gherkin↔CU) se cablea en la del flujo SDD.
+
 ## Cómo las usa `/plan-task`
 
 - **Repo sin la convención** → `/plan-task` ofrece bootstrapearla copiando

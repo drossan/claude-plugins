@@ -33,6 +33,15 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   (no reescribe el fichero; no duplica una entrada existente) y sanea/pregunta ante nombres no válidos como
   clave YAML. El `HOW-TO-START-A-TASK.md` del package gana un bloque **"Stack de este package"** que
   **refleja** `stack.packages.<pkg>` (el YAML sigue siendo la fuente de verdad).
+- **Set de plantillas SDD** (#36) — cuatro semillas nuevas en `templates/`, gated por `features.sdd`:
+  **`spec.md`** (GitHub Spec Kit + EARS: user stories P1/P2/P3, requisitos `FR-00x` en EARS, criterios
+  `SC-00x`, convención `[NECESITA ACLARACIÓN: …]`) → `.claude/specs/<pkg>/spec.md`; **`caso-de-uso.md`**
+  (Cockburn *fully-dressed* + Gherkin, **único hogar del Gherkin** con la disciplina de `task.md`) →
+  `.claude/specs/<pkg>/casos-de-uso/<id>.md`; **`adr.md`** (MADR 4.0.0, **los 5 estados** proposed/accepted/
+  rejected/deprecated/superseded, status fiel a la fuente) → `.claude/specs/adr/NNNN-titulo.md`;
+  **`adr-index.md`** (numeración `NNNN` desde `0001`, **sin `ADR-0000` de relleno**). `templates/README.md`
+  gana la **lista canónica** de nombres/ubicaciones SDD (única fuente que `/doctor` referencia). El plugin
+  envía **plantillas, no contenido**: ningún spec/CU/ADR de un package se autogenera.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

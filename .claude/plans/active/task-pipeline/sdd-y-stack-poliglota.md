@@ -177,7 +177,7 @@ quien no la quiera.
 - [x] `task-pipeline-sdd-y-stack-poliglota-03` (P2) — `/task-init` detección de lenguaje por-workspace best-effort + `AskUserQuestion` de confirm + materializa `stack.packages` + el HOW-TO refleja el stack  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-02
 
 **Workstream B — #36: SDD nativo opt-in**
-- [ ] `task-pipeline-sdd-y-stack-poliglota-04` (P1) — Set de plantillas SDD: `spec.md`(SpecKit+EARS) · `caso-de-uso.md`(Cockburn+Gherkin) · `adr.md`+`adr-index.md`(MADR 4.0.0, `NNNN` desde `0001`, sin ADR-0000 relleno) + lista canónica de nombres/ubicaciones (para doctor) + mapeo en `templates/README.md`  · depends_on: —
+- [x] `task-pipeline-sdd-y-stack-poliglota-04` (P1) — Set de plantillas SDD: `spec.md`(SpecKit+EARS) · `caso-de-uso.md`(Cockburn+Gherkin) · `adr.md`+`adr-index.md`(MADR 4.0.0, `NNNN` desde `0001`, sin ADR-0000 relleno) + lista canónica de nombres/ubicaciones (para doctor) + mapeo en `templates/README.md`  · depends_on: —
 - [ ] `task-pipeline-sdd-y-stack-poliglota-05` (P1) — Flag `features.sdd` **booleano** (opt-in, default off, fuera de preset, ausencia ≠ drift) en todas las sedes del schema  · depends_on: task-pipeline-sdd-y-stack-poliglota-04
 - [ ] `task-pipeline-sdd-y-stack-poliglota-06` (P2) — Flujo SDD imperativo + línea de DoD gated por `features.sdd` + interacción Gherkin↔CU (CU única fuente, la tarea enlaza, scenario-coverage retro-alimenta el CU; SDD off = intacto)  · depends_on: task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
 
