@@ -1,2 +1,5 @@
+# Config de pnpm 11+ (los settings del campo `pnpm` de package.json viven aquí).
+# Permite que esbuild (dependencia de VitePress) corra su build script — sin esto, pnpm 11
+# lo ignora y `vitepress build` falla (ERR_PNPM_IGNORED_BUILDS) porque `strictDepBuilds` es true.
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
