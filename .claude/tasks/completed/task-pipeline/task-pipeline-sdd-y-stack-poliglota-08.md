@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-08
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-02, task-pipeline-sdd-y-stack-poliglota-03, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05, task-pipeline-sdd-y-stack-poliglota-06, task-pipeline-sdd-y-stack-poliglota-07]
 estimate: 2h
-actual:
+actual: ~30m
 issue: 45                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#45
 created: 2026-08-13
 updated: 2026-08-14
@@ -83,10 +83,10 @@ Feature: Cierre de release del plan
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
-- [ ] Spec cumplida (versión, manifiestos, CHANGELOG consolidado, nav, espejos)
-- [ ] Gate de `fact-checker` superado — en especial "la versión subió a 0.15.0" y "la frase canónica no cambió" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `plugin.json` + `marketplace.json` + `CHANGELOG.md` + `config.mts` · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-08.md` · context-log
-- [ ] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / `test -d`)
+- [x] Spec cumplida (versión, manifiestos, CHANGELOG consolidado, nav, espejos)
+- [x] Gate de `fact-checker` superado — en especial "la versión subió a 0.15.0" y "la frase canónica no cambió" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `plugin.json` + `marketplace.json` + `CHANGELOG.md` + `config.mts` · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-08.md` · context-log
+- [x] Retro añadida al plan; barrido `grep` reforzado final (sin identificadores muertos; frase canónica intacta)

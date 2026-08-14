@@ -4,10 +4,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
-## [Unreleased]
+## [0.15.0] — 2026-08-14
 
-> Entradas del plan **sdd-y-stack-poliglota** (#35 stack por-package · #36 SDD nativo). La tarea de
-> release (08) las consolida bajo un único header de versión con su bump SemVer.
+**Stack multi-lenguaje por-package (#35)** y **capa de SDD nativo opt-in (#36)**, del plan
+`sdd-y-stack-poliglota`. Todo lo nuevo es **opt-in con default off** (`features.sdd`, `stack.packages`): el
+**comportamiento por defecto es idéntico al de 0.14.0** — un repo que no toque su `.claude/task-pipeline.yml`
+no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferido** a un plan follow-up.)
 
 ### Added
 - **Schema `stack.packages.<pkg>`** (#35) — override de stack **por-workspace** para monorepos poliglotas.

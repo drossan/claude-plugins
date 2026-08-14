@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-y-stack-poliglota
 package: task-pipeline
-status: active           # pending | active | completed | cancelled
+status: completed        # pending | active | completed | cancelled
 branch: plan/task-pipeline/sdd-y-stack-poliglota
 issue: 37                # issue PADRE proyectada (github-tracking) — drossan/claude-plugins#37
 created: 2026-08-13
@@ -183,7 +183,7 @@ quien no la quiera.
 
 **Workstream C — cierre compartido**
 - [x] `task-pipeline-sdd-y-stack-poliglota-07` (P2) — `/doctor`: reconoce `features.sdd` + `stack.packages` (ausencia ≠ drift); detecta plantillas SDD ausentes con flag on (referencia la lista canónica de la tarea 04)  · depends_on: task-pipeline-sdd-y-stack-poliglota-01, task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05
-- [ ] `task-pipeline-sdd-y-stack-poliglota-08` (P3) — **Release only**: sidebar en `config.mts` (nav final) + e2e de coherencia (espejos/`test -d`) + bump SemVer en `plugin.json` + strings de manifiestos + consolidar CHANGELOG + retro  · depends_on: 01,02,03,04,05,06,07
+- [x] `task-pipeline-sdd-y-stack-poliglota-08` (P3) — **Release only**: sidebar en `config.mts` (nav final) + e2e de coherencia (espejos/`test -d`) + bump SemVer en `plugin.json` + strings de manifiestos + consolidar CHANGELOG + retro  · depends_on: 01,02,03,04,05,06,07
 
 ## Registro de cambios del plan
 
@@ -234,3 +234,22 @@ quien no la quiera.
   `main`; #37 y #38 → In progress). **Tarea 01 cerrada** (`done`): schema `stack.packages.<pkg>` con la
   regla de resolución canónica en README + punteros; `fact-checker` 9/9 VERIFICADO. Nota "mutation-gate no
   es per-package" reservada a la tarea 02 (F7a), no adelantada aquí.
+- 2026-08-14: **plan completado** (tareas 01–08 `done`). Release **v0.15.0** (minor: features opt-in
+  retrocompatibles). #38–#45 cerradas; padre #37 → Done/close.
+
+## Retro (plan cerrado)
+
+- **Estimación vs. real**: estimado ~19h (8 tareas), real ~6h20m aprox. La densa (A2 `/mutation`) salió más
+  rápido de lo previsto por ser reescritura de un único `SKILL.md` sin runner que correr; la 06 (flujo SDD)
+  fue la más larga por tocar 9 sedes con coherencia de espejos.
+- **Sorpresas / dependencias no vistas**: (1) la creación de `## [Unreleased]` en la tarea 01 **eliminó por
+  error el header `## [0.14.0]`**; se detectó y corrigió en la tarea 02 (el `fact-checker` de 01 no lo pilló
+  porque no se le dio esa afirmación). Aprendizaje: al insertar un header nuevo sobre otro, verificar que el
+  anterior sobrevive. (2) Un `fact-checker` marcó INCORRECTO una afirmación mía por imprecisión ("allowlist
+  CHANGELOG ≤0.8.1" cuando la narración del rename `grill-me`→`grilling` vive en 0.9.0): sin defecto de
+  código, corregido el enunciado.
+- **Corte de B4 (seed VitePress) a follow-up** (design-review F1): acertado — de-riesgó el release; el
+  plan-stub `sdd-site-vitepress` queda en `pending/` para retomarlo. `features.sdd` shipeado como booleano
+  (F5), añadir `.site` luego es aditivo.
+- **github-tracking modo plano C3** (gh 2.69.0 sin `--parent`): la proyección de estado (label + Status del
+  Project) funcionó best-effort en las 8 tareas; la jerarquía nativa padre-hijo sigue como residual.
