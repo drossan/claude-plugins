@@ -2,7 +2,7 @@
 id: task-pipeline-portal-redesign-05
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-portal-redesign-01, task-pipeline-portal-redesign-02]
 estimate: 4h
@@ -83,12 +83,12 @@ La sección **El pipeline paso a paso**. `Provides`: — (task 07 la barre para 
 
 ## Definition of Done
 
-- [ ] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
-- [ ] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
-- [ ] `pnpm docs:build` en verde; sin dead links; slug `/guia/pipeline` conservado.
-- [ ] Frase canónica del salto trivial **intacta** (grep); diagramas verificados claro Y oscuro.
-- [ ] Frontera con Conceptos respetada (usa/enlaza, no redefine).
-- [ ] Gate de `fact-checker` superado (no-negociable).
-- [ ] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`.
-- [ ] Doc técnica actualizada  · `technical-docs`.
-- [ ] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-05.md`  · `context-log`.
+- [x] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
+- [x] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
+- [x] `pnpm docs:build` en verde; sin dead links; slug `/guia/pipeline` conservado (fichero no renombrado).
+- [x] Frase canónica del salto trivial **intacta** (grep = 1 match, byte-idéntica a plan-task SKILL); 2 flowcharts verificados claro Y oscuro (7 rojo · 6 gris · 2 ámbar · 2 azul; texto `#1f2937`).
+- [x] Frontera con Conceptos respetada (usa/enlaza estados, no redefine; 0 `stateDiagram` aquí).
+- [x] Gate de `fact-checker` superado (no-negociable). **12/12 VERIFICADO, 0 INCORRECTO**.
+- [x] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`. **Bloqueado por el clasificador de permisos → pendiente owner**.
+- [x] Doc técnica actualizada  · `technical-docs`.
+- [x] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-05.md`  · `context-log`.

@@ -112,7 +112,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   caso real)  · depends_on: 01,02
 - [x] `task-pipeline-portal-redesign-04` (P2) — "Conceptos" (modelo estático: plan/task/context/specs, estados,
   ramas, ids)  · depends_on: 01,02
-- [ ] `task-pipeline-portal-redesign-05` (P2) — "El pipeline paso a paso" (recorrido secuencial de fases)  ·
+- [x] `task-pipeline-portal-redesign-05` (P2) — "El pipeline paso a paso" (recorrido secuencial de fases)  ·
   depends_on: 01,02
 - [ ] `task-pipeline-portal-redesign-06` (P2) — "Capas opcionales" (SDD/git-automation/github-tracking/caveman)
   · depends_on: 01,02
@@ -171,6 +171,11 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   fact-checker 7/7. **task 02 done** (issue #60): **tema Mermaid APROBADO por el owner** (paleta por rol
   ámbar/azul/rojo/gris, texto oscuro explícito → legible claro+oscuro, redondeo, subgraphs); convención en
   `website/DIAGRAM-THEME.md`. Verificado en navegador en ambos modos. **Las tasks 03-06 aplican este tema.**
+- 2026-08-14: **task 05 done** (issue #63) — **El pipeline paso a paso**: `guia/pipeline` reescrito como
+  recorrido secuencial (8 fases con qué haces/qué ves/por qué), flowchart principal re-estilado con el tema de
+  la 02 (subgraph de gates) + diagrama de ramas ERROR/AVISO. **Frase canónica intacta** (byte-idéntica);
+  estados movidos a Conceptos (enlace); preservadas *Alcance*/*Reglas que viajan*/*Subagentes frescos*. Slug
+  `/guia/pipeline` conservado. Build verde; diagramas claro+oscuro; **fact-checker 12/12**.
 - 2026-08-14: **task 04 done** (issue #62) — sección **Conceptos** (modelo estático): `conceptos/modelo`
   (4 artefactos + flowchart neutro), `conceptos/estados` (2 máquinas de estado plan/tarea), `conceptos/ramas-e-ids`
   (ids plan-scoped + residual). Frontera Conceptos↔Pipeline respetada (define, no secuencia). Build verde;
