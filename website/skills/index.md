@@ -26,7 +26,9 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand; `sdd-lint`
 ## Portabilidad
 
 `grilling`, `design-review`, `scenario-coverage` y `fact-checker` funcionan en cualquier repo. `task-init`,
-`plan-task`, `mutation` y `doctor` asumen la convención `.claude/plans|tasks|specs|context`.
+`plan-task`, `mutation` y `doctor` asumen la convención `.claude/plans|tasks|specs|context`. `sdd-lint` va
+más allá: asume además la capa SDD (`.claude/specs/<pkg>/` con spec EARS / caso-de-uso / ADR) y solo aporta
+valor con `features.sdd` on.
 
 > **Fuente canónica**: cada skill y su frontera están descritas en el
 > [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).

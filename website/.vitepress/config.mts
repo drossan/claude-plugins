@@ -28,6 +28,7 @@ export default defineConfig({
           { text: 'Qué es', link: '/guia/que-es' },
           { text: 'Instalación', link: '/guia/instalacion' },
           { text: 'El pipeline', link: '/guia/pipeline' },
+          { text: 'Configuración', link: '/guia/configuracion' },
         ],
       },
       {

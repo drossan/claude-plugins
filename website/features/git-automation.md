@@ -3,6 +3,11 @@
 Automatiza el **commit** al cerrar una tarea y la **PR** al cerrar el plan. **Opt-in** (default `off`): sin
 el bloque, commit y PR son **manuales**, exactamente como hoy.
 
+> **`conventional-commits` es un flag aparte** (`features.conventional-commits`, default **ON**), **no** una
+> sub-clave de `git-automation`: rige el **formato** del mensaje tanto en commits manuales como
+> automáticos. Se documenta aquí por cercanía, pero es independiente — puedes tener conventional-commits sin
+> auto-commit, y viceversa.
+
 ## Activar
 
 En `.claude/task-pipeline.yml`:

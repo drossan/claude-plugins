@@ -10,9 +10,12 @@ fire-and-forget**: hay checkpoints humanos por diseño.
                  →  descomponer en tareas con escenarios Gherkin
                  →  scenario-coverage (QA adversario de escenarios vía subagente)
                  →  handoff al flujo TDD (Red → Green → Refactor)
-                 →  /mutation (gate de calidad de tests)
-                 →  fact-checker (gate de cierre: verifica las afirmaciones de la sesión)
+                 →  gates de cierre: /mutation → sdd-lint* → fact-checker
+                    (* sdd-lint solo con features.sdd on)
 ```
+
+Todo el pipeline es **configurable por repo** (`.claude/task-pipeline.yml`): los gates (TDD, mutation) y las
+capas de doc se encienden/apagan por preset (`mode`) o flag. Ver [Configuración](./configuracion.md).
 
 ## Los checkpoints
 
@@ -26,10 +29,16 @@ fire-and-forget**: hay checkpoints humanos por diseño.
 
 ## Los gates de cierre
 
-- **Mutation testing** (Stryker): verifica que los tests realmente matan mutantes, no solo que pasan en
-  verde. Configurable por repo (umbral `break`).
+Al cerrar cada tarea, en orden: **`mutation` → `sdd-lint` → `fact-checker`**.
+
+- **Mutation testing** (Stryker por defecto; agnóstico por-package): verifica que los tests realmente matan
+  mutantes, no solo que pasan en verde. Configurable por repo (umbral `break`; `false` lo desactiva).
+- **`sdd-lint`** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec
+  EARS · caso-de-uso Gherkin · ADR MADR). **ERROR** bloquea el cierre; **AVISO** se reconoce. Ver
+  [SDD nativo](../features/sdd.md).
 - **`fact-checker`** (no negociable): un subagente fresco verifica las afirmaciones factuales de la sesión
-  ("la función X hace Y", "el gate de mutation pasó"). Un `INCORRECTO` bloquea el cierre.
+  ("la función X hace Y", "el gate de mutation pasó", "el gate `sdd-lint` pasó"). Un `INCORRECTO` bloquea el
+  cierre.
 
 ## Alcance: el pipeline no lo expande solo
 

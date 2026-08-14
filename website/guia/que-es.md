@@ -26,10 +26,22 @@ cerrar— y deja fluir el resto.
 - Descomponer algo grande en tareas pequeñas con criterios de aceptación (Gherkin).
 - Cerrar cada tarea con gates de calidad (mutation testing, verificación de afirmaciones).
 
+## Capas opt-in (default off)
+
+El pipeline base funciona sin tocar nada. Además, el plugin trae **capas opcionales** que enciendes por flag
+en `.claude/task-pipeline.yml` — ninguna se activa sola y su ausencia no es "drift":
+
+- **[SDD nativo](../features/sdd.md)** — specs vivas: requisitos **EARS**, casos de uso **Gherkin**, decisiones **ADR/MADR**, con gate de validación `/sdd-lint`.
+- **[Git automation](../features/git-automation.md)** — auto-commit al cerrar tarea, auto-PR al cerrar plan.
+- **[GitHub tracking](../features/github-tracking.md)** — proyecta el trabajo a GitHub Issues/Projects (one-way).
+- **[Modo caveman](../features/caveman.md)** — comprime el output del hilo principal para ahorrar tokens.
+- **Stack por-package poliglota** (`stack.packages`) y presets (`mode: full/legacy/docs-only`) — ver [Configuración](./configuracion.md).
+
 ## Siguiente paso
 
 - [Instalación](./instalacion.md) — añade el marketplace e instala el plugin.
 - [El pipeline](./pipeline.md) — el flujo completo, fase a fase.
+- [Configuración](./configuracion.md) — `task-pipeline.yml`: presets, stack, features, models.
 
 > **Fuente canónica**: el README del plugin y la guía de ciclo de vida documentan el detalle exhaustivo.
 > Ver [`task-pipeline/README.md`](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md)
