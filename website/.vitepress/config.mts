@@ -19,7 +19,7 @@ export default withMermaid(defineConfig({
   lastUpdated: true,
   // Excluidos de las páginas del sitio: el README de dev y el mapa de fuente canónica
   // (CANONICAL-SOURCES.md es documentación interna del portal, no una página pública).
-  srcExclude: ['**/README.md', 'CANONICAL-SOURCES.md'],
+  srcExclude: ['**/README.md', 'CANONICAL-SOURCES.md', 'DIAGRAM-THEME.md'],
   // ignoreDeadLinks se deja en su default (false): el build FALLA ante enlaces internos rotos.
   themeConfig: {
     // Buscador local (sin dependencias externas): indexa el contenido en build.

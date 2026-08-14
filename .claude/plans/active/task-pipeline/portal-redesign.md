@@ -106,7 +106,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
 
 - [x] `task-pipeline-portal-redesign-01` (P1) — IA + navegación + slugs estables/redirects + mapa de fuente
   canónica (contrato de estructura)  · depends_on: —
-- [ ] `task-pipeline-portal-redesign-02` (P1) — Tema Mermaid: **spike del mecanismo** (claro+oscuro, paleta por
+- [x] `task-pipeline-portal-redesign-02` (P1) — Tema Mermaid: **spike del mecanismo** (claro+oscuro, paleta por
   rol) + muestra verificada + nota de convención  · depends_on: —
 - [ ] `task-pipeline-portal-redesign-03` (P2) — "Empezar" (Qué es + Instalación + Tu primer plan = walkthrough
   caso real)  · depends_on: 01,02
@@ -166,6 +166,11 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   walkthrough lo elige la **task 03**. **(B) decisiones del owner**: (B1) frase canónica **solo portal** ahora
   → alinear las 5 copias divergentes = **cleanup separado**; (B4) meta-tags SEO/OG **fuera de alcance**;
   (B2/B3) consecuencias ya aceptadas (estilo de diagrama GitHub↔portal, asimetría de prosa con el README).
+
+- 2026-08-14: **task 01 done** (issue #59 cerrada) — IA de 5 secciones + buscador + mapa canónico; build verde,
+  fact-checker 7/7. **task 02 done** (issue #60): **tema Mermaid APROBADO por el owner** (paleta por rol
+  ámbar/azul/rojo/gris, texto oscuro explícito → legible claro+oscuro, redondeo, subgraphs); convención en
+  `website/DIAGRAM-THEME.md`. Verificado en navegador en ambos modos. **Las tasks 03-06 aplican este tema.**
 
 > **Follow-up separado #2: `canonical-phrase-consistency` (cleanup).** Alinear el string literal de la frase
 > canónica del salto trivial en sus 5 copias (`README.md`, `docs/guides/task-lifecycle.md`,
