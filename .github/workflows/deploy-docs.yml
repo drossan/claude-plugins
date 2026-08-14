@@ -31,7 +31,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          # pnpm 11: `pnpm-workspace.yaml` lleva settings (allowBuilds, publicHoistPattern)
+          # que pnpm 9 no entiende → "packages field missing or empty". Pineado a la
+          # versión con la que se verifica el build en local.
+          version: 11.21.0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
