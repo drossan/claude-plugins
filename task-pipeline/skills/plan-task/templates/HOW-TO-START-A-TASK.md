@@ -12,6 +12,19 @@
 > descomposición en tareas con escenarios **Gherkin**). Este HOW-TO cubre la
 > **ejecución** de cada tarea ya creada. Ver `docs/guides/task-lifecycle.md`.
 
+> ## 📦 Stack de este package
+>
+> <!-- ESPECÍFICO DEL PACKAGE: refleja `stack.packages.<package>` de `.claude/task-pipeline.yml`.
+>      El YAML es la FUENTE DE VERDAD; este bloque solo lo refleja para el humano — si divergen,
+>      manda el YAML. `/task-init` lo rellena con el stack detectado (best-effort + confirm). -->
+> - **Lenguaje**: `<language>`
+> - **Gestor de paquetes**: `<package-manager>`
+> - **Runner de tests**: `<test-runner>`
+> - **Mutation**: `<mutation-tool>` (o `mutation-command: "<cmd>"` si es un escape genérico)
+>
+> Si este package **no** tiene entrada en `stack.packages`, hereda el `stack:` top-level (regla de
+> resolución canónica: README del plugin → "Configuración por repo" → "Stack por-package").
+
 > ## 🚦 GATE TDD — IMPERATIVO, NO NEGOCIABLE
 >
 > **Este gate asume el preset `full`** (defaults del plugin). Si `.claude/task-pipeline.yml`

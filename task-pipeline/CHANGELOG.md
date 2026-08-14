@@ -4,6 +4,134 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.15.0] — 2026-08-14
+
+**Stack multi-lenguaje por-package (#35)** y **capa de SDD nativo opt-in (#36)**, del plan
+`sdd-y-stack-poliglota` (+ su extensión: **activación asistida de SDD** y **git-automation /
+conventional-commits**) y el plan **`sdd-validation-gate`** (**gate `/sdd-lint`** de validación de formato +
+completitud de los artefactos SDD). Todo lo nuevo es **opt-in con default off** (`features.sdd`,
+`stack.packages`, `features.git-automation`) o **preserva el default histórico**
+(`features.conventional-commits` = ON): el **comportamiento por defecto es idéntico al de 0.14.0** — un repo
+que no toque su `.claude/task-pipeline.yml` no cambia en nada. (El seed ejecutable de sitio VitePress de #36
+queda **diferido** a un plan follow-up.)
+
+### Added
+- **Schema `stack.packages.<pkg>`** (#35) — override de stack **por-workspace** para monorepos poliglotas.
+  El `stack:` top-level pasa a ser el **default/fallback**; una entrada de package pisa **solo las claves
+  que declara** (herencia parcial). La **regla de resolución se enuncia en un único sitio canónico**
+  (README → "Configuración por repo" → "Stack por-package") y las demás sedes (YAML seed comentado, los
+  dos `task-lifecycle`, el contrato de lectura de `plan-task`) **apuntan** a él. `packages` ausente =
+  comportamiento histórico y **no es drift**; `stack.packages` malformado = config **legible** que no
+  aborta el resto de la lectura. Los **lectores** (`/mutation`, `/task-init`, `/doctor`) llegan en las
+  tareas siguientes del plan.
+- **`/mutation` agnóstico por herramienta y por-package** (#35) — resuelve `stack.packages.<pkg>.mutation-tool`
+  (fallback al top-level) y **despacha**: `stryker` (JS/TS, **camino verificado**, gotchas pnpm), `mutmut`
+  (Python, **referencia** con banner "⚠️ no verificada"), un **escape genérico `mutation-command: "<cmd>"`**
+  para cualquier otro lenguaje (referencia, mismo banner) y `none` (no-op "sin gate"). Un `mutation-command`
+  que sale con código ≠ 0 **falla** el gate (no se silencia por ser referencia); herramienta desconocida sin
+  `mutation-command` = no-op con aviso. **Solo Stryker se afirma verificado**; `cosmic-ray`/`cargo-mutants`/
+  `gremlins` quedan como **ejemplos en docs**, no ramas shipeadas.
+- **`/task-init` detecta el lenguaje por-workspace y siembra `stack.packages`** (#35) — infiere el lenguaje
+  de marcadores (`package.json`→JS/TS, `pyproject.toml`/`setup.py`→Python, `Cargo.toml`→Rust, `go.mod`→Go),
+  propone el stack por lenguaje (mapa coherente con `/mutation`: Rust/Go vía escape `mutation-command`) y lo
+  escribe **solo tras `AskUserQuestion`** de confirm. Detección ambigua / en conflicto / sin marcador / sin
+  canal → **no adivina**. La escritura es **aditiva** sobre un `.claude/task-pipeline.yml` ya materializado
+  (no reescribe el fichero; no duplica una entrada existente) y sanea/pregunta ante nombres no válidos como
+  clave YAML. El `HOW-TO-START-A-TASK.md` del package gana un bloque **"Stack de este package"** que
+  **refleja** `stack.packages.<pkg>` (el YAML sigue siendo la fuente de verdad).
+- **Set de plantillas SDD** (#36) — cuatro semillas nuevas en `templates/`, gated por `features.sdd`:
+  **`spec.md`** (GitHub Spec Kit + EARS: user stories P1/P2/P3, requisitos `FR-00x` en EARS, criterios
+  `SC-00x`, convención `[NECESITA ACLARACIÓN: …]`) → `.claude/specs/<pkg>/spec.md`; **`caso-de-uso.md`**
+  (Cockburn *fully-dressed* + Gherkin, **único hogar del Gherkin** con la disciplina de `task.md`) →
+  `.claude/specs/<pkg>/casos-de-uso/<id>.md`; **`adr.md`** (MADR 4.0.0, **los 5 estados** proposed/accepted/
+  rejected/deprecated/superseded, status fiel a la fuente) → `.claude/specs/adr/NNNN-titulo.md`;
+  **`adr-index.md`** (numeración `NNNN` desde `0001`, **sin `ADR-0000` de relleno**). `templates/README.md`
+  gana la **lista canónica** de nombres/ubicaciones SDD (única fuente que `/doctor` referencia). El plugin
+  envía **plantillas, no contenido**: ningún spec/CU/ADR de un package se autogenera.
+- **Flag `features.sdd`** (#36) — booleano **opt-in** (default `off`) que activa la capa SDD, con el patrón
+  de `caveman`/`github-tracking`: **fuera de todo preset** (`mode: full` no lo enciende), **fail-safe** (solo
+  `true` booleano activa; ausente / `false` / `"true"` / `yes` / `1` / `TRUE` / forma-bloque / comentado →
+  off, sin error de parseo) y **ausencia ≠ drift**. **Con `off` (default) el comportamiento es idéntico al de
+  hoy** (el Gherkin vive en la tarea). Presente en todas las sedes del schema (YAML seed comentado, tabla de
+  flags de README + sección "SDD nativo (opcional)", las dos `task-lifecycle`, contrato de `plan-task`) y en
+  el portal (`website/features/sdd.md` + sidebar). El **flujo imperativo** y la línea de DoD gated llegan en
+  la tarea siguiente del plan.
+- **Flujo SDD imperativo** (#36) — cablea la capa SDD en el ciclo de vida (gated por `features.sdd`) y cierra
+  la contradicción "Gherkin = fuente de tests" ↔ "Gherkin solo en el CU" (design-review F3): con el flag
+  **on**, el **caso de uso es la única fuente** del Gherkin y el `## Scenarios` de la tarea **enlaza** (no
+  copia); `scenario-coverage` **retro-alimenta el CU** (entrada: sigue el enlace; salida: incorpora al CU) y
+  `/mutation` **sigue el enlace al CU** al leer survivors. Añade la **línea de DoD gated** ("spec+CU
+  actualizados o 'sin cambios'"), el **bootstrap** del primer spec/CU (materializa desde las plantillas),
+  el reporte de **enlace roto** y la **convivencia** inline↔CU sin migración forzada al hacer *toggle* a
+  mitad. Con el flag **off** (default), el comportamiento es **byte-idéntico** al de hoy. Cableado en
+  `task.md`, las dos `task-lifecycle`, `plan-task`, `scenario-coverage`, `mutation`, README y portal.
+- **`/doctor` reconoce `features.sdd` + `stack.packages`** (#35/#36) — su **ausencia no es drift** (como
+  `caveman`/`github-tracking`); `features.sdd` no-booleano → **off** por fail-safe. Estrena una categoría
+  **condicional a flag**: con `features.sdd: true`, detecta el **scaffolding SDD ausente** contra la **lista
+  canónica** de `templates/README.md` (única fuente, no la re-lista) y lo ofrece como hallazgo **corregible**
+  (materializar desde la semilla, con aprobación + diff); **presencia parcial** = solo la pieza faltante,
+  **per-package** para `spec.md`/`casos-de-uso/` y global para `adr/`; idempotente. Además avisa de claves
+  `stack.packages` **huérfanas** (typo) o **malformadas** (no-mapa).
+- **Activación asistida de SDD** (#36) — `/task-init` (instalación nueva) y `/doctor` (repo ya adoptado sin
+  el flag) **preguntan** con `AskUserQuestion` si activar la capa SDD, en vez de dejarla como un opt-in que
+  nadie descubre. Al **confirmar** escriben `features.sdd: true` y materializan el scaffold ADR inicial
+  (`.claude/specs/adr/adr-index.md`); al declinar o **sin canal** para preguntar, no tocan nada. **Nunca se
+  auto-activa** (opt-in con confirmación) y es **idempotente** (si ya está on, no re-pregunta).
+- **Flags `features.conventional-commits` y `features.git-automation`** — `conventional-commits` (**default
+  ON**, ausencia = comportamiento histórico) hace **configurable** la exigencia del formato `<task-id>:
+  <conventional commit>`. `git-automation` es un **bloque opt-in** (default off, fuera de preset, fail-safe,
+  ausencia ≠ drift) con `auto-commit` (commit al cerrar la tarea), `auto-pr` (PR al cerrar el **plan**;
+  **requiere** `auto-commit`) y `co-author` (default **false** = sin trailer de co-autor en los commits
+  automáticos). Presentes en todas las sedes del schema + portal (`website/features/git-automation.md`). El
+  **comportamiento** (ejecución de commit/PR) se cablea en la tarea siguiente.
+- **Comportamiento de `git-automation`** cableado en el ciclo de vida — con `auto-commit` on, al cerrar una
+  tarea (DoD en verde, incluido `fact-checker`) la sesión ejecuta `<task-id>: <mensaje>` automáticamente; con
+  `auto-pr` on (**requiere** `auto-commit`), al cerrar el **plan** abre la PR. El **formato** respeta
+  `conventional-commits` (default ON) y el **trailer de co-autor** solo se añade con `co-author: true`
+  (default off; gobierna los commits de la automatización, no los manuales). **Best-effort**: si el
+  commit/PR automático falla, se avisa y **no** se bloquea el cambio de `status:` del `.md`. `/doctor`
+  reconoce los flags (ausencia ≠ drift). Con los flags **off** (default), commit y PR son **manuales**,
+  idéntico a hoy. Cableado en las dos `task-lifecycle` y `plan-task`.
+- **Skill `sdd-lint`** (#36) — gate de **validación de formato + completitud** de los artefactos SDD (spec
+  **EARS** · caso-de-uso **Gherkin** · ADR **MADR**), la pieza que faltaba: valida que estén **bien formados,
+  completos y trazables**, no solo que existan (eso es `/doctor`). **Fuente autoritativa** model-driven —
+  mecánico vía comandos `grep`/`test` fijos (vocabulario MADR cerrado case-insensitive, `[NECESITA
+  ACLARACIÓN]` sin resolver, secciones, ids `FR-00x`/`SC-00x`, enlaces rotos, huérfanos/duplicados por-package)
+  + semántico por juicio de un subagente fresco (EARS bien-formado, coherencia de estado MADR, disciplina
+  Gherkin, trazabilidad). **ERROR bloquea / AVISO no** (como `fact-checker`; ante duda de parseo → AVISO).
+  Invocable `/sdd-lint [package]`; con `features.sdd` off, no-op. (El cableado como gate de cierre y el helper
+  Bash opcional llegan en las tareas siguientes del plan.)
+- **`scripts/sdd-lint.sh`: helper Bash opcional** (#36) — subconjunto **mecánico** de `sdd-lint` (estado MADR,
+  `[NECESITA ACLARACIÓN]`, ids `FR`/`SC`, sección EARS, enlace ADR roto) para que un repo consumidor **con
+  runner/CI** lo cablee y tenga validación **desatendida** (`exit 2` = ERROR). **NO bloqueante y no es el
+  gate**: la skill `/sdd-lint` es la autoritativa (incluye lo semántico). **Bash 3.2+** (macOS), `grep -E`
+  portable, cero dependencias, cero-verde-falso. Con **fixtures aseverados** known-good/known-bad + doc de
+  cableado a CI.
+- **`sdd-lint` cableado como gate de cierre** (#36) — con `features.sdd` on, corre **entre `mutation` y
+  `fact-checker`**; un **ERROR** de formato/completitud **bloquea** el cierre (como `fact-checker`
+  `INCORRECTO`), un **AVISO** se reconoce. Línea de DoD gated en `task.md` + las dos `task-lifecycle`; paso
+  "3b" en "Cerrar una tarea"; `fact-checker` **atestigua** "el gate `sdd-lint` pasó"; `plan-task` gana el
+  Paso 7.5; `/doctor` lo reconoce (parte de la capa SDD, intrínseco a `features.sdd`, ausencia ≠ drift con
+  SDD off, plugin-owned solo-reporte). Con `features.sdd` **off**, no corre (byte-idéntico a hoy).
+- **Las plantillas SDD pasan su propio lint** (#36, rescate GAINUP P7) — `/doctor` declara el invariante de
+  que las semillas (`spec.md`/`caso-de-uso.md`/`adr.md`/`adr-index.md`) pasan `/sdd-lint` limpias, para que
+  **ninguna instancia nueva nazca defectuosa**. Para lograrlo: `spec.md` **reescrito** (describe el marcador
+  de aclaración pendiente **sin** instanciar el literal `[NECESITA ACLARACIÓN`, de modo que la plantilla pasa
+  pero un artefacto real que lo escriba **sí** bloquea); `adr.md` clarifica "MADR = *Markdown Architectural
+  Decision Records*" (revertido de *Any* en la fuente). Verificado: no hay "MADR Any" en la superficie shipeada.
+
+### Fixed
+- **`sdd-lint`: check de ids con frontera de palabra** (#36) — correr `/sdd-lint` sobre las propias plantillas
+  destapó que el check de ids `FR-00x`/`SC-00x` daba **falsos positivos** con `NFR-001` (contiene `FR-001`) y
+  con la notación placeholder `FR-00x`. Corregido con `\b` (frontera de palabra, portable BSD/GNU) en la skill
+  `sdd-lint` y en `scripts/sdd-lint.sh`.
+
+### Changed
+- **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
+  "(Stryker, break 80)" a "**con la herramienta del package** (`stack.mutation-tool`)" en `templates/task.md`,
+  `templates/task-lifecycle.md` y `docs/guides/task-lifecycle.md`. Se explicita que `features.mutation-gate`
+  **no** es per-package (solo `stack.*` lo es): "este package sin gate" = `stack.mutation-tool: none`.
+
 ## [0.14.0] — 2026-08-10
 
 Realineación con el comportamiento documentado de **Claude Opus 5**. `honesty-rules.md` amplía su carta de

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="task-pipeline">
+  <rect width="32" height="32" rx="7" fill="#1d4ed8"/>
+  <path d="M11 16h4.5M19.5 16H22" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="8.5" cy="16" r="3" fill="#fde68a"/>
+  <circle cx="16" cy="16" r="3" fill="#fff"/>
+  <circle cx="23.5" cy="16" r="3" fill="#bfdbfe"/>
+</svg>

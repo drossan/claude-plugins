@@ -25,7 +25,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `legacy` | ON | ON | OFF |
 | `docs-only` | OFF | ON | OFF |
 
-**`stack:`** — usa estos valores en vez de asumir pnpm/Vitest/Stryker. Adapta los comandos de test/lint/mutation al `package-manager` y `test-runner`; `language: other` significa que "doc en el código" no es TSDoc sino el equivalente del lenguaje (o N/A); `mutation-tool: none` desactiva de facto el gate aunque `mutation-gate` traiga número.
+**`stack:`** — usa estos valores en vez de asumir pnpm/Vitest/Stryker. Adapta los comandos de test/lint/mutation al `package-manager` y `test-runner`; `language: other` significa que "doc en el código" no es TSDoc sino el equivalente del lenguaje (o N/A); `mutation-tool: none` desactiva de facto el gate aunque `mutation-gate` traiga número. En monorepos poliglotas el stack se resuelve **por-package** vía `stack.packages.<pkg>` (herencia parcial: solo pisa las claves que declara); la **regla de resolución canónica** vive en el README del plugin → "Configuración por repo" → "Stack por-package" (no la repito aquí).
 
 **`features:`** (una clave explícita pisa al preset):
 
@@ -36,7 +36,11 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.closing-documentation.technical-docs` | `true`/`false` | No exiges doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | No exiges el session log en `.claude/context/`. |
 | `features.mutation-gate` | `false` / `true`(=80) / `<int>` | `false`: sin gate. `<int>`: gate con ese umbral `break` (ratchet en legacy). |
+| `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in, **no** gate de DoD: comprime el output del hilo principal (hook `UserPromptSubmit`). **Fuera de todo preset**; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD: proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **Fuera de todo preset** (`mode: full` NO lo enciende); su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
+| `features.sdd` | booleano; opt-in (default **off**) | **Comportamiento** opt-in, **no** gate de DoD (salvo la línea de DoD gated con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); su **ausencia no es drift** para `/doctor`. |
+| `features.conventional-commits` | booleano; default **ON** | Formato `<task-id>: <conventional commit>`; `false` lo relaja. Ausencia = ON (histórico, no opt-in silencioso). |
+| `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea) · `auto-pr` (cierre de **plan**, requiere `auto-commit`) · `co-author` (default off). **Fuera de todo preset**; fail-safe; su **ausencia no es drift**. |
 
 **`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
 
@@ -115,6 +119,8 @@ El id de tarea es **`<task-id> = <plan-id>-<nn>`** (`<plan-id> = <package>-<name
 
 Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre). Aplica las **reglas de la plantilla** (no las repito aquí): **declarativo > imperativo** (el `When` es acción de dominio, no pasos de UI/llamadas internas — es lo que evita tests frágiles a refactors), **un escenario = un comportamiento**, **disciplina G/W/T**, y **`Scenario Outline`** para fronteras/clases de equivalencia. Si `features.tdd` es `false`, los escenarios siguen siendo útiles como **spec de comportamiento** (criterio de aceptación), pero no se exige un test por cada uno.
 
+> **Con `features.sdd` on (opcional):** el Gherkin vive en el **caso de uso** (`.claude/specs/<pkg>/casos-de-uso/<id>.md`), **fuente única**; el `## Scenarios (Gherkin)` de la tarea **enlaza** a ese CU en vez de copiar el bloque. Si el package aún no tiene `spec.md`/CU, materialízalos primero desde `templates/spec.md` y `templates/caso-de-uso.md` (léelos con `Read`) antes de enlazarlos. Con el flag **off** (default) todo se comporta como aquí abajo (Gherkin en la tarea). Detalle en `docs/guides/task-lifecycle.md` → "Flujo SDD".
+
 ```gherkin
 Feature: <capacidad de la tarea>
 
@@ -130,7 +136,7 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 **Pásale también la ruta del plan.** Sin él, la dimensión 8 no puede saber qué se dejó fuera **a propósito** y propone como hueco lo que tú ya descartaste — el pipeline se convierte en un motor de expansión de alcance. La salida viene en **dos secciones**:
 
-- **(A) Dentro del alcance** → incorpora los escenarios aceptados a `## Scenarios (Gherkin)`; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer).
+- **(A) Dentro del alcance** → incorpora los escenarios aceptados a `## Scenarios (Gherkin)` (con `features.sdd` on, **al CU enlazado**, que es la fuente única — no a la tarea); si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer).
 - **(B) Fuera del alcance declarado** → **no** los conviertas en escenarios ni tareas por tu cuenta: son **decisión del owner**. Preséntalos con su detalle, decide con él cada uno y registra la decisión y su motivo en el **Plan change log**. Si la sección viene vacía, se dice "ninguno"; si el subagente no pudo leer el plan, traslada esa declaración en vez de leerla como "no hay nada fuera de alcance".
 
 ## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)
@@ -168,6 +174,8 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.
 
+> **Con `features.git-automation` on (opcional):** el **cierre** de cada tarea puede **auto-commit** y el del **plan** (última tarea) **auto-PR** (`auto-pr` requiere `auto-commit`); el formato lo rige `features.conventional-commits` y el trailer de co-autor `git-automation.co-author` (default off). Detalle en `docs/guides/task-lifecycle.md` → "Cerrar una tarea"/"Cerrar un plan". Con off (default), commit y PR son **manuales**.
+
 ## Documentar todo (tres capas — configurables)
 
 Cada tarea documenta en tres capas, **cada una activable por flag** (default ON; ver la tabla de arriba): (1) **TSDoc en el código** de todo símbolo público (al crearlo, no al final) — `closing-documentation.tsdoc`; (2) **doc técnica/contexto** (README/CLAUDE.md/specs/ADRs) — `closing-documentation.technical-docs`; (3) **histórico de la tarea** (session log en `.claude/context/<package>/<task-id>.md`) — `closing-documentation.context-log`. Docs de dev/usuario + changeset cuando aplique. Una capa con flag `false` no entra en la DoD ni bloquea el cierre.
@@ -176,9 +184,13 @@ Cada tarea documenta en tres capas, **cada una activable por flag** (default ON;
 
 Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), cada tarea no se cierra hasta pasar el gate de **mutation testing** con el umbral configurado (`true` = `break:80`; `<int>` = ese umbral). Ver la skill `/mutation`, que lee el mismo `stack`/umbral del YAML.
 
+## Paso 7.5 — Gate de cierre por tarea: sdd-lint (solo con `features.sdd` on)
+
+**Solo con `features.sdd` on**: **entre** el gate de mutation y `fact-checker`, cada tarea corre `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de formato/completitud **bloquea** el cierre; **AVISO** se reconoce. Es un **gate de cierre** (no una fase de `/plan-task`) e **intrínseco a `features.sdd`** (sin flag propio). Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
+
 ## Paso 8 — Gate de cierre por tarea: fact-checker (no-negociable)
 
-**Tras** el gate de mutation y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
+**Tras** el gate de mutation (y, con SDD on, `sdd-lint`) y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó» y «el gate `sdd-lint` pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
 
 ## Reglas de la sesión
 

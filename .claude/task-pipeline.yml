@@ -39,6 +39,11 @@ stack:
   test-runner: none           # vitest | jest | node | none
   mutation-tool: none         # stryker | none
 
+  # Override por-package (stack.packages.<pkg>): N/A aquí — este repo es SINGLE-PACKAGE
+  # (task-pipeline, stack: none), no necesita override real. La regla de resolución CANÓNICA
+  # vive en el README del plugin → "Configuración por repo" → "Stack por-package". Ausencia de
+  # `packages` = comportamiento histórico (solo el stack plano), NO es drift.
+
 # ── Features ──────────────────────────────────────────────────────────────────
 features:
   # Escribir tests / TDD como parte de la DoD (Red→Green→Refactor, 1 test por

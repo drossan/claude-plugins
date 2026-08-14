@@ -1,7 +1,7 @@
 # Las skills
 
-task-pipeline trae **9 skills**, namespaced por el plugin (`/task-pipeline:<skill>`). Ocho orquestan o dan
-soporte al pipeline; `pipeline-usage` es analítica de uso on-demand.
+task-pipeline trae **10 skills**, namespaced por el plugin (`/task-pipeline:<skill>`). Ocho orquestan o dan
+soporte al pipeline; `pipeline-usage` es analítica de uso on-demand; `sdd-lint` es el gate de la capa SDD opt-in.
 
 | Skill | Qué hace |
 |---|---|
@@ -14,6 +14,7 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand.
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin (drift, ids duplicados). |
 | `fact-checker` | Gate de cierre: verifica la veracidad de las afirmaciones de la sesión (subagente de solo lectura). |
 | `/pipeline-usage` | Analítica de uso on-demand (tokens/modelo/tiempo por fase y subagente). Read-only, best-effort. |
+| `/sdd-lint` | Gate de cierre de la capa SDD (solo `features.sdd` on): valida formato + completitud de spec EARS / caso-de-uso Gherkin / ADR MADR (mecánico + subagente semántico). ERROR bloquea / AVISO no; entre `/mutation` y `fact-checker`. Helper Bash opcional para CI. |
 
 ## Frontera clave
 
@@ -25,7 +26,9 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand.
 ## Portabilidad
 
 `grilling`, `design-review`, `scenario-coverage` y `fact-checker` funcionan en cualquier repo. `task-init`,
-`plan-task`, `mutation` y `doctor` asumen la convención `.claude/plans|tasks|specs|context`.
+`plan-task`, `mutation` y `doctor` asumen la convención `.claude/plans|tasks|specs|context`. `sdd-lint` va
+más allá: asume además la capa SDD (`.claude/specs/<pkg>/` con spec EARS / caso-de-uso / ADR) y solo aporta
+valor con `features.sdd` on.
 
 > **Fuente canónica**: cada skill y su frontera están descritas en el
 > [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).

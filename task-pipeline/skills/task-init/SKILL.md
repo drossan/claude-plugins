@@ -34,6 +34,12 @@ Antes de escribir nada, mira el repo en read-only:
 - ¿Qué runner de tests usa (Vitest, Jest, otro) y gestor (pnpm, npm, yarn)? El
   plugin asume **Vitest + pnpm + Stryker `break: 80`**; si el repo difiere, ajusta
   los comandos al materializar las plantillas en vez de copiarlos a ciegas.
+- **Lenguaje por workspace (best-effort)**: para cada workspace, infiere el lenguaje
+  de sus marcadores — `package.json`→JS/TS, `pyproject.toml`/`setup.py`→Python,
+  `Cargo.toml`→Rust, `go.mod`→Go. Es **best-effort**, no promete detección infalible.
+  Si un workspace tiene marcadores **en conflicto** (p.ej. `package.json` **Y**
+  `pyproject.toml`) o **ninguno reconocible**, trátalo como **ambiguo** → no adivines:
+  se pregunta en el Paso 1.5.
 - ¿Ya hay algo de la convención (`.claude/plans`, `docs/guides/task-lifecycle.md`)?
   Si sí, este repo ya está parcialmente adoptado: completa lo que falte, no dupliques.
 
@@ -80,6 +86,63 @@ Antes de escribir nada, mira el repo en read-only:
 > borra) — pero **nunca** toca el `CLAUDE.md`. `coding-standards.md`, por ser
 > user-owned, **no** la restaura el hook. Tú la creas la primera vez.
 
+## Paso 1.5 — Stack por-package (`stack.packages`, monorepo poliglota)
+
+Solo si hay **más de un lenguaje** entre los workspaces (o el usuario lo pide). Siembra
+`stack.packages.<pkg>` para que cada workspace resuelva su runner/mutation por lenguaje. La **regla de
+resolución es canónica** en el README del plugin → "Configuración por repo" → "Stack por-package" (el
+`stack:` top-level es el default/fallback; una entrada de package pisa **solo** las claves que declara).
+
+**Alcance del escaneo** (declara cuál aplica):
+- **`/task-init` sin package** (bootstrap genérico): puede escanear **todos** los workspaces de una vez y
+  proponer una entrada por cada uno cuyo lenguaje difiera del `stack:` top-level.
+- **`/task-init <package>`**: inicializa **ese** package; propone solo su entrada.
+
+**Mapa lenguaje → stack por defecto** (coherente con `/mutation`, tarea del selector de herramienta):
+
+| Lenguaje | `test-runner` | `mutation-tool` |
+|---|---|---|
+| JS/TS | `vitest` (o `jest` si lo detectas) | `stryker` |
+| Python | `pytest` | `mutmut` |
+| Rust | `cargo test` | `none` + `mutation-command: "cargo mutants"` (referencia) |
+| Go | `go test` | `none` + `mutation-command: "gremlins ..."` (referencia) |
+
+Rust/Go usan el **escape `mutation-command`** (no una tool nombrada shipeada), coherente con
+"cosmic-ray/cargo-mutants/gremlins solo en docs" de `/mutation`.
+
+**Confirm humano (obligatorio)**: antes de escribir `stack.packages`, lanza **`AskUserQuestion`** con la
+propuesta detectada (por package). **Solo escribe al confirmar** — igual que ya haces con `mode`. Detección
+**ambigua / desconocida / en conflicto** → **no fijes un default en silencio**: pregunta. **Sin canal para
+`AskUserQuestion`** (entorno no interactivo) → **no** escribas `stack.packages` a ciegas: déjalo sin fijar y
+**repórtalo** (no adivinar es preferible a acertar por suerte).
+
+**Escritura ADITIVA (no "no pisar el fichero entero")**: la idempotencia de `/task-init` ("nunca pises un
+fichero que ya existe") es a nivel de **fichero completo**. Añadir `stack.packages.<pkg>` a un
+`.claude/task-pipeline.yml` **ya materializado** (repo previamente adoptado, sin `stack.packages`) es una
+**edición aditiva**: **añade** el bloque/entrada sin tocar el resto del fichero — **no** lo trates como
+"fichero que ya existe, no pisar". **Nunca dupliques** una entrada `stack.packages.<pkg>` ya presente: si
+existe, respétala e informa.
+
+**Clave YAML válida**: la clave del map es el `<package>` (nombre de workspace, el mismo de
+`.claude/tasks|plans/<package>/`). Si el nombre no es una clave YAML válida (espacios, `:`, etc.) →
+**sanea o pregunta**; nunca escribas una clave que rompa el YAML.
+
+## Paso 1.6 — Activación SDD (opcional, opt-in con confirm)
+
+La capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR) es **opt-in** y **default off**. Para que sea
+**descubrible** (no un flag que nadie enciende), al inicializar el repo **ofrécela explícitamente**:
+
+- Si `.claude/task-pipeline.yml` **no** tiene `features.sdd: true`, lanza **`AskUserQuestion`**: "¿Activar la
+  capa SDD (specs EARS + casos de uso Gherkin + ADR MADR)?". **Nunca la actives en silencio.**
+- **Al confirmar** → escribe `features.sdd: true` (descomentado) en `features:` **y** materializa el scaffold
+  ADR inicial: lee `../plan-task/templates/adr-index.md` con **Read** y escríbelo en
+  `.claude/specs/adr/adr-index.md` (crea `.claude/specs/adr/` si falta). El resto (spec/CU por package) lo
+  crea el **flujo SDD** on-demand al trabajar (no lo autogeneres aquí).
+- **Al declinar** → deja `features.sdd` **off** (comentado, como el template), sin materializar nada SDD.
+- **Sin canal para `AskUserQuestion`** (entorno no interactivo) → **no** actives a ciegas: deja el estado y
+  **repórtalo** ("SDD no activado: sin canal para confirmar").
+- **Idempotente**: si `features.sdd` ya es `true`, **no** vuelvas a preguntar.
+
 ## Paso 2 — HOW-TO del package (si aplica)
 
 Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su
@@ -88,6 +151,10 @@ Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su
 1. Lee `../plan-task/templates/HOW-TO-START-A-TASK.md` con **Read**.
 2. Materialízalo en `.claude/specs/<package>/HOW-TO-START-A-TASK.md` rellenando los
    bloques marcados `ESPECÍFICO DEL PACKAGE`:
+   - **Bloque "Stack de este package"**: rellénalo con `stack.packages.<package>` (o el
+     `stack:` top-level si el package no tiene override). El bloque **refleja** el YAML;
+     **nota explícitamente que el YAML es la fuente de verdad** (si divergen, manda el
+     YAML). Debe **coincidir** con `stack.packages.<package>`.
    - **Niveles de test por artefacto** (dominio/use cases → unit con mocks de
      puertos; repos/endpoints → integración; adapters → suite de contrato…).
    - **Reglas de arquitectura** del workspace (dirección de dependencias,
@@ -98,6 +165,11 @@ Si `$ARGUMENTS` nombra un package (o el usuario lo pide), y no existe ya su
 3. Sustituye todos los `<package>` por el nombre real.
 4. Sugiere referenciarlo desde el `CLAUDE.md` del workspace (y el raíz) para que se
    tenga en cuenta en toda tarea.
+
+> **HOW-TO ya existente**: si el `HOW-TO-START-A-TASK.md` del package ya está (repo
+> adoptado), **no lo reescribas**; pero **sí** añade/actualiza solo el bloque "Stack de
+> este package" para que refleje `stack.packages.<package>` — es una edición **aditiva**
+> del bloque, no una sobrescritura del fichero.
 
 Si no te pasan package, no inventes uno: deja la parte genérica lista y di al
 usuario que corra `/task-init <package>` cuando quiera inicializar uno (o que

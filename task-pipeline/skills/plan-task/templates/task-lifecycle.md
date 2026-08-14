@@ -25,7 +25,10 @@ defaults internos (= preset `full`) → preset de `mode:` → claves explícitas
 | `docs-only` | OFF | ON | OFF | solo orquestar planes + documentar |
 
 **`stack:`** (`language`, `package-manager`, `test-runner`, `mutation-tool`): las
-skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
+skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker. En monorepos
+poliglotas, `stack.packages.<pkg>` pisa el stack por-workspace (herencia parcial: solo
+las claves que declara); la **regla de resolución canónica** vive en el README del plugin
+→ "Configuración por repo" → "Stack por-package".
 
 **`features:`** (una clave explícita pisa el preset):
 
@@ -36,7 +39,11 @@ skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
 | `features.closing-documentation.technical-docs` | `true`/`false` | Doc técnica (README/CLAUDE.md/specs/ADRs). |
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
+| `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en checkpoints. No forma parte de ningún preset; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
+| `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. |
+| `features.conventional-commits` | `true`(default)/`false` | Formato `<task-id>: <conventional commit>`. Comportamiento histórico, configurable; `false` lo relaja. **Ausencia = ON**. |
+| `features.git-automation` | bloque; opt-in (default `off`) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea), `auto-pr` (cierre de **plan**; requiere `auto-commit`), `co-author` (default off). **Fuera de todo preset**; fail-safe; **ausencia ≠ drift**. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
@@ -194,8 +201,11 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Todos los tests en verde
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
-- [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
+- [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo si `features.sdd`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
+- [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
+- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo si `features.sdd`
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -285,14 +295,20 @@ particular:
 
 1. Todos los tests en verde (`pnpm --filter <pkg> test` o repo-wide `pnpm test`).
 2. Lint / format / typecheck OK (`pnpm lint`).
-3. **Gate de mutation testing superado** (Stryker, `break: 80`) sobre los ficheros
-   que tocó la tarea — salvo que `features.mutation-gate` sea `false`. Survivors por
+3. **Gate de mutation testing superado** con la **herramienta del package**
+   (`stack.mutation-tool`: Stryker verificado; `mutmut`/`mutation-command` como referencia
+   con banner) sobre los ficheros que tocó la tarea — salvo que `features.mutation-gate` sea
+   `false`. `features.mutation-gate` **no** es per-package (solo `stack.*` lo es). Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
+3b. **Gate `sdd-lint`** (solo con `features.sdd` on): **entre** el gate de mutation y `fact-checker`, corre
+   la skill `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de
+   formato/completitud **bloquea** el cierre hasta corregir (como `fact-checker` `INCORRECTO`); un **AVISO**
+   se reconoce, no bloquea. Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
 4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
    `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
    resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
-   (incluida «el gate de mutation pasó»). `INCORRECTO` **bloquea** el cierre hasta
+   (incluida «el gate de mutation pasó» y, con SDD on, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
    corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
    (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
    en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
@@ -316,6 +332,36 @@ particular:
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
+
+> **Flujo SDD (solo con `features.sdd` on — opcional).** Con el flag **off** (default) nada de esto aplica:
+> el Gherkin vive en el `## Scenarios` de la tarea, **byte-idéntico** a hoy. Con el flag **on**:
+>
+> - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios (Gherkin)` de la tarea **enlaza** al/los
+>   CU (`.claude/specs/<pkg>/casos-de-uso/<id>.md`) en vez de copiar el bloque. Anti-duplicación: **ADR** =
+>   *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** = *cómo + criterios de aceptación*.
+> - **DoD gated**: la tarea no cierra sin **crear/actualizar** la spec (EARS) + el CU (Gherkin) que toca,
+>   **o** declarar **"sin cambios de spec/CU"** en el **checkbox de la DoD** y una línea del **session log**
+>   (no en el CU).
+> - **Bootstrap del primer spec/CU**: si el package aún no tiene `spec.md`/CU, la sesión **lee
+>   `templates/spec.md` y `templates/caso-de-uso.md` con `Read` y los materializa** en las rutas canónicas
+>   **antes** de enlazarlos (mismo estilo imperativo que `/task-init`).
+> - **`scenario-coverage` retro-alimenta el CU**: los escenarios endurecidos se incorporan al **CU** (fuente
+>   única), no como copia divergente en la tarea. **`/mutation`** sigue el enlace al CU al leer survivors.
+> - **Enlace roto**: si el `## Scenarios` enlaza a un CU inexistente/borrado, **repórtalo** — no asumas "sin
+>   escenarios" en silencio.
+> - **Convivencia / toggle a mitad**: las tareas materializadas **antes** de activar el flag (Gherkin inline)
+>   **conviven** con las nuevas y **no se migran a la fuerza**; la regla aplica a las tareas **nuevas** desde
+>   que el flag está on.
+
+> **Git automation — auto-commit (opcional, `features.git-automation.auto-commit`).** Con el flag **off**
+> (default) el commit de cierre es **manual**, exactamente como hoy. Con **on**: al llegar aquí (DoD en
+> verde, incluido `fact-checker`), la sesión ejecuta automáticamente `<task-id>: <mensaje>`.
+> - **Formato del mensaje**: respeta `features.conventional-commits` — ON (default) = `<task-id>:
+>   <conventional commit>`; `false` = `<task-id>: <mensaje libre>`.
+> - **Trailer de co-autor**: se añade **solo** si `git-automation.co-author: true` (default **false** = no lo
+>   añade). Gobierna los commits de la **automatización**, no los manuales (esos los rige tu `CLAUDE.md`).
+> - **Best-effort**: si el commit falla (git error), **avisa** y **no** bloquees el cambio de `status:` del
+>   `.md` (el `.md` manda).
 
 > **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
 > `enabled` **y** la tarea tiene `issue:` (sin `issue:` → ciclo de vida **local puro**, ni un comando
@@ -371,6 +417,10 @@ Es el registro canónico; no lo dupliques.
      red → **avisa y NO bloquees** el cierre del plan (mover a `completed/`, `status:`).
    - Abre PR desde `plan/<package>/<name-plan>` a la rama de integración. **Tests
      en verde y docs al día** son obligatorios antes del merge.
+   - **(Opcional, `features.git-automation.auto-pr`)** con `auto-pr` **y** `auto-commit` on, la sesión abre
+     esta PR **automáticamente** al cerrar la última tarea; `auto-pr: true` con `auto-commit: false` =
+     **inerte** + aviso. Best-effort: si `gh`/la PR falla, avisa y **no** bloquees el cierre del plan. Con el
+     flag off (default), la PR es **manual** como hoy.
    - Borra la rama tras el merge.
 2. La promoción a `main` ocurre en ciclos de release, no al cerrar un plan.
 3. Añade una nota retro al plan cerrado: estimación vs. real, sorpresas, dependencias
@@ -382,6 +432,36 @@ Es el registro canónico; no lo dupliques.
 |---|---|---|
 | Plan | `pending → active → completed` | `cancelled` desde cualquier estado. |
 | Tarea | `pending → active → in-review → done` | `blocked` desde `active` (motivo en el session log) → vuelve a `active` al desbloquear. `cancelled` desde cualquier estado. |
+
+**Plan:**
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> completed
+    completed --> [*]
+    pending --> cancelled
+    active --> cancelled
+    completed --> cancelled
+```
+
+**Tarea** (`blocked` y la reapertura `done → active` son transiciones laterales):
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> in_review
+    in_review --> done
+    active --> blocked
+    blocked --> active
+    done --> active
+    done --> [*]
+    active --> cancelled
+```
 
 ## Re-planificación, bloqueos, cancelación
 
