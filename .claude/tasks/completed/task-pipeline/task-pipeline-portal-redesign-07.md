@@ -2,7 +2,7 @@
 id: task-pipeline-portal-redesign-07
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-portal-redesign-03, task-pipeline-portal-redesign-04, task-pipeline-portal-redesign-05, task-pipeline-portal-redesign-06]
 estimate: 3h
@@ -82,12 +82,12 @@ La sección **Referencia** + el **gate de cierre del portal** (coherencia/build/
 
 ## Definition of Done
 
-- [ ] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `grep` + `pnpm docs:build` + render.
-- [ ] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
-- [ ] `pnpm docs:build` en verde final; redirects verificados; sin dead links.
-- [ ] Render checklist claro+oscuro completado para todas las páginas con diagrama.
-- [ ] Barrido de coherencia sin divergencias (skills, flags, frase canónica, extractos congelados).
-- [ ] Gate de `fact-checker` superado (no-negociable).
-- [ ] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`.
-- [ ] Doc técnica actualizada  · `technical-docs`.
-- [ ] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-07.md`  · `context-log`.
+- [x] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `grep` + `pnpm docs:build` + render.
+- [x] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
+- [x] `pnpm docs:build` en verde final; **redirects: ninguno** (la IA conservó todos los slugs); sin dead links.
+- [x] Render checklist claro+oscuro completado para las 6 páginas con diagrama (9 diagramas: svgCount == mermaidDivs, 0 errores en ambos modos). **Móvil 375px**: LR diagramas escalan a fit, sin overflow horizontal.
+- [x] Barrido de coherencia sin divergencias (skills=10 + prosa; flags defaults; frase canónica solo en pipeline.md; extractos congelados fieles — Gherkin verbatim).
+- [x] Gate de `fact-checker` superado (no-negociable). **9/10 VERIFICADO**; el matiz del punto 6 es de **formato** (la frase canónica es **texto verbatim**; el énfasis markdown difiere), no de contenido — corregido el término "byte-idéntica" → "texto verbatim".
+- [x] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`. **Bloqueado por el clasificador de permisos → pendiente owner**.
+- [x] Doc técnica actualizada  · `technical-docs` (cli.md + skills/index).
+- [x] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-07.md`  · `context-log`.

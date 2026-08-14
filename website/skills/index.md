@@ -30,5 +30,8 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand; `sdd-lint`
 más allá: asume además la capa SDD (`.claude/specs/<pkg>/` con spec EARS / caso-de-uso / ADR) y solo aporta
 valor con `features.sdd` on.
 
-> **Fuente canónica**: cada skill y su frontera están descritas en el
-> [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).
+## Profundizar (opcional)
+
+La descripción larga de cada skill y sus fronteras exactas están en el
+[README del plugin → Skills](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#skills).
+No hace falta para saber cuál usar.
