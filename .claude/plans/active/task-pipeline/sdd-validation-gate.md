@@ -110,7 +110,7 @@ aseverados para CI de consumidores; `checkTemplate` en `/doctor` + fix "Architec
 - [x] `task-pipeline-sdd-validation-gate-01` (P1) — **Skill `sdd-lint`**: gate model-driven autoritativo — mecánico vía comandos `grep`/`test` FIJOS (vocabulario MADR cerrado, `[NECESITA ACLARACIÓN]`, secciones, ids, enlaces rotos, huérfanos/dup) + semántico por juicio (EARS/MADR/Gherkin/trazabilidad); severidad ERROR bloquea/AVISO no (demota a AVISO ante duda de parseo); invocable `/sdd-lint`  · depends_on: —
 - [x] `task-pipeline-sdd-validation-gate-02` (P2) — **Bash helper opcional** `sdd-lint.sh` (subconjunto determinista, NO bloqueante, best-effort) + **fixtures aseverados** known-good/known-bad + doc "cómo cablearlo a tu CI"  · depends_on: 01
 - [x] `task-pipeline-sdd-validation-gate-03` (P1) — Gate en el cierre: línea de DoD gated `features.sdd` en `task.md` + 2×lifecycle + wiring "Cerrar una tarea" (`mutation → sdd-lint → fact-checker`) + nota `plan-task` + reconocimiento en `/doctor` (ausencia ≠ drift)  · depends_on: 01
-- [ ] `task-pipeline-sdd-validation-gate-04` (P2) — `/doctor` valida que las **PLANTILLAS** SDD pasan el lint (`checkTemplate`) + fix **"MADR *Any*"→"*Architectural*"** en plantillas/doc shipeadas  · depends_on: 01
+- [x] `task-pipeline-sdd-validation-gate-04` (P2) — `/doctor` valida que las **PLANTILLAS** SDD pasan el lint (`checkTemplate`) + fix **"MADR *Any*"→"*Architectural*"** en plantillas/doc shipeadas  · depends_on: 01
 - [ ] `task-pipeline-sdd-validation-gate-05` (P3) — Release: README (sección `sdd-lint`) + portal + CHANGELOG + bump/manifiestos + retro + cierre del plan/PR  · depends_on: 01,02,03,04
 
 ## Registro de cambios del plan

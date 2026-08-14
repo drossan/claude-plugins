@@ -112,6 +112,18 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   "3b" en "Cerrar una tarea"; `fact-checker` **atestigua** "el gate `sdd-lint` pasó"; `plan-task` gana el
   Paso 7.5; `/doctor` lo reconoce (parte de la capa SDD, intrínseco a `features.sdd`, ausencia ≠ drift con
   SDD off, plugin-owned solo-reporte). Con `features.sdd` **off**, no corre (byte-idéntico a hoy).
+- **Las plantillas SDD pasan su propio lint** (#36, rescate GAINUP P7) — `/doctor` declara el invariante de
+  que las semillas (`spec.md`/`caso-de-uso.md`/`adr.md`/`adr-index.md`) pasan `/sdd-lint` limpias, para que
+  **ninguna instancia nueva nazca defectuosa**. Para lograrlo: `spec.md` **reescrito** (describe el marcador
+  de aclaración pendiente **sin** instanciar el literal `[NECESITA ACLARACIÓN`, de modo que la plantilla pasa
+  pero un artefacto real que lo escriba **sí** bloquea); `adr.md` clarifica "MADR = *Markdown Architectural
+  Decision Records*" (revertido de *Any* en la fuente). Verificado: no hay "MADR Any" en la superficie shipeada.
+
+### Fixed
+- **`sdd-lint`: check de ids con frontera de palabra** (#36) — correr `/sdd-lint` sobre las propias plantillas
+  destapó que el check de ids `FR-00x`/`SC-00x` daba **falsos positivos** con `NFR-001` (contiene `FR-001`) y
+  con la notación placeholder `FR-00x`. Corregido con `\b` (frontera de palabra, portable BSD/GNU) en la skill
+  `sdd-lint` y en `scripts/sdd-lint.sh`.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

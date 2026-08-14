@@ -1,6 +1,6 @@
 # <NNNN>. <título de la decisión, en imperativo>
 
-> **Plantilla SDD** (MADR 4.0.0). Materialízala en `.claude/specs/adr/NNNN-titulo.md` (`NNNN` desde
+> **Plantilla SDD** (MADR 4.0.0 — *Markdown Architectural Decision Records*). Materialízala en `.claude/specs/adr/NNNN-titulo.md` (`NNNN` desde
 > `0001`). **Gated por `features.sdd`** (opt-in, default off). Registra **una decisión de arquitectura** y
 > su porqué, para que perdure más allá de la tarea que la tomó.
 

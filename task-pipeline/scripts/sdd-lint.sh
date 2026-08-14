@@ -11,7 +11,9 @@
 #         Los AVISOS van a stderr y NO cambian el exit code.
 # Deps: solo grep/test/find/sort/uniq/dirname/ls (sin Node, sin dependencias).
 #
-# Portabilidad: Bash 3.2+ (macOS incluido — SIN `mapfile`); `grep -E` (BSD y GNU) sin `-P`/`\d`.
+# Portabilidad: Bash 3.2+ (macOS incluido — SIN `mapfile`); `grep -E` (BSD/macOS y GNU) sin `-P`/`\d`.
+#   Usa `\b` (frontera de palabra), soportado por grep BSD/macOS y GNU — evita falsos positivos como
+#   `NFR-001` (contiene `FR-001`) o el placeholder `FR-00x`.
 
 set -u
 
@@ -50,14 +52,15 @@ done < <(find "$ROOT" -type f -path '*/adr/[0-9]*.md' 2>/dev/null)
 # 3/4) Por cada spec.md: ids bien formados, duplicados por-package, sección EARS obligatoria.
 while IFS= read -r spec; do
   [ -z "$spec" ] && continue
-  # 3a) ids FR-000 / SC-000 con 3 dígitos.
+  # 3a) ids FR-000 / SC-000 con 3 dígitos. `\b` (frontera de palabra) evita falsos positivos de
+  #     `NFR-001` (contiene FR-001) y de la notación placeholder `FR-00x`/`SC-00x`.
   while IFS= read -r bad; do
     [ -n "$bad" ] && err "id mal formado (usa FR-000 / SC-000 con 3 dígitos) → $spec: $bad"
-  done < <(grep -oE '(FR|SC)-[0-9]+' "$spec" 2>/dev/null | grep -vE '(FR|SC)-[0-9]{3}$')
+  done < <(grep -oE '\b(FR|SC)-[0-9]+\b' "$spec" 2>/dev/null | grep -vE '(FR|SC)-[0-9]{3}$')
   # 3b) duplicados por-package (dentro del mismo spec).
   while IFS= read -r dup; do
     [ -n "$dup" ] && err "id duplicado en el spec → $spec: $dup"
-  done < <(grep -oE '(FR|SC)-[0-9]{3}' "$spec" 2>/dev/null | sort | uniq -d)
+  done < <(grep -oE '\b(FR|SC)-[0-9]{3}\b' "$spec" 2>/dev/null | sort | uniq -d)
   # 4) sección obligatoria EARS.
   grep -qE '^## Requisitos funcionales' "$spec" 2>/dev/null \
     || err "sección obligatoria ausente: '## Requisitos funcionales (EARS)' → $spec"

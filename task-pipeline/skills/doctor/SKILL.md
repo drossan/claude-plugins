@@ -188,6 +188,13 @@ artefacto del plugin — ver "Propiedad" abajo).
      (`../plan-task/templates/spec.md`, `caso-de-uso.md`, `adr.md`, `adr-index.md`), **solo tras aprobación
      y con diff**. Tras materializarla, una **segunda pasada no repite** el hallazgo (idempotente). Con el
      flag **off**, esta categoría **no corre**.
+   - **Las plantillas SDD pasan su propio lint (rescate GAINUP P7)**: las semillas
+     (`spec.md`/`caso-de-uso.md`/`adr.md`/`adr-index.md`) están escritas para **pasar `/sdd-lint` limpias**
+     (p.ej. `spec.md` describe el marcador de aclaración pendiente **sin** instanciar el literal, y usa
+     `FR-000`/`SC-000` bien formados) — así **ninguna instancia nueva nace defectuosa**. Es un invariante
+     **plugin-owned** (las plantillas viven en el plugin): si con SDD on una plantilla **materializada** por
+     el consumidor no pasa el lint, es **solo-reporte** ("actualiza el plugin"); doctor no reescribe la
+     semilla del plugin.
 10. **`stack.packages` huérfano o malformado** (repo-owned, aviso) — si una clave `stack.packages.<pkg>`
     **no corresponde a un workspace real** del repo, avísalo (**config muerta por typo**, p.ej.
     `stack.packages.apii`). Si `stack.packages` **no es un mapa** (o una entrada de package no lo es),

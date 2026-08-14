@@ -49,7 +49,7 @@ misma salida. **Ante duda de parseo, demota a AVISO** (no bloquees por una regex
 | **Estado MADR válido** (∈ 5, **case-insensitive**) | `grep -iE '^- \*\*Estado\*\*: *(proposed\|accepted\|rejected\|deprecated\|superseded)' adr/NNNN-*.md` — si no matchea → estado no canónico | **ERROR** |
 | **`[NECESITA ACLARACIÓN` sin resolver** (solo artefactos materializados `.claude/specs/**`) | `grep -rn '\[NECESITA ACLARACIÓN' .claude/specs/<pkg>` | **ERROR** |
 | **Secciones obligatorias** (spec: user stories/EARS/criterios; CU: Cockburn+Gherkin; ADR: Estado/Contexto/Decisión) | `grep -c '^## '` por sección esperada | **ERROR** si falta |
-| **Ids bien formados** `FR-00x`/`SC-00x`; ADR `NNNN` desde `0001` | `grep -nE 'FR-[0-9]{3}\|SC-[0-9]{3}'` / patrón de nombre de fichero | **ERROR** si mal formado |
+| **Ids bien formados** `FR-000`/`SC-000` (3 díg.); ADR `NNNN` desde `0001` | `grep -oE '\b(FR\|SC)-[0-9]+\b'` y filtra los que no acaban en 3 díg. **Usa `\b`** para no matchear `NFR-001` (contiene `FR-001`) ni el placeholder `FR-00x` | **ERROR** si mal formado |
 | **Enlaces rotos**: `## Scenarios`→CU, `superseded by NNNN`→ADR, `spec`→CU | por cada enlace, `test -f <ruta>` | **ERROR** si no existe |
 | **Huérfanos/duplicados**: CU no enlazado desde ninguna spec (AVISO); `FR`/`SC`/CU-id **duplicado por-package** (ERROR) | `grep` + `sort` + `uniq -d` | ver col. |
 

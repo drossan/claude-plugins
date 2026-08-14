@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-validation-gate-04
 package: task-pipeline
 plan: sdd-validation-gate
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-validation-gate-01]
 estimate: 2h
-actual:
+actual: ~1h
 issue: 55
 created: 2026-08-14
 updated: 2026-08-14
@@ -82,10 +82,10 @@ Feature: doctor valida plantillas SDD + nomenclatura MADR
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / correr `sdd-lint` sobre las plantillas)
-- [ ] Spec cumplida
-- [ ] Gate de `fact-checker` superado — en especial "MADR es Architectural 4.0.0" y "plantillas pasan el lint" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `doctor/SKILL.md` + plantillas SDD corregidas + CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Barrido `grep` reforzado: sin "MADR Any" shipeado; sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep` / correr `sdd-lint` sobre las plantillas)
+- [x] Spec cumplida
+- [x] Gate de `fact-checker` superado — en especial "MADR es Architectural 4.0.0" y "plantillas pasan el lint" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `doctor/SKILL.md` + plantillas SDD corregidas + CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Barrido `grep` reforzado: sin "MADR Any" shipeado; sin identificadores muertos
