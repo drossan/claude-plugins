@@ -433,6 +433,36 @@ Es el registro canónico; no lo dupliques.
 | Plan | `pending → active → completed` | `cancelled` desde cualquier estado. |
 | Tarea | `pending → active → in-review → done` | `blocked` desde `active` (motivo en el session log) → vuelve a `active` al desbloquear. `cancelled` desde cualquier estado. |
 
+**Plan:**
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> completed
+    completed --> [*]
+    pending --> cancelled
+    active --> cancelled
+    completed --> cancelled
+```
+
+**Tarea** (`blocked` y la reapertura `done → active` son transiciones laterales):
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> pending
+    pending --> active
+    active --> in_review
+    in_review --> done
+    active --> blocked
+    blocked --> active
+    done --> active
+    done --> [*]
+    active --> cancelled
+```
+
 ## Re-planificación, bloqueos, cancelación
 
 - Plan obsoleto a mitad → para, corre `grilling` sobre las tareas afectadas,

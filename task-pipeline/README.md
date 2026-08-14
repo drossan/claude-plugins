@@ -1,16 +1,26 @@
 # task-pipeline (plugin de Claude Code)
 
-Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad:
+Pipeline de trabajo guiado para iniciar y ejecutar tareas con calidad. Nodos **amarillos** = checkpoints
+humanos no negociables; **azules** = subagentes frescos:
 
-```
-/plan-task "<specs>"  →  plan mode  →  plan en .claude/plans/pending/<package>/
-                 →  grilling (refinar rama a rama, checkpoint humano)
-                 →  design-review (zoom-out adversario vía subagente, checkpoint)
-                 →  descomponer en tareas con escenarios Gherkin
-                 →  scenario-coverage (QA adversario de escenarios vía subagente)
-                 →  handoff al flujo TDD (Red → Green → Refactor)
-                 →  /mutation (gate de calidad de tests, Stryker break 80)
-                 →  fact-checker (gate de cierre: verifica las afirmaciones de la sesión)
+```mermaid
+flowchart TD
+    A["/plan-task 'specs'"] --> B["plan mode + plan en .claude/plans/pending/"]
+    B --> G["grilling"]
+    G --> DR["design-review"]
+    DR --> AP["aprobacion del plan"]
+    AP --> T["descomponer en tareas + Gherkin"]
+    T --> SC["scenario-coverage"]
+    SC --> HO["handoff TDD (Red - Green - Refactor)"]
+    HO --> M["gate: mutation (break 80)"]
+    M --> SL["gate: sdd-lint (solo si features.sdd)"]
+    SL --> FC["gate: fact-checker (INCORRECTO bloquea)"]
+    FC --> D["tarea done + commit/PR"]
+
+    classDef human fill:#fde68a,stroke:#b45309,color:#111
+    classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
+    class G,AP,FC human
+    class DR,SC agent
 ```
 
 Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociables**. Las dos pasadas caras por subagente (**`design-review`**, **`scenario-coverage`**) corren por defecto pero admiten un **salto proporcional** solo en planes triviales (criterios estrictos + confirmación del owner + log). No es fire-and-forget, por diseño.
@@ -315,6 +325,17 @@ Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Iss
 - **Estados** — proyectados en cada transición en **dos sitios**: label `status:*` en la issue + campo **Status del Project**: `active` → `In progress` + `status: in-progress` (+ **assignee** según `assignee`) · `in-review` → `In review` + `status: in-review` · `blocked` → `status: blocked` (el Project queda en `In progress`) · `done` → cerrada + Project `Done` + `status:*` retirada · `cancelled` → cerrada "not planned" + `Done`. Recipe **add-then-remove** (añade la nueva antes de quitar las demás `status:*`). Mecánica canónica en [`docs/guides/task-lifecycle.md`](../docs/guides/task-lifecycle.md) → "Cerrar una tarea".
 - **Ciclo de vida del padre**: al completar el plan, la **issue PADRE se cierra** (con `gh issue close`) + Project `Done`; GitHub **no** la auto-cierra al cerrar sus sub-issues. El padre **no** lleva `status:*` ni assignee.
 - `depends_on` **no** se proyecta como dependencia nativa (a lo sumo nota de texto en el body).
+
+```mermaid
+flowchart LR
+    PLAN["plan.md"] -->|"crea: body + label pkg"| PADRE["issue PADRE"]
+    TASK["task.md"] -->|"crea: --parent"| SUB["sub-issue"]
+    PADRE -.->|"jerarquia"| SUB
+    TASK -->|"cada cambio de status:"| ST["label status:* + Status del Project"]
+    PADRE -->|"plan completed"| CLOSE["gh issue close + Project Done"]
+```
+
+Proyección **one-way** (`.md` → GitHub); el `.md` es la única fuente de verdad. `/doctor` reconcilia el drift.
 
 **Límites (honestos):**
 
