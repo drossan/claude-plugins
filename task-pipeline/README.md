@@ -91,7 +91,25 @@ se borra.
 
 **Stack (`stack`)** — `language`, `package-manager`, `test-runner`, `mutation-tool`:
 las skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker (cubre repos
-con Jest, npm, no-TS, etc.).
+con Jest, npm, no-TS, etc.). El `stack:` top-level es el **default/fallback** del repo.
+
+**Stack por-package (`stack.packages.<pkg>`)** — para un **monorepo poliglota** donde cada
+workspace tiene su propio lenguaje/runner. Es un **mapa de overrides** cuya clave es el
+`<package>` (el mismo nombre de workspace que `.claude/tasks|plans/<package>/`). **Esta es la
+sede canónica de la regla de resolución; las demás sedes (el YAML seed, los dos
+`task-lifecycle`, el contrato de lectura de `plan-task`) apuntan aquí y no la reenuncian.**
+
+- **Resolución, por-clave**: `stack.packages.<pkg>.<k>` → `stack.<k>` (top-level) → default
+  del preset. Para cada una de las 4 claves del stack se toma primero el override del package;
+  si esa clave falta, el valor top-level; si también falta, el default interno.
+- **Herencia parcial**: una entrada de package **solo pisa las claves que declara**; el resto
+  se hereda del `stack:` top-level. Un package **sin entrada** usa el `stack:` plano completo
+  (no hereda nada de otros packages).
+- **`packages` ausente = comportamiento histórico exacto** (solo el `stack:` plano). Su
+  ausencia **no es drift** para `/doctor` (mismo criterio que `caveman`/`github-tracking`).
+- **Malformado**: si `stack.packages` no es un mapa (o una entrada de package no lo es), el
+  lector lo trata como **config malformada legible** y **no aborta** el resto de la lectura de
+  config; la detección/aviso vive en `/doctor`.
 
 **Flags (`features`)** — una clave explícita pisa el preset:
 

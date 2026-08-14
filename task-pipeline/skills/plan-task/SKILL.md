@@ -25,7 +25,7 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `legacy` | ON | ON | OFF |
 | `docs-only` | OFF | ON | OFF |
 
-**`stack:`** — usa estos valores en vez de asumir pnpm/Vitest/Stryker. Adapta los comandos de test/lint/mutation al `package-manager` y `test-runner`; `language: other` significa que "doc en el código" no es TSDoc sino el equivalente del lenguaje (o N/A); `mutation-tool: none` desactiva de facto el gate aunque `mutation-gate` traiga número.
+**`stack:`** — usa estos valores en vez de asumir pnpm/Vitest/Stryker. Adapta los comandos de test/lint/mutation al `package-manager` y `test-runner`; `language: other` significa que "doc en el código" no es TSDoc sino el equivalente del lenguaje (o N/A); `mutation-tool: none` desactiva de facto el gate aunque `mutation-gate` traiga número. En monorepos poliglotas el stack se resuelve **por-package** vía `stack.packages.<pkg>` (herencia parcial: solo pisa las claves que declara); la **regla de resolución canónica** vive en el README del plugin → "Configuración por repo" → "Stack por-package" (no la repito aquí).
 
 **`features:`** (una clave explícita pisa al preset):
 

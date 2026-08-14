@@ -33,7 +33,10 @@ defaults internos (= preset `full`) → preset de `mode:` → claves explícitas
 | `docs-only` | OFF | ON | OFF | solo orquestar planes + documentar |
 
 **`stack:`** (`language`, `package-manager`, `test-runner`, `mutation-tool`): las
-skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker.
+skills eligen comandos con esto en vez de asumir pnpm/Vitest/Stryker. En monorepos
+poliglotas, `stack.packages.<pkg>` pisa el stack por-workspace (herencia parcial: solo
+las claves que declara); la **regla de resolución canónica** vive en el README del plugin
+→ "Configuración por repo" → "Stack por-package".
 
 **`features:`** (una clave explícita pisa el preset):
 

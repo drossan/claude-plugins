@@ -4,7 +4,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
-## [0.14.0] — 2026-08-10
+## [Unreleased]
+
+> Entradas del plan **sdd-y-stack-poliglota** (#35 stack por-package · #36 SDD nativo). La tarea de
+> release (08) las consolida bajo un único header de versión con su bump SemVer.
+
+### Added
+- **Schema `stack.packages.<pkg>`** (#35) — override de stack **por-workspace** para monorepos poliglotas.
+  El `stack:` top-level pasa a ser el **default/fallback**; una entrada de package pisa **solo las claves
+  que declara** (herencia parcial). La **regla de resolución se enuncia en un único sitio canónico**
+  (README → "Configuración por repo" → "Stack por-package") y las demás sedes (YAML seed comentado, los
+  dos `task-lifecycle`, el contrato de lectura de `plan-task`) **apuntan** a él. `packages` ausente =
+  comportamiento histórico y **no es drift**; `stack.packages` malformado = config **legible** que no
+  aborta el resto de la lectura. Los **lectores** (`/mutation`, `/task-init`, `/doctor`) llegan en las
+  tareas siguientes del plan.
 
 Realineación con el comportamiento documentado de **Claude Opus 5**. `honesty-rules.md` amplía su carta de
 "anti-alucinación" a **honestidad y disciplina de trabajo**, `scenario-coverage` deja de trabajar a ciegas

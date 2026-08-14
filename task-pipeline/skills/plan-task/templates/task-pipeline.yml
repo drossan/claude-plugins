@@ -30,6 +30,20 @@ stack:
   test-runner: vitest         # vitest | jest | node | none
   mutation-tool: stryker      # stryker | none
 
+  # Override por-package (monorepo poliglota). El `stack:` de arriba es el DEFAULT/FALLBACK.
+  # `stack.packages.<pkg>` pisa el stack POR-WORKSPACE; clave del mapa = el <package> (mismo
+  # nombre que .claude/tasks|plans/<package>/). HERENCIA PARCIAL: una entrada pisa SOLO las
+  # claves que declara; el resto se hereda del stack top-level. Un package sin entrada usa el
+  # stack plano completo. `packages` ausente = comportamiento histórico y NO es drift.
+  # Regla de resolución CANÓNICA: README del plugin → "Configuración por repo" → "Stack por-package".
+  # Comentado a propósito: el TEMPLATE no impone stack por-package a repos consumidores.
+  # packages:
+  #   api:                      # workspace Python dentro de un monorepo TS
+  #     language: python
+  #     test-runner: none       # runner gestionado fuera del pipeline
+  #     mutation-tool: mutmut   # o `none` para "sin gate de mutation" en ese package
+  #   # web: sin entrada → hereda el `stack:` top-level completo
+
 # ── Features ──────────────────────────────────────────────────────────────────
 features:
   # Escribir tests / TDD como parte de la DoD (Red→Green→Refactor, 1 test por
