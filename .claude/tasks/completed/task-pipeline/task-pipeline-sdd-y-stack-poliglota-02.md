@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-02
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-sdd-y-stack-poliglota-01]
 estimate: 3h
-actual:
+actual: ~1h
 issue: 39                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#39
 created: 2026-08-13
 updated: 2026-08-14
@@ -114,10 +114,10 @@ Feature: Selección de herramienta de mutation por-package
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; `Provides` disponible aguas abajo
-- [ ] Gate de `fact-checker` superado — en especial "solo Stryker verificado; el resto lleva banner" (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `mutation/SKILL.md` + DoD tool-agnóstica en `task.md` + 2×lifecycle + nota mutation-gate; entrada de CHANGELOG de esta feature · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-02.md` · context-log
-- [ ] Barrido `grep` reforzado: sin identificadores muertos; DoD espejo consistente (task.md ↔ 2×lifecycle)
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; `Provides` disponible aguas abajo
+- [x] Gate de `fact-checker` superado — en especial "solo Stryker verificado; el resto lleva banner" (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `mutation/SKILL.md` + DoD tool-agnóstica en `task.md` + 2×lifecycle + nota mutation-gate; entrada de CHANGELOG de esta feature · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-02.md` · context-log
+- [x] Barrido `grep` reforzado: sin identificadores muertos; DoD espejo consistente (task.md ↔ 2×lifecycle)

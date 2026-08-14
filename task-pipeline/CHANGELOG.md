@@ -18,6 +18,21 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   comportamiento histórico y **no es drift**; `stack.packages` malformado = config **legible** que no
   aborta el resto de la lectura. Los **lectores** (`/mutation`, `/task-init`, `/doctor`) llegan en las
   tareas siguientes del plan.
+- **`/mutation` agnóstico por herramienta y por-package** (#35) — resuelve `stack.packages.<pkg>.mutation-tool`
+  (fallback al top-level) y **despacha**: `stryker` (JS/TS, **camino verificado**, gotchas pnpm), `mutmut`
+  (Python, **referencia** con banner "⚠️ no verificada"), un **escape genérico `mutation-command: "<cmd>"`**
+  para cualquier otro lenguaje (referencia, mismo banner) y `none` (no-op "sin gate"). Un `mutation-command`
+  que sale con código ≠ 0 **falla** el gate (no se silencia por ser referencia); herramienta desconocida sin
+  `mutation-command` = no-op con aviso. **Solo Stryker se afirma verificado**; `cosmic-ray`/`cargo-mutants`/
+  `gremlins` quedan como **ejemplos en docs**, no ramas shipeadas.
+
+### Changed
+- **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
+  "(Stryker, break 80)" a "**con la herramienta del package** (`stack.mutation-tool`)" en `templates/task.md`,
+  `templates/task-lifecycle.md` y `docs/guides/task-lifecycle.md`. Se explicita que `features.mutation-gate`
+  **no** es per-package (solo `stack.*` lo es): "este package sin gate" = `stack.mutation-tool: none`.
+
+## [0.14.0] — 2026-08-10
 
 Realineación con el comportamiento documentado de **Claude Opus 5**. `honesty-rules.md` amplía su carta de
 "anti-alucinación" a **honestidad y disciplina de trabajo**, `scenario-coverage` deja de trabajar a ciegas

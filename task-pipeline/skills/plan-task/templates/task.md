@@ -117,7 +117,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Todos los tests en verde
 - [ ] Spec cumplida; lo declarado en `Provides` queda realmente disponible para las tareas dependientes
 - [ ] Lint / format / typecheck OK
-- [ ] Gate de mutation testing superado (Stryker, umbral `break`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
+- [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):

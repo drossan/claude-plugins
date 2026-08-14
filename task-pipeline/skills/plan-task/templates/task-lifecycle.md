@@ -197,7 +197,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Todos los tests en verde
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
-- [ ] Gate de mutation testing superado (Stryker, umbral `break`)  · salvo `features.mutation-gate: false`
+- [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
@@ -288,8 +288,10 @@ particular:
 
 1. Todos los tests en verde (`pnpm --filter <pkg> test` o repo-wide `pnpm test`).
 2. Lint / format / typecheck OK (`pnpm lint`).
-3. **Gate de mutation testing superado** (Stryker, `break: 80`) sobre los ficheros
-   que tocó la tarea — salvo que `features.mutation-gate` sea `false`. Survivors por
+3. **Gate de mutation testing superado** con la **herramienta del package**
+   (`stack.mutation-tool`: Stryker verificado; `mutmut`/`mutation-command` como referencia
+   con banner) sobre los ficheros que tocó la tarea — salvo que `features.mutation-gate` sea
+   `false`. `features.mutation-gate` **no** es per-package (solo `stack.*` lo es). Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
 4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
