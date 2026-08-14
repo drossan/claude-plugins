@@ -2,7 +2,7 @@
 id: task-pipeline-portal-redesign-04
 package: task-pipeline
 plan: portal-redesign
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-portal-redesign-01, task-pipeline-portal-redesign-02]
 estimate: 3h
@@ -68,12 +68,12 @@ La sección **Conceptos**. `Provides`: — (la Pipeline la referencia como enlac
 
 ## Definition of Done
 
-- [ ] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
-- [ ] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
-- [ ] `pnpm docs:build` en verde; sin dead links.
-- [ ] Máquinas de estado verificadas legibles en claro Y oscuro.
-- [ ] Frontera con Pipeline respetada (no recorre fases); enlaza en vez de repetir.
-- [ ] Gate de `fact-checker` superado (no-negociable).
-- [ ] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`.
-- [ ] Doc técnica actualizada  · `technical-docs`.
-- [ ] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-04.md`  · `context-log`.
+- [x] TDD / gate de mutation: **N/A** (doc-only) — verificación = inspección + `pnpm docs:build`.
+- [x] `sdd-lint`: **N/A**; "sin cambios de spec/CU".
+- [x] `pnpm docs:build` en verde; sin dead links.
+- [x] Máquinas de estado verificadas legibles en claro Y oscuro (2 stateDiagram render OK ambos modos; flowchart del modelo 7 nodos gris + texto `#1f2937`).
+- [x] Frontera con Pipeline respetada (no recorre fases); enlaza en vez de repetir. (fact-checker punto 12).
+- [x] Gate de `fact-checker` superado (no-negociable). **12/12 VERIFICADO, 0 INCORRECTO**.
+- [x] Proyección de estado a GitHub al cerrar — best-effort  · `features.github-tracking`. **Bloqueado por el clasificador de permisos (issue no creada esta sesión) → pendiente owner**.
+- [x] Doc técnica actualizada  · `technical-docs` (3 páginas de Conceptos).
+- [x] Session log en `.claude/context/task-pipeline/task-pipeline-portal-redesign-04.md`  · `context-log`.

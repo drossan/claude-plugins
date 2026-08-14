@@ -110,7 +110,7 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   rol) + muestra verificada + nota de convención  · depends_on: —
 - [x] `task-pipeline-portal-redesign-03` (P2) — "Empezar" (Qué es + Instalación + Tu primer plan = walkthrough
   caso real)  · depends_on: 01,02
-- [ ] `task-pipeline-portal-redesign-04` (P2) — "Conceptos" (modelo estático: plan/task/context/specs, estados,
+- [x] `task-pipeline-portal-redesign-04` (P2) — "Conceptos" (modelo estático: plan/task/context/specs, estados,
   ramas, ids)  · depends_on: 01,02
 - [ ] `task-pipeline-portal-redesign-05` (P2) — "El pipeline paso a paso" (recorrido secuencial de fases)  ·
   depends_on: 01,02
@@ -171,6 +171,11 @@ enlaces al README/GitHub como *"profundizar"*, no como *"el contenido real está
   fact-checker 7/7. **task 02 done** (issue #60): **tema Mermaid APROBADO por el owner** (paleta por rol
   ámbar/azul/rojo/gris, texto oscuro explícito → legible claro+oscuro, redondeo, subgraphs); convención en
   `website/DIAGRAM-THEME.md`. Verificado en navegador en ambos modos. **Las tasks 03-06 aplican este tema.**
+- 2026-08-14: **task 04 done** (issue #62) — sección **Conceptos** (modelo estático): `conceptos/modelo`
+  (4 artefactos + flowchart neutro), `conceptos/estados` (2 máquinas de estado plan/tarea), `conceptos/ramas-e-ids`
+  (ids plan-scoped + residual). Frontera Conceptos↔Pipeline respetada (define, no secuencia). Build verde;
+  diagramas verificados claro+oscuro (preview fresco); **fact-checker 12/12**. Nota: preview viejo sirve chunks
+  caducados → Mermaid no hidrata; verificar siempre en server recién arrancado.
 - 2026-08-14: **task 03 done** (issue #61) — sección **Empezar** autocontenida: `que-es`/`instalacion`
   con "Profundizar (opcional)" en vez del tapón al README; **nueva `tu-primer-plan`** = walkthrough e2e del
   caso real cerrado **`sdd-validation-gate`** (6 pasos + tabla "qué decides tú" + 1 diagrama journey con el
