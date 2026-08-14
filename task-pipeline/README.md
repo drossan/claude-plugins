@@ -121,6 +121,7 @@ sede canónica de la regla de resolución; las demás sedes (el YAML seed, los d
 | `features.closing-documentation.context-log` | `true`/`false` | Session log en `.claude/context/`. |
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
+| `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): activa la capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. Ver [SDD nativo](#sdd-nativo-opcional). |
 
 `grilling` y la aprobación del plan **no** son configurables: no negociables por
 diseño. `design-review` y `scenario-coverage` corren por defecto; solo se saltan con
@@ -207,6 +208,26 @@ que inyecta una directiva mínima de compresión.
   de herramientas dominan). El pipeline **no puede medir por sí solo** el efecto de caveman
   (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
   probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
+
+## SDD nativo (opcional)
+
+Capa **opt-in** (default `off`) de **Spec-Driven Development**: eleva la fuente de verdad de la prosa en
+`docs/` a artefactos **vivos** —**spec** de requisitos (EARS), **casos de uso** (Gherkin) y **ADR** (MADR
+4.0.0)— que cada tarea mantiene. Se activa con `features.sdd: true` en `.claude/task-pipeline.yml`.
+
+**Qué envía el plugin** (plantillas, **no** contenido — nada se autogenera): las semillas `spec.md`,
+`caso-de-uso.md`, `adr.md` y `adr-index.md` (lista canónica en `skills/plan-task/templates/README.md`), que
+se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-uso/<id>.md` y
+`.claude/specs/adr/NNNN-*.md`.
+
+**Garantías opt-in:**
+- **Fail-safe**: SOLO `features.sdd: true` (booleano) activa. Ausente / `false` / `"true"` / `yes` / `1` /
+  `TRUE` / la forma-bloque `{ enabled: true }` / comentado → **off**, sin error de parseo.
+- **Fuera de todo preset**: `mode: full` **no** lo enciende; es una decisión explícita.
+- **Ausencia ≠ drift**: `/doctor` no reporta la falta del flag ni de las plantillas SDD salvo que el flag
+  esté **on** (mismo criterio que `caveman`/`github-tracking`).
+- **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`), como
+  siempre.
 
 ## GitHub tracking (opcional)
 

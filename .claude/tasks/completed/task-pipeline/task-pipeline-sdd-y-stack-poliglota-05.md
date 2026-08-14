@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-05
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-sdd-y-stack-poliglota-04]
 estimate: 2h
-actual:
+actual: ~40m
 issue: 42                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#42
 created: 2026-08-13
 updated: 2026-08-14
@@ -98,10 +98,10 @@ DoD y el flujo de la tarea 06 y el reconocimiento de `/doctor` (tarea 07).
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
-- [ ] Spec cumplida; `Provides` disponible para 06/07
-- [ ] Gate de `fact-checker` superado — en especial "el flag está en las N sedes" y "fail-safe solo true" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: fila en tabla de flags (README + 2×lifecycle) + `plan-task/SKILL.md` + `website/features/sdd.md` + `config.mts` + entrada CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-05.md` · context-log
-- [ ] Barrido `grep` reforzado: tablas de flags espejo consistentes (README ↔ 2×lifecycle)
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`)
+- [x] Spec cumplida; `Provides` disponible para 06/07
+- [x] Gate de `fact-checker` superado — en especial "el flag está en las N sedes" y "fail-safe solo true" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: fila en tabla de flags (README + 2×lifecycle) + `plan-task/SKILL.md` + `website/features/sdd.md` + `config.mts` + entrada CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-05.md` · context-log
+- [x] Barrido `grep` reforzado: tablas de flags espejo consistentes (README ↔ 2×lifecycle)

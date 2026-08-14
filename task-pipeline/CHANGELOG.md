@@ -42,6 +42,14 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   **`adr-index.md`** (numeración `NNNN` desde `0001`, **sin `ADR-0000` de relleno**). `templates/README.md`
   gana la **lista canónica** de nombres/ubicaciones SDD (única fuente que `/doctor` referencia). El plugin
   envía **plantillas, no contenido**: ningún spec/CU/ADR de un package se autogenera.
+- **Flag `features.sdd`** (#36) — booleano **opt-in** (default `off`) que activa la capa SDD, con el patrón
+  de `caveman`/`github-tracking`: **fuera de todo preset** (`mode: full` no lo enciende), **fail-safe** (solo
+  `true` booleano activa; ausente / `false` / `"true"` / `yes` / `1` / `TRUE` / forma-bloque / comentado →
+  off, sin error de parseo) y **ausencia ≠ drift**. **Con `off` (default) el comportamiento es idéntico al de
+  hoy** (el Gherkin vive en la tarea). Presente en todas las sedes del schema (YAML seed comentado, tabla de
+  flags de README + sección "SDD nativo (opcional)", las dos `task-lifecycle`, contrato de `plan-task`) y en
+  el portal (`website/features/sdd.md` + sidebar). El **flujo imperativo** y la línea de DoD gated llegan en
+  la tarea siguiente del plan.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de

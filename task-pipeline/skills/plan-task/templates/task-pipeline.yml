@@ -94,6 +94,15 @@ features:
   #   #                        # colaborador ASIGNABLE del repo (si no → avisa y sigue). Solo la sub-issue.
   #   # issue-type-plan: Plan  # avanzado: issue types se definen en el ORG; sin ellos → label `plan`
 
+  # SDD nativo (Spec-Driven Development) — capa OPCIONAL opt-in (default off). Con `sdd: true` la tarea
+  # trabaja contra specs (EARS) + casos de uso (Gherkin, única fuente) + ADR (MADR): plantillas en
+  # `.claude/specs/`. NO forma parte de ningún preset (mode: full NO lo enciende) y su AUSENCIA no es drift
+  # para /doctor (como caveman/github-tracking). FAIL-SAFE: SOLO `sdd: true` (booleano) activa; ausente /
+  # false / "true" string / yes / 1 / TRUE / comentado / forma-bloque → off. Con off (default) el Gherkin
+  # vive en la tarea, como hoy (comportamiento idéntico). Detalle en el README del plugin → "SDD nativo".
+  # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
+  # sdd: false
+
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
 # `scenario-coverage` y `fact-checker`. Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan
