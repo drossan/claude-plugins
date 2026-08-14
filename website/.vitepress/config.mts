@@ -17,36 +17,60 @@ export default withMermaid(defineConfig({
   // (mismo footgun que `base` — atado al nombre del repo).
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/claude-plugins/favicon.svg' }]],
   lastUpdated: true,
-  // El README de dev de website/ no es contenido del sitio: excluirlo de las páginas.
-  srcExclude: ['**/README.md'],
+  // Excluidos de las páginas del sitio: el README de dev y el mapa de fuente canónica
+  // (CANONICAL-SOURCES.md es documentación interna del portal, no una página pública).
+  srcExclude: ['**/README.md', 'CANONICAL-SOURCES.md', 'DIAGRAM-THEME.md'],
   // ignoreDeadLinks se deja en su default (false): el build FALLA ante enlaces internos rotos.
   themeConfig: {
+    // Buscador local (sin dependencias externas): indexa el contenido en build.
+    search: { provider: 'local' },
+    // Nav superior alineado con la IA de 5 secciones (task-pipeline-portal-redesign-01).
     nav: [
       { text: 'Inicio', link: '/' },
-      { text: 'Guía', link: '/guia/que-es' },
-      { text: 'Skills', link: '/skills/' },
+      { text: 'Empezar', link: '/guia/que-es' },
+      { text: 'Conceptos', link: '/conceptos/modelo' },
+      { text: 'El pipeline', link: '/guia/pipeline' },
+      { text: 'Capas opcionales', link: '/features/sdd' },
+      { text: 'Referencia', link: '/guia/configuracion' },
     ],
+    // Sidebar = las 5 secciones de la IA. Slugs existentes CONSERVADOS (0 redirects);
+    // solo se reagrupa y se añaden páginas nuevas (Conceptos, Tu primer plan, CLI).
     sidebar: [
       {
-        text: 'Guía',
+        text: 'Empezar',
         items: [
           { text: 'Qué es', link: '/guia/que-es' },
           { text: 'Instalación', link: '/guia/instalacion' },
-          { text: 'El pipeline', link: '/guia/pipeline' },
-          { text: 'Configuración', link: '/guia/configuracion' },
+          { text: 'Tu primer plan', link: '/guia/tu-primer-plan' },
         ],
       },
       {
-        text: 'Skills',
-        items: [{ text: 'Las 10 skills', link: '/skills/' }],
+        text: 'Conceptos',
+        items: [
+          { text: 'El modelo', link: '/conceptos/modelo' },
+          { text: 'Estados', link: '/conceptos/estados' },
+          { text: 'Ramas e ids', link: '/conceptos/ramas-e-ids' },
+        ],
       },
       {
-        text: 'Opcional',
+        text: 'El pipeline paso a paso',
+        items: [{ text: 'El pipeline', link: '/guia/pipeline' }],
+      },
+      {
+        text: 'Capas opcionales',
         items: [
-          { text: 'github-tracking', link: '/features/github-tracking' },
-          { text: 'caveman', link: '/features/caveman' },
           { text: 'SDD nativo', link: '/features/sdd' },
           { text: 'Git automation', link: '/features/git-automation' },
+          { text: 'GitHub tracking', link: '/features/github-tracking' },
+          { text: 'Modo caveman', link: '/features/caveman' },
+        ],
+      },
+      {
+        text: 'Referencia',
+        items: [
+          { text: 'Configuración (task-pipeline.yml)', link: '/guia/configuracion' },
+          { text: 'Las 10 skills', link: '/skills/' },
+          { text: 'CLI', link: '/referencia/cli' },
         ],
       },
     ],

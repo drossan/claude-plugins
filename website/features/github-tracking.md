@@ -14,12 +14,16 @@ local no cambia).
 
 ```mermaid
 flowchart LR
-    PLAN["plan.md"] -->|"crea: body + label pkg"| PADRE["issue PADRE"]
-    TASK["task.md"] -->|"crea: --parent"| SUB["sub-issue"]
-    PADRE -.->|"jerarquia"| SUB
-    TASK -->|"cada cambio de status:"| ST["label status:* + Status del Project"]
-    PADRE -->|"plan completed"| CLOSE["gh issue close + Project Done"]
+    PLAN("plan.md"):::normal -->|"crea: body + label pkg"| PADRE("issue PADRE"):::normal
+    TASK("task.md"):::normal -->|"crea: --parent"| SUB("sub-issue"):::normal
+    PADRE -. "jerarquía" .-> SUB
+    TASK -->|"cada cambio de status:"| ST("label status:* + Status del Project"):::normal
+    PADRE -->|"plan completed"| CLOSE("gh issue close + Project Done"):::normal
+
+    classDef normal fill:#e2e8f0,stroke:#64748b,color:#1f2937
 ```
+
+<small>gris = artefacto/paso. Proyección **one-way** (`.md` → GitHub); el `.md` es la única fuente de verdad.</small>
 
 - **Plan → issue PADRE**; **tarea → SUB-ISSUE** (`gh issue create --parent`).
 - **Body = cuerpo completo del `.md`** (sin frontmatter) + **banner de espejo** + link al `.md`. Se vuelca al
@@ -69,6 +73,10 @@ features:
   labels `pkg:*`/`status:*`, los **items** del Project y las `status:*` pegadas a issues in-flight →
   **reconcilia/limpia ANTES de desactivar** (con el flag off, `/doctor` ya no las detecta).
 
-> **Fuente canónica**: setup, mapeo, ciclo de vida del padre y riesgos aceptados en el
-> [README del plugin → GitHub tracking](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).
-> La mecánica de las transiciones de estado vive en `docs/guides/task-lifecycle.md`.
+## Profundizar (opcional)
+
+La **tabla completa de config** (todas las claves, `issue-type-plan`), el ciclo de vida del padre y los
+**riesgos aceptados** al detalle están en el
+[README del plugin → GitHub tracking](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#github-tracking-opcional);
+la mecánica exacta de cada transición de estado, en la
+[guía de ciclo de vida](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md).

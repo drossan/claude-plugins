@@ -41,5 +41,9 @@ features:
 - **Best-effort**: si el commit/PR automático falla (git/gh), se avisa y **no** se bloquea el cambio de
   `status:` del `.md`.
 
-> **Fuente canónica**: detalle en el
-> [README del plugin → Git automation](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).
+## Profundizar (opcional)
+
+Los matices de interacción con `conventional-commits` y el comportamiento exacto ante fallo de `git`/`gh`
+están en el
+[README del plugin → Git automation](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#git-automation-opcional).
+No hace falta para activarlo.
