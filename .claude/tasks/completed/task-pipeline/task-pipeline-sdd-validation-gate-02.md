@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-validation-gate-02
 package: task-pipeline
 plan: sdd-validation-gate
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-validation-gate-01]
 estimate: 3h
-actual:
+actual: ~1h
 issue: 53
 created: 2026-08-14
 updated: 2026-08-14
@@ -97,10 +97,10 @@ Feature: Helper Bash opcional de validación SDD
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados (correr `sdd-lint.sh` sobre fixtures + `bash -n`)
-- [ ] Spec cumplida
-- [ ] Gate de `fact-checker` superado · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: `sdd-lint.sh` + fixtures/README + doc de cableado a CI · technical-docs
-- [ ] Histórico de la tarea — session log · context-log
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios Gherkin verificados (correr `sdd-lint.sh` sobre fixtures + `bash -n`)
+- [x] Spec cumplida
+- [x] Gate de `fact-checker` superado · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: `sdd-lint.sh` + fixtures/README + doc de cableado a CI · technical-docs
+- [x] Histórico de la tarea — session log · context-log
+- [x] Barrido `grep` reforzado: sin identificadores muertos

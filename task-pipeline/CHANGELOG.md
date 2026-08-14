@@ -100,6 +100,12 @@ no cambia en nada. (El seed ejecutable de sitio VitePress de #36 queda **diferid
   Gherkin, trazabilidad). **ERROR bloquea / AVISO no** (como `fact-checker`; ante duda de parseo → AVISO).
   Invocable `/sdd-lint [package]`; con `features.sdd` off, no-op. (El cableado como gate de cierre y el helper
   Bash opcional llegan en las tareas siguientes del plan.)
+- **`scripts/sdd-lint.sh`: helper Bash opcional** (#36) — subconjunto **mecánico** de `sdd-lint` (estado MADR,
+  `[NECESITA ACLARACIÓN]`, ids `FR`/`SC`, sección EARS, enlace ADR roto) para que un repo consumidor **con
+  runner/CI** lo cablee y tenga validación **desatendida** (`exit 2` = ERROR). **NO bloqueante y no es el
+  gate**: la skill `/sdd-lint` es la autoritativa (incluye lo semántico). **Bash 3.2+** (macOS), `grep -E`
+  portable, cero dependencias, cero-verde-falso. Con **fixtures aseverados** known-good/known-bad + doc de
+  cableado a CI.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
