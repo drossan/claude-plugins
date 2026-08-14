@@ -63,6 +63,16 @@ features:
   #   <int>  → gate con ese umbral break (p.ej. 50 para ir subiendo el listón en legacy).
   mutation-gate: 80
 
+  # SDD nativo (opt-in, default off). Eleva la fuente de verdad de la prosa suelta a
+  # artefactos vivos: spec EARS (requisitos FR/SC) + casos de uso Gherkin + ADR MADR.
+  # Con `true`: el Gherkin vive SOLO en el caso de uso (la tarea enlaza, no copia), la
+  # DoD exige actualizar spec+CU (o declarar "sin cambios"), y al cerrar corre el gate
+  # `/sdd-lint` (formato + completitud; ERROR bloquea / AVISO no) entre mutation y
+  # fact-checker. Fuera de todo preset; solo `true` booleano activa (fail-safe).
+  # El scaffolding SDD (spec.md/casos-de-uso/adr por package) se materializa desde las
+  # plantillas en el primer uso o vía `/doctor` (categoría de scaffolding SDD).
+  sdd: true
+
   # Modo caveman (comportamiento opt-in, default off). Comprime el OUTPUT del hilo
   # principal para ahorrar tokens; lo lee el hook UserPromptSubmit (caveman.sh), que se
   # auto-inhibe en los checkpoints (grilling/design-review/scenario-coverage/fact-checker).
@@ -89,6 +99,19 @@ features:
     #                                   # por nombre, case-insensitive: "In progress" real, no "In Progress").
     assignee: "@me"                     # @me = identidad gh que arranca (danielrosse); login para fijar otro; false = no asignar
     # issue-type-plan:                  # no se usa; el plan se etiqueta con la label `plan`
+
+  # Automatización de git (opt-in, default off). Fuera de todo preset; solo `true`
+  # booleano activa cada toggle (fail-safe). Best-effort: si el commit/PR automático
+  # falla (git/gh), se avisa y NO se bloquea el cambio de `status:` del .md.
+  git-automation:
+    auto-commit: true      # al cerrar cada tarea (tras su DoD, incl. fact-checker): commit `<task-id>: <mensaje>`
+    auto-pr: true          # al cerrar el PLAN (última tarea): abre PR a la rama de integración. Requiere auto-commit
+    co-author: false       # NUNCA el trailer de co-autor de Claude en los commits de la automatización
+
+  # Conventional commits (default ON; INDEPENDIENTE de git-automation — rige el FORMATO
+  # del mensaje tanto en commits manuales como automáticos). `false` lo relaja a mensaje
+  # libre conservando el prefijo `<task-id>:`. Explícito aquí porque ahora auto-commit está on.
+  conventional-commits: true
 
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: `design-review`,
