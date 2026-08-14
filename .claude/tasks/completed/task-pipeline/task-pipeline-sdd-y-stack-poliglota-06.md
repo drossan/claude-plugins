@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-y-stack-poliglota-06
 package: task-pipeline
 plan: sdd-y-stack-poliglota
-status: pending
+status: done
 priority: 2
 depends_on: [task-pipeline-sdd-y-stack-poliglota-04, task-pipeline-sdd-y-stack-poliglota-05]
 estimate: 3h
-actual:
+actual: ~1h10m
 issue: 43                # sub-issue proyectada (github-tracking) — drossan/claude-plugins#43
 created: 2026-08-13
 updated: 2026-08-14
@@ -127,10 +127,10 @@ depende de él salvo la verificación de coherencia (tarea 08).
 
 ## Definition of Done
 
-- [ ] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`; correr `/plan-task` mental sobre un caso con flag on/off)
-- [ ] Spec cumplida; contradicción Gherkin↔CU cerrada de forma coherente en las 4 skills/plantillas afectadas
-- [ ] Gate de `fact-checker` superado — en especial "con SDD off el comportamiento es idéntico a hoy" · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
-- [ ] Doc técnica: 2×lifecycle (DoD + Cerrar una tarea) + `plan-task/SKILL.md` + `scenario-coverage/SKILL.md` (entrada+salida) + `mutation/SKILL.md` (Paso 4) + `task.md` + sección de flujo en README/portal + CHANGELOG · technical-docs
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-06.md` · context-log
-- [ ] Barrido `grep` reforzado: DoD espejo consistente; sin identificadores muertos
+- [x] Escenarios Gherkin verificados como criterios de aceptación (inspección / `grep`; correr `/plan-task` mental sobre un caso con flag on/off)
+- [x] Spec cumplida; contradicción Gherkin↔CU cerrada de forma coherente en las 4 skills/plantillas afectadas
+- [x] Gate de `fact-checker` superado — en especial "con SDD off el comportamiento es idéntico a hoy" · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · features.github-tracking ON
+- [x] Doc técnica: 2×lifecycle (DoD + Cerrar una tarea) + `plan-task/SKILL.md` + `scenario-coverage/SKILL.md` (entrada+salida) + `mutation/SKILL.md` (Paso 4) + `task.md` + sección de flujo en README/portal + CHANGELOG · technical-docs
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-y-stack-poliglota-06.md` · context-log
+- [x] Barrido `grep` reforzado: DoD espejo consistente; sin identificadores muertos

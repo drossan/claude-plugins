@@ -200,6 +200,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
+- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo si `features.sdd`
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -322,6 +323,26 @@ particular:
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
+
+> **Flujo SDD (solo con `features.sdd` on — opcional).** Con el flag **off** (default) nada de esto aplica:
+> el Gherkin vive en el `## Scenarios` de la tarea, **byte-idéntico** a hoy. Con el flag **on**:
+>
+> - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios (Gherkin)` de la tarea **enlaza** al/los
+>   CU (`.claude/specs/<pkg>/casos-de-uso/<id>.md`) en vez de copiar el bloque. Anti-duplicación: **ADR** =
+>   *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** = *cómo + criterios de aceptación*.
+> - **DoD gated**: la tarea no cierra sin **crear/actualizar** la spec (EARS) + el CU (Gherkin) que toca,
+>   **o** declarar **"sin cambios de spec/CU"** en el **checkbox de la DoD** y una línea del **session log**
+>   (no en el CU).
+> - **Bootstrap del primer spec/CU**: si el package aún no tiene `spec.md`/CU, la sesión **lee
+>   `templates/spec.md` y `templates/caso-de-uso.md` con `Read` y los materializa** en las rutas canónicas
+>   **antes** de enlazarlos (mismo estilo imperativo que `/task-init`).
+> - **`scenario-coverage` retro-alimenta el CU**: los escenarios endurecidos se incorporan al **CU** (fuente
+>   única), no como copia divergente en la tarea. **`/mutation`** sigue el enlace al CU al leer survivors.
+> - **Enlace roto**: si el `## Scenarios` enlaza a un CU inexistente/borrado, **repórtalo** — no asumas "sin
+>   escenarios" en silencio.
+> - **Convivencia / toggle a mitad**: las tareas materializadas **antes** de activar el flag (Gherkin inline)
+>   **conviven** con las nuevas y **no se migran a la fuerza**; la regla aplica a las tareas **nuevas** desde
+>   que el flag está on.
 
 > **Proyección de estado a GitHub (opcional — `features.github-tracking`).** Solo si el flag está
 > `enabled` **y** la tarea tiene `issue:` (sin `issue:` → ciclo de vida **local puro**, ni un comando

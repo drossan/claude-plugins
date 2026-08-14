@@ -116,6 +116,8 @@ El id de tarea es **`<task-id> = <plan-id>-<nn>`** (`<plan-id> = <package>-<name
 
 Cada tarea describe su comportamiento en escenarios **Given / When / Then**, fuente 1:1 de los tests TDD (el `Then` es el assert). Concretos y verificables; cubre camino feliz **y** bordes/errores (los exige el mutation testing del cierre). Aplica las **reglas de la plantilla** (no las repito aquí): **declarativo > imperativo** (el `When` es acción de dominio, no pasos de UI/llamadas internas — es lo que evita tests frágiles a refactors), **un escenario = un comportamiento**, **disciplina G/W/T**, y **`Scenario Outline`** para fronteras/clases de equivalencia. Si `features.tdd` es `false`, los escenarios siguen siendo útiles como **spec de comportamiento** (criterio de aceptación), pero no se exige un test por cada uno.
 
+> **Con `features.sdd` on (opcional):** el Gherkin vive en el **caso de uso** (`.claude/specs/<pkg>/casos-de-uso/<id>.md`), **fuente única**; el `## Scenarios (Gherkin)` de la tarea **enlaza** a ese CU en vez de copiar el bloque. Si el package aún no tiene `spec.md`/CU, materialízalos primero desde `templates/spec.md` y `templates/caso-de-uso.md` (léelos con `Read`) antes de enlazarlos. Con el flag **off** (default) todo se comporta como aquí abajo (Gherkin en la tarea). Detalle en `docs/guides/task-lifecycle.md` → "Flujo SDD".
+
 ```gherkin
 Feature: <capacidad de la tarea>
 
@@ -131,7 +133,7 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 **Pásale también la ruta del plan.** Sin él, la dimensión 8 no puede saber qué se dejó fuera **a propósito** y propone como hueco lo que tú ya descartaste — el pipeline se convierte en un motor de expansión de alcance. La salida viene en **dos secciones**:
 
-- **(A) Dentro del alcance** → incorpora los escenarios aceptados a `## Scenarios (Gherkin)`; si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer).
+- **(A) Dentro del alcance** → incorpora los escenarios aceptados a `## Scenarios (Gherkin)` (con `features.sdd` on, **al CU enlazado**, que es la fuente única — no a la tarea); si un hueco es un requisito sin tarea, puede implicar una tarea nueva (vuelve a descomponer).
 - **(B) Fuera del alcance declarado** → **no** los conviertas en escenarios ni tareas por tu cuenta: son **decisión del owner**. Preséntalos con su detalle, decide con él cada uno y registra la decisión y su motivo en el **Plan change log**. Si la sección viene vacía, se dice "ninguno"; si el subagente no pudo leer el plan, traslada esa declaración en vez de leerla como "no hay nada fuera de alcance".
 
 ## Paso 5.7 — Proyección a GitHub Issues (opcional — `features.github-tracking`)

@@ -32,5 +32,17 @@ features:
   esté **on** (mismo criterio que `caveman`/`github-tracking`).
 - **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`).
 
+## Flujo (con el flag on)
+
+- **Fuente única del Gherkin = el caso de uso.** El `## Scenarios` de la tarea **enlaza** al CU en vez de
+  copiar el bloque. Anti-duplicación: **ADR** = *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** =
+  *cómo + aceptación*.
+- **DoD gated**: la tarea no cierra sin actualizar la spec + el CU que toca, **o** declarar "sin cambios de
+  spec/CU" (en el checkbox de la DoD y el session log).
+- **`scenario-coverage` y `/mutation` siguen el enlace al CU**: la QA retro-alimenta el CU; el bucle de
+  survivors localiza el escenario en el CU.
+- **Enlace roto** → se reporta. **Toggle a mitad**: las tareas inline previas conviven y no se migran a la
+  fuerza; la regla aplica a las tareas nuevas.
+
 > **Fuente canónica**: detalle en el
 > [README del plugin → SDD nativo](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md).

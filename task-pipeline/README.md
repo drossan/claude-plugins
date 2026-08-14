@@ -229,6 +229,21 @@ se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-
 - **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`), como
   siempre.
 
+**Flujo imperativo (con el flag on):**
+- **Fuente única del Gherkin = el caso de uso.** El `## Scenarios` de la tarea **enlaza** al CU en vez de
+  copiar el bloque. Anti-duplicación: **ADR** = *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** =
+  *cómo + aceptación*.
+- **DoD gated**: la tarea no cierra sin actualizar la spec + el CU que toca, **o** declarar "sin cambios de
+  spec/CU" (checkbox de la DoD + session log).
+- **Bootstrap**: el primer `spec.md`/CU de un package se materializa desde `templates/spec.md` y
+  `templates/caso-de-uso.md` (`Read` → escribir en la ruta canónica) antes de enlazarlo.
+- **`scenario-coverage` y `/mutation` siguen el enlace al CU**: la QA retro-alimenta el CU (fuente única);
+  el bucle de survivors localiza el escenario en el CU, no en la tarea.
+- **Enlace roto** → se reporta (no se asume "sin escenarios"). **Toggle a mitad**: las tareas inline previas
+  **conviven** y **no se migran a la fuerza**; la regla aplica a las tareas nuevas.
+
+El flujo completo, paso a paso, vive en `docs/guides/task-lifecycle.md` → "Flujo SDD".
+
 ## GitHub tracking (opcional)
 
 Integración **opt-in** (default `off`) que **proyecta** el trabajo a GitHub Issues/Projects para tener orden global glanceable + tablero. El `.md` sigue siendo la **única fuente de verdad**; GitHub es una **proyección one-way** (`.md` → GitHub). Se activa con `features.github-tracking.enabled: true` en `.claude/task-pipeline.yml`.

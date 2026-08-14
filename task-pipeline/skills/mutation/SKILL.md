@@ -100,6 +100,10 @@ Aplica a **cualquier** herramienta que reporte survivors (`[Survived]` en Stryke
 
 1. Lee la mutación (operador, fichero:línea): te dice qué comportamiento ningún test comprueba.
 2. Suele ser un escenario Gherkin sin assert real, un mensaje/contexto de error no verificado o una rama sin cubrir. **Añade o refuerza el test** (sin tocar el código de producción para "facilitar" el kill — es trampa).
+   - **Con `features.sdd` on**: el escenario Gherkin vive en el **caso de uso enlazado**
+     (`.claude/specs/<pkg>/casos-de-uso/<id>.md`), no en el `## Scenarios` de la tarea (que solo enlaza) —
+     **sigue el enlace al CU** para localizar el escenario del survivor. Con `features.sdd` off (default) el
+     escenario está inline en el `## Scenarios` de la tarea, como hoy.
 3. Re-corre. Repite hasta superar `break: 80`.
 
 **Mutantes equivalentes**: algunos survivors no se pueden matar. No persigas kills imposibles: documéntalos. No bajes el umbral para esquivarlos sin acuerdo del usuario.

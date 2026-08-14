@@ -33,6 +33,12 @@ Cubres el hueco que **ningún gate posterior tapa**. El gate de mutation testing
     placeholder de la plantilla): se trata como **vacío** y se declara. Nada se marca — un plan sin
     alcance declarado no es permiso para inventar el filtro.
 
+> **Con `features.sdd` on (ENTRADA):** el `## Scenarios (Gherkin)` de una tarea **solo tiene un enlace** al
+> caso de uso (`.claude/specs/<pkg>/casos-de-uso/<id>.md`), que es la **fuente única** del Gherkin. **Sigue
+> el enlace y lee el Gherkin del CU** — no trates el `## Scenarios` de la tarea (que solo enlaza) como si no
+> tuviera escenarios. Si el enlace apunta a un CU inexistente, **repórtalo** (enlace roto), no asumas "sin
+> escenarios". Con `features.sdd` off (default), el Gherkin está inline en la tarea, como hoy.
+
 Revisa el **set completo**, no tarea a tarea: así cazas huecos *dentro* de una tarea y huecos *entre* tareas (un comportamiento que **ninguna** tarea cubre).
 
 ## Paso 2 — Lanzar el subagente QA (Agent tool)
@@ -122,6 +128,11 @@ SALIDA OBLIGATORIA — DOS SECCIONES, ambas siempre presentes:
 Traslada los huecos al usuario sin filtrarlos, **manteniendo las dos secciones separadas**.
 
 **(A) Dentro del alcance.** Decidid juntos cuáles incorporar. Añade los escenarios aceptados a la sección `## Scenarios (Gherkin)` de la tarea correspondiente; si el hueco es un requisito que ninguna tarea cubre, puede implicar una **tarea nueva** (vuelve a la descomposición del plan).
+
+> **Con `features.sdd` on (SALIDA):** los escenarios endurecidos se **incorporan al caso de uso enlazado**
+> (`.claude/specs/<pkg>/casos-de-uso/<id>.md`), que es la fuente única — **no** como copia divergente en el
+> `## Scenarios` de la tarea (que solo enlaza). Retro-alimentar el CU mantiene una sola fuente del Gherkin.
+> Con `features.sdd` off (default) se incorporan al `## Scenarios` de la tarea, como hoy.
 
 **(B) Fuera del alcance declarado.** Se trasladan **sin filtrar y con su detalle**, y **no** generan escenario ni tarea automáticamente: son decisión del **owner**. Preséntalos como lo que son —cosas reales que el plan decidió no hacer— y registra la decisión de cada uno (incorporar / ampliar el plan / descartar) con su motivo en el **Plan change log**. Si la sección viene vacía, dilo: **"ninguno"** explícito, nunca omitirla en silencio; y si el subagente declaró que no pudo leer un plan, traslada esa declaración tal cual en vez de presentarla como "no hay huecos fuera de alcance".
 

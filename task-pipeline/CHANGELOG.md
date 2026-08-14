@@ -50,6 +50,15 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
   flags de README + sección "SDD nativo (opcional)", las dos `task-lifecycle`, contrato de `plan-task`) y en
   el portal (`website/features/sdd.md` + sidebar). El **flujo imperativo** y la línea de DoD gated llegan en
   la tarea siguiente del plan.
+- **Flujo SDD imperativo** (#36) — cablea la capa SDD en el ciclo de vida (gated por `features.sdd`) y cierra
+  la contradicción "Gherkin = fuente de tests" ↔ "Gherkin solo en el CU" (design-review F3): con el flag
+  **on**, el **caso de uso es la única fuente** del Gherkin y el `## Scenarios` de la tarea **enlaza** (no
+  copia); `scenario-coverage` **retro-alimenta el CU** (entrada: sigue el enlace; salida: incorpora al CU) y
+  `/mutation` **sigue el enlace al CU** al leer survivors. Añade la **línea de DoD gated** ("spec+CU
+  actualizados o 'sin cambios'"), el **bootstrap** del primer spec/CU (materializa desde las plantillas),
+  el reporte de **enlace roto** y la **convivencia** inline↔CU sin migración forzada al hacer *toggle* a
+  mitad. Con el flag **off** (default), el comportamiento es **byte-idéntico** al de hoy. Cableado en
+  `task.md`, las dos `task-lifecycle`, `plan-task`, `scenario-coverage`, `mutation`, README y portal.
 
 ### Changed
 - **DoD del gate de mutation tool-agnóstica** — el checkbox y la prosa de "Cerrar una tarea" pasan de
