@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./task-pipeline.schema.json
 # task-pipeline — configuración del repo
 #
 # Las skills del plugin (/plan-task, /mutation, /task-init) LEEN este archivo y lo

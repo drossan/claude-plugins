@@ -133,7 +133,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
 - [x] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
   (`design-review: opus` + resto `sonnet`) + tabla de recomendación inline (template); **este repo** añade
   `sdd-lint: sonnet` (activo); invariante **intacta**  · depends_on: 01
-- [ ] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
+- [x] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
   modeline (este repo ruta relativa) + `anyOf[enum,string]` para modelos  · depends_on: 01
 - [ ] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
   (solo esa; con cláusula de compat de versión)  · depends_on: —
@@ -201,3 +201,11 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   `sdd-lint` (invarianza, sin cambios en `.claude/specs/`) y `fact-checker` (6/6 VERIFICADO) superados.
   Siguiente tarea recomendada: **03** (JSON schema) o **04** (frontmatter `/pipeline-usage`) — ambas sin
   dependencias pendientes entre sí, se pueden hacer en cualquier orden.
+- 2026-08-18: **Tarea 03 cerrada** (`done`). JSON schema (draft-07) creado en
+  `skills/plan-task/templates/task-pipeline.schema.json`, materializado dogfood en
+  `.claude/task-pipeline.schema.json`, modeline `yaml-language-server` en ambos `task-pipeline.yml`,
+  clave-ancla `x-task-pipeline-schema-version: "1.0.0"`. Validado con `jsonschema` (Draft7Validator) contra
+  10 casos derivados del CU (incl. los 6 verificados por `fact-checker`). Gates `sdd-lint` (invarianza) y
+  `fact-checker` (6/6 VERIFICADO) superados. Siguiente tarea recomendada: **04** (frontmatter
+  `/pipeline-usage`) — última sin dependencias pendientes antes de que **05** las necesite todas (01, 02,
+  03, 04).

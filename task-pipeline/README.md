@@ -148,6 +148,28 @@ criterios. Cada criterio trae su frontera resuelta con un ejemplo en la skill `p
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/plan-task` también avisa/ayuda si te la saltas.
 
+### Autocompletado con JSON schema
+
+`.claude/task-pipeline.yml` referencia un **JSON schema** (`.claude/task-pipeline.schema.json`, en este
+repo) vía el modeline `# yaml-language-server: $schema=./task-pipeline.schema.json` en la primera línea
+del fichero. Es **ayuda de editor** (autocompletado + validación en tiempo de edición vía
+`yaml-language-server`, p.ej. la extensión `redhat.vscode-yaml`) — **no** valida en runtime: las skills
+siguen leyendo el YAML sin parser, como siempre.
+
+- Cubre **todo** el fichero: `mode`, `stack` (+ `packages`), `features` (+ los bloques opt-in) y `models`.
+- El valor de una clave de `models:` acepta `anyOf[enum(opus|sonnet|haiku|fable|inherit), string libre]`:
+  el editor sugiere los alias, pero no rechaza un id de modelo libre (`claude-sonnet-5`, por ejemplo). Un
+  valor no-escalar (lista, mapa) sí se marca como error.
+- El schema **fuente** vive en `skills/plan-task/templates/task-pipeline.schema.json` (misma carpeta que
+  el resto de plantillas materializables — `${CLAUDE_PLUGIN_ROOT}` no se expande en el cuerpo de un
+  `SKILL.md`, así que se referencia con ruta relativa). En este repo se **materializa** una copia en
+  `.claude/task-pipeline.schema.json`, junto al `.claude/task-pipeline.yml` que la referencia (mismo
+  patrón que usarán los repos consumidores). Trae una clave-ancla top-level
+  `x-task-pipeline-schema-version` que `/doctor` usa para detectar drift entre el schema materializado y
+  el que trae la versión instalada del plugin.
+- **Ruta rota** (p.ej. tras mover el `.yml`): el YAML sigue parseando con normalidad — el modeline es un
+  comentario — solo se pierde el autocompletado, sin aviso (limitación del editor, no del plugin).
+
 ## Routing de modelo por fase (`models:`)
 
 Las fases que lanzan un **subagente** son ruteables: **3 siempre** (`design-review`, `scenario-coverage`,
