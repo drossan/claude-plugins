@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-model-routing-per-phase
 package: task-pipeline
-status: active          # pending | active | completed | cancelled
+status: completed          # pending | active | completed | cancelled
 branch: plan/task-pipeline/model-routing-per-phase
 issue: 67                # issue PADRE proyectada (features.github-tracking ON); espejo one-way md→GitHub
 created: 2026-08-18
@@ -142,7 +142,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   el bloque comentado y **reconoce** el set (3 + `sdd-lint` condicional)  · depends_on: 01, 02, 03, 04
 - [x] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
   perfil + schema/autocompletado + coste) + `que-es.md`/nav; `pnpm docs:build` verde  · depends_on: 01, 02, 03, 05
-- [ ] `task-pipeline-model-routing-per-phase-07` (P4) — Cierre de release: CHANGELOG + bump `0.16.0` +
+- [x] `task-pipeline-model-routing-per-phase-07` (P4) — Cierre de release: CHANGELOG + bump `0.16.0` +
   coherencia de `description` + barrido `grep` final  · depends_on: 01, 02, 03, 04, 05, 06
 
 ## Registro de cambios del plan
@@ -230,3 +230,21 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   workspace pnpm en la raíz del monorepo). Gates `sdd-lint` (invarianza) y `fact-checker` (5/6 VERIFICADO,
   1 corrección de formulación propia) superados. Siguiente tarea recomendada: **07** (cierre de release:
   CHANGELOG + bump `0.16.0`) — depende de 01-06, todas `done`.
+- 2026-08-18: **Tarea 07 cerrada** (`done`) — **última tarea del plan**. `CHANGELOG.md` con la entrada
+  `0.16.0`; `plugin.json` en `0.16.0`; `description` de `plugin.json`/`marketplace.json` coherentes
+  (ambas mencionan ahora el routing de modelo); `claude plugin validate .` en verde. Barrido `grep` final:
+  sin maquinaria de auto-escalado viva (B1 confirmado), sin ids muertos vivos fuera de la allowlist real
+  de `CLAUDE.md`, sin conteos de fase contradictorios. Gates `sdd-lint` (invarianza) y `fact-checker` (6/7
+  VERIFICADO, 1 corrección de formulación propia sin defecto real) superados.
+- 2026-08-18: **Plan `model-routing-per-phase` completado**. Retro: estimación global 5-7 sesiones,
+  real ≈ **1 sesión continua** (01=1 sesión larga con arranque; 02=30min; 03=45min; 04=20min;
+  05=1h15min; 06=25min; 07=30min). Sorpresas: (1) el prompt de arranque afirmaba plan/tareas "sin
+  commitear" cuando ya estaban en `main` (78f0ffe) — no bloqueó, pero es una discrepancia de contexto a
+  vigilar en futuros arranques; (2) la redacción inicial de la regla de comparación de la clave-ancla del
+  schema (tarea 05) era ambigua (string vs SemVer) — detectado y corregido **gracias a** verificar
+  corriendo la lógica contra fixtures sintéticos, no por inspección de prosa; (3) el patrón recurrente de
+  "INCORRECTO" en `fact-checker` fue casi siempre una imprecisión de mi propia formulación de la
+  afirmación (exclusiones incompletas en un barrido grep), nunca un defecto real del entregable — vale la
+  pena, en el futuro, formular las afirmaciones de barrido contra la allowlist real documentada en vez de
+  reconstruirla de memoria. Dependencias no vistas: ninguna relevante — el orden de tareas (01 →
+  02/03/04 en paralelo lógico → 05 → 06 → 07) se ejecutó sin bloqueos ni replanificación.

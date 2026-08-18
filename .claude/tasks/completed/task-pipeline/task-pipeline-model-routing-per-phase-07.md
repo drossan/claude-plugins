@@ -2,11 +2,11 @@
 id: task-pipeline-model-routing-per-phase-07
 package: task-pipeline
 plan: model-routing-per-phase
-status: pending
+status: done
 priority: 4
 depends_on: [01, 02, 03, 04, 05, 06]
 estimate: 2h
-actual:
+actual: 30 min
 issue: 74
 created: 2026-08-18
 updated: 2026-08-18
