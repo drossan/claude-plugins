@@ -42,7 +42,13 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.conventional-commits` | booleano; default **ON** | Formato `<task-id>: <conventional commit>`; `false` lo relaja. Ausencia = ON (histórico, no opt-in silencioso). |
 | `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea) · `auto-pr` (cierre de **plan**, requiere `auto-commit`) · `co-author` (default off). **Fuera de todo preset**; fail-safe; su **ausencia no es drift**. |
 
-**`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
+**`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente**: **3
+siempre** (`design-review`, `scenario-coverage`, `fact-checker`, cada una lo lee en su Paso 2) **+
+`sdd-lint`**, que rutea **solo con `features.sdd` on**: clave ausente/`inherit` = modelo de sesión;
+alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una
+fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`)
+heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del
+plugin → "Routing de modelo por fase" (no la repito aquí).
 
 > **Checkpoints — qué se puede saltar y qué no**: `grilling` y la aprobación del plan son **no negociables** (baratos y nucleares); ningún flag, preset ni "es que es pequeño" los desactiva. `design-review` (Paso 4.5) y `scenario-coverage` (Paso 5.5) corren **por defecto**, pero admiten un **salto proporcional** solo en planes triviales (regla abajo). El escape es proporcional al coste: solo las dos pasadas caras (subagente) lo tienen.
 

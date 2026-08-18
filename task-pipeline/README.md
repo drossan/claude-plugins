@@ -150,21 +150,37 @@ Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una v
 
 ## Routing de modelo por fase (`models:`)
 
-Las fases que lanzan un **subagente** (`design-review`, `scenario-coverage`, `fact-checker`) pueden correr con un modelo distinto al de tu sesión. Se configura en la sección `models:` de `.claude/task-pipeline.yml`:
+Las fases que lanzan un **subagente** son ruteables: **3 siempre** (`design-review`, `scenario-coverage`,
+`fact-checker`) **+ `sdd-lint`**, que rutea **solo con `features.sdd: true`** (con el flag off —default—,
+`models.sdd-lint` no tiene efecto: el gate no corre). Se configura en la sección `models:` de
+`.claude/task-pipeline.yml`:
 
 ```yaml
 models:
   design-review: opus        # alias o id de modelo
   # scenario-coverage:       # ausente / inherit → hereda la sesión
   # fact-checker:            # ausente / inherit → hereda la sesión (verificar es barato)
+  # sdd-lint:                # solo tiene efecto con features.sdd: true
 ```
 
 - **Clave ausente o `inherit`** → la fase hereda el modelo de la sesión (no se fuerza nada).
 - **Alias o id de modelo** → se pasa como `model` al lanzar el subagente (Agent tool).
 - **Valor inválido** (typo / id inexistente) → la skill **avisa** y cae a inherit; nunca lanza un subagente con un `model` roto.
 - **Clave para una fase inline** → se ignora (esa fase hereda la sesión).
+- **`sdd-lint` con `features.sdd` off** → la clave no tiene efecto (el gate no corre; no es drift).
 
-**Limitación de plataforma.** Solo las fases con **subagente** se pueden rutar, porque el modelo se fija por invocación de la Agent tool. Las fases **inline** —`grilling`, `mutation` y el propio `/plan-task`— corren en la sesión actual y **heredan su modelo**: no hay forma robusta de cambiárselo desde una skill, ni existe un "modelo óptimo" automático que el pipeline pueda elegir por ti (verificado contra `code.claude.com/docs`). Si quieres una fase inline en otro modelo, cambia el modelo de la sesión.
+**Limitación de plataforma.** Un `SKILL.md` **sí** admite una clave `model:` en su frontmatter (mismos
+alias que `/model`, o `inherit`) — pero ese override es **estático** (un valor fijo escrito en el fichero,
+no calculado al invocarse) y **por-turno**: aplica solo al turno en el que se invoca la skill; el
+siguiente prompt retoma el modelo de la sesión (verificado 2026-08-18 contra
+`code.claude.com/docs/en/skills.md`, sección "Frontmatter reference"). Rutear dinámicamente según lo que
+diga el `.claude/task-pipeline.yml` de cada repo exige leer ese valor en tiempo de ejecución y pasarlo
+como `model` a una invocación — algo que solo la **Agent tool** (subagente) permite. Por eso el routing
+**robusto y per-repo sigue siendo subagente-only**: las fases **inline** —`grilling`, `mutation` y el
+propio `/plan-task`— corren en la sesión actual y **heredan su modelo**, tampoco existe un "modelo óptimo"
+automático que el pipeline pueda elegir por ti. Si quieres una fase inline en otro modelo, cambia el
+modelo de la sesión; el frontmatter estático solo tiene sentido en una skill **read-only de un solo
+turno**, donde ese turno es todo lo que hace.
 
 > El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
 

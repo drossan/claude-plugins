@@ -115,9 +115,9 @@ que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker. En
 (herencia parcial), y `/mutation` elige la herramienta por package (Stryker verificado ·
 `mutmut` · escape `mutation-command`). Regla de resolución canónica en el README del plugin.
 
-`models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
-en el README del plugin.
+`models:` fija el modelo de las fases con subagente: **3 siempre** (`design-review`,
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on. Ver [Routing de
+modelo por fase](../README.md#routing-de-modelo-por-fase-models) en el README del plugin.
 
 ## Capas opt-in (default off, salvo que se diga)
 

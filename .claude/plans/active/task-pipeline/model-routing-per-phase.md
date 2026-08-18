@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-model-routing-per-phase
 package: task-pipeline
-status: pending          # pending | active | completed | cancelled
+status: active          # pending | active | completed | cancelled
 branch: plan/task-pipeline/model-routing-per-phase
 issue: 67                # issue PADRE proyectada (features.github-tracking ON); espejo one-way md→GitHub
 created: 2026-08-18
@@ -127,7 +127,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
 
 ## Tasks
 
-- [ ] `task-pipeline-model-routing-per-phase-01` (P1) — Contrato canónico ("3 ruteables + `sdd-lint`
+- [x] `task-pipeline-model-routing-per-phase-01` (P1) — Contrato canónico ("3 ruteables + `sdd-lint`
   condicional") + documentar el lector silencioso + reconciliar el drift 2/3 en todas las copias + **corregir
   la limitación del README** (frontmatter por-turno + estático; robusto = subagente-only)  · depends_on: —
 - [ ] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
@@ -190,3 +190,8 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   aceptada**: `gh 2.69.0` **no** soporta `--parent` → issues **planas** con nota de texto "Parte del plan
   #67", **sin** anidación nativa (ni retroactiva al actualizar gh). `issue:` escrito en el frontmatter de
   plan + 7 tareas. Espejo one-way md→GitHub; el `.md` es la fuente de verdad.
+- 2026-08-18: **Tarea 01 cerrada** (`done`). Contrato canónico reconciliado en 9 ficheros vivos (README del
+  plugin corregido en su "Limitación de plataforma" + conteo 2→3 en las 7 copias restantes). Gates
+  `sdd-lint` (1 AVISO menor reconocido) y `fact-checker` (5/6 VERIFICADO, 1 afirmación propia corregida)
+  superados. Follow-up detectado (no de este plan): el roster de skills de `README.md` raíz no lista
+  `sdd-lint`. Siguiente tarea recomendada: **02** (defaults sostenibles del perfil).
