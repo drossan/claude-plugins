@@ -130,7 +130,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
 - [x] `task-pipeline-model-routing-per-phase-01` (P1) — Contrato canónico ("3 ruteables + `sdd-lint`
   condicional") + documentar el lector silencioso + reconciliar el drift 2/3 en todas las copias + **corregir
   la limitación del README** (frontmatter por-turno + estático; robusto = subagente-only)  · depends_on: —
-- [ ] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
+- [x] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
   (`design-review: opus` + resto `sonnet`) + tabla de recomendación inline (template); **este repo** añade
   `sdd-lint: sonnet` (activo); invariante **intacta**  · depends_on: 01
 - [ ] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
@@ -195,3 +195,9 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   `sdd-lint` (1 AVISO menor reconocido) y `fact-checker` (5/6 VERIFICADO, 1 afirmación propia corregida)
   superados. Follow-up detectado (no de este plan): el roster de skills de `README.md` raíz no lista
   `sdd-lint`. Siguiente tarea recomendada: **02** (defaults sostenibles del perfil).
+- 2026-08-18: **Tarea 02 cerrada** (`done`). Perfil activo en este repo (+ `sdd-lint: sonnet`), template
+  comentado con el mismo perfil, tabla de recomendación de sesión para fases inline en el README del
+  plugin (sin `fable`, sin afirmar el frontmatter de `/pipeline-usage` que aún no existe). Gates
+  `sdd-lint` (invarianza, sin cambios en `.claude/specs/`) y `fact-checker` (6/6 VERIFICADO) superados.
+  Siguiente tarea recomendada: **03** (JSON schema) o **04** (frontmatter `/pipeline-usage`) — ambas sin
+  dependencias pendientes entre sí, se pueden hacer en cualquier orden.

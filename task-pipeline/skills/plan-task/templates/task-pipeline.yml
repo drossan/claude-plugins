@@ -133,8 +133,12 @@ features:
 #   alias o id de modelo (p.ej. `opus`)    → se pasa como `model` al lanzar el subagente
 #   valor inválido (typo / id inexistente) → aviso + inherit (no se lanza roto)
 #   clave para una fase inline             → se ignora (esa fase hereda la sesión)
-# Comentado a propósito: el TEMPLATE no impone modelos a repos consumidores (inherit).
+# Recomendación de modelo de SESIÓN para las fases inline (no se rutan por aquí): tabla completa
+# en el README del plugin → "Routing de modelo por fase".
+# Perfil recomendado (ADR 0001): design-review en Opus (revisión de más valor, 1×/plan), el
+# resto en Sonnet. Comentado a propósito: el TEMPLATE no impone modelos a repos consumidores (inherit).
 # models:
 #   design-review: opus
 #   scenario-coverage: sonnet
 #   fact-checker: sonnet
+#   sdd-lint: sonnet

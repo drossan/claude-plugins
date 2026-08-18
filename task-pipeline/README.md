@@ -184,6 +184,19 @@ turno**, donde ese turno es todo lo que hace.
 
 > El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
 
+### Recomendación de modelo de sesión para fases inline
+
+Las fases inline no se rutan (arriba); esto es una **recomendación**, no una configuración:
+
+| Fase inline | Modelo de sesión recomendado |
+|---|---|
+| `grilling` | Opus — interrogatorio adversario, es donde el criterio del modelo fuerte más pesa |
+| `/plan-task`, `/mutation`, `/doctor`, `/task-init` | Sonnet — orquestación/verificación mecánica, rinde bien sin coste de Opus |
+| `/pipeline-usage` | Haiku — read-only y de un solo turno, el único caso donde el frontmatter estático de la skill "pega" limpio |
+
+**Plan complejo** (contrato nuevo, decisión arquitectónica): sube `design-review` a Opus a mano en `models:`
+(o la sesión entera) — no hay heurística automática que lo decida por ti (ver más abajo).
+
 ### `effort`: se fija por sesión, no por fase
 
 **No existe —ni existirá— una clave `effort:` en `.claude/task-pipeline.yml`.** No es un olvido: la
