@@ -140,7 +140,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
 - [x] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
   bloque `models:` (sin wizard) + **materializar el schema**; `/doctor` **detecta drift** del schema, **recrea**
   el bloque comentado y **reconoce** el set (3 + `sdd-lint` condicional)  · depends_on: 01, 02, 03, 04
-- [ ] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
+- [x] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
   perfil + schema/autocompletado + coste) + `que-es.md`/nav; `pnpm docs:build` verde  · depends_on: 01, 02, 03, 05
 - [ ] `task-pipeline-model-routing-per-phase-07` (P4) — Cierre de release: CHANGELOG + bump `0.16.0` +
   coherencia de `description` + barrido `grep` final  · depends_on: 01, 02, 03, 04, 05, 06
@@ -223,3 +223,10 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   actualizado (fila `/doctor` + tabla de plantillas). Gates `sdd-lint` (invarianza) y `fact-checker` (6/6
   VERIFICADO) superados. Siguiente tarea recomendada: **06** (website: `configuracion.md` + `que-es.md` +
   nav) — depende de 01, 02, 03, 05, todas `done`.
+- 2026-08-18: **Tarea 06 cerrada** (`done`). `website/guia/configuracion.md` reescrita (set 3+condicional,
+  perfil con su porqué de coste, tabla de recomendación de sesión, autocompletado JSON schema);
+  `que-es.md` sin cambios (su única mención de "models" no tenía conteo que corregir). `pnpm docs:build`
+  verde (ejecutado dentro de `website/`, que es el sub-proyecto aislado con su propio toolchain — no hay
+  workspace pnpm en la raíz del monorepo). Gates `sdd-lint` (invarianza) y `fact-checker` (5/6 VERIFICADO,
+  1 corrección de formulación propia) superados. Siguiente tarea recomendada: **07** (cierre de release:
+  CHANGELOG + bump `0.16.0`) — depende de 01-06, todas `done`.
