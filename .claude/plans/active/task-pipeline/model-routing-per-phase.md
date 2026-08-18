@@ -137,7 +137,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   modeline (este repo ruta relativa) + `anyOf[enum,string]` para modelos  · depends_on: 01
 - [x] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
   (solo esa; con cláusula de compat de versión)  · depends_on: —
-- [ ] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
+- [x] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
   bloque `models:` (sin wizard) + **materializar el schema**; `/doctor` **detecta drift** del schema, **recrea**
   el bloque comentado y **reconoce** el set (3 + `sdd-lint` condicional)  · depends_on: 01, 02, 03, 04
 - [ ] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
@@ -215,3 +215,11 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   `fact-checker` (4/4 VERIFICADO) superados. **Todas las dependencias de la tarea 05 (01, 02, 03, 04) están
   `done`** — siguiente tarea recomendada: **05** (configurador `/task-init`+`/doctor` + materialización/drift
   del schema).
+- 2026-08-18: **Tarea 05 cerrada** (`done`). `/task-init` materializa el schema en bootstrap (Paso 3b);
+  `/doctor` reescrito: categoría 2 (3 estados de `models:` + clave espuria = posible typo) y nueva
+  categoría 11 (schema: materializar / drift por ancla SemVer estricta / reportar sin sobrescribir si es
+  edición manual — regla de comparación precisada tras un hallazgo real de ambigüedad en verificación).
+  Verificado corriendo la lógica documentada contra 7 fixtures sintéticos (7/7 coinciden). README
+  actualizado (fila `/doctor` + tabla de plantillas). Gates `sdd-lint` (invarianza) y `fact-checker` (6/6
+  VERIFICADO) superados. Siguiente tarea recomendada: **06** (website: `configuracion.md` + `que-es.md` +
+  nav) — depende de 01, 02, 03, 05, todas `done`.
