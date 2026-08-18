@@ -1,5 +1,6 @@
 ---
 name: pipeline-usage
+model: haiku
 description: >-
   Informe de uso/consumo de la sesión bajo demanda: tokens (input/output/cache),
   modelo, tiempo y desglose por fase (design-review, grilling, plan-task…) y por

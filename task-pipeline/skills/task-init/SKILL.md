@@ -62,6 +62,12 @@ Antes de escribir nada, mira el repo en read-only:
      planes + docs) y **confírmalo con `AskUserQuestion`** antes de fijarlo. Si hay
      stack de tests sano, deja `full`.
    El usuario puede editarla luego. No la sobrescribas si ya existe.
+3b. Lee `../plan-task/templates/task-pipeline.schema.json` con **Read** y escríbela en
+   `.claude/task-pipeline.schema.json` **solo si no existe**. Es el JSON schema (ayuda de editor, no
+   runtime) que el modeline `# yaml-language-server` de `task-pipeline.yml` ya referencia por ruta
+   relativa (`./task-pipeline.schema.json`, mismo directorio) — no hace falta reescribir el modeline, solo
+   materializar el fichero al que apunta. Sin aprobación explícita (es bootstrap de un repo nuevo, igual
+   que el resto del Paso 1). Ver README del plugin → "Autocompletado con JSON schema".
 4. Lee `../plan-task/templates/honesty-rules.md` con **Read** y escríbela en
    `.claude/honesty-rules.md` **solo si no existe**. Son las reglas de honestidad **y de
    disciplina de trabajo** (verificar antes de afirmar, alcance del encargo, cap de

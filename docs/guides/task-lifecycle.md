@@ -61,9 +61,9 @@ son configurables** — son por diseño.
 > config, mapeo plan→padre / task→sub-issue, ciclo de vida del padre, límites y riesgos aceptados— en el
 > README del plugin → [GitHub tracking (opcional)](../../task-pipeline/README.md#github-tracking-opcional).
 
-La sección `models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models)
-en el README del plugin.
+La sección `models:` fija el modelo de las fases con subagente: **3 siempre** (`design-review`,
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on. Ver [Routing de
+modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models) en el README del plugin.
 
 ## Layout de directorios
 

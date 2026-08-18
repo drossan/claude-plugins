@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-model-routing-per-phase
 package: task-pipeline
-status: pending          # pending | active | completed | cancelled
+status: completed          # pending | active | completed | cancelled
 branch: plan/task-pipeline/model-routing-per-phase
 issue: 67                # issue PADRE proyectada (features.github-tracking ON); espejo one-way md→GitHub
 created: 2026-08-18
@@ -127,22 +127,22 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
 
 ## Tasks
 
-- [ ] `task-pipeline-model-routing-per-phase-01` (P1) — Contrato canónico ("3 ruteables + `sdd-lint`
+- [x] `task-pipeline-model-routing-per-phase-01` (P1) — Contrato canónico ("3 ruteables + `sdd-lint`
   condicional") + documentar el lector silencioso + reconciliar el drift 2/3 en todas las copias + **corregir
   la limitación del README** (frontmatter por-turno + estático; robusto = subagente-only)  · depends_on: —
-- [ ] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
+- [x] `task-pipeline-model-routing-per-phase-02` (P2) — YAML `models:`: bloque **comentado** con el perfil
   (`design-review: opus` + resto `sonnet`) + tabla de recomendación inline (template); **este repo** añade
   `sdd-lint: sonnet` (activo); invariante **intacta**  · depends_on: 01
-- [ ] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
+- [x] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
   modeline (este repo ruta relativa) + `anyOf[enum,string]` para modelos  · depends_on: 01
-- [ ] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
+- [x] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
   (solo esa; con cláusula de compat de versión)  · depends_on: —
-- [ ] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
+- [x] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
   bloque `models:` (sin wizard) + **materializar el schema**; `/doctor` **detecta drift** del schema, **recrea**
   el bloque comentado y **reconoce** el set (3 + `sdd-lint` condicional)  · depends_on: 01, 02, 03, 04
-- [ ] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
+- [x] `task-pipeline-model-routing-per-phase-06` (P3) — Website: `configuracion.md` (set ruteable +
   perfil + schema/autocompletado + coste) + `que-es.md`/nav; `pnpm docs:build` verde  · depends_on: 01, 02, 03, 05
-- [ ] `task-pipeline-model-routing-per-phase-07` (P4) — Cierre de release: CHANGELOG + bump `0.16.0` +
+- [x] `task-pipeline-model-routing-per-phase-07` (P4) — Cierre de release: CHANGELOG + bump `0.16.0` +
   coherencia de `description` + barrido `grep` final  · depends_on: 01, 02, 03, 04, 05, 06
 
 ## Registro de cambios del plan
@@ -190,3 +190,61 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   aceptada**: `gh 2.69.0` **no** soporta `--parent` → issues **planas** con nota de texto "Parte del plan
   #67", **sin** anidación nativa (ni retroactiva al actualizar gh). `issue:` escrito en el frontmatter de
   plan + 7 tareas. Espejo one-way md→GitHub; el `.md` es la fuente de verdad.
+- 2026-08-18: **Tarea 01 cerrada** (`done`). Contrato canónico reconciliado en 9 ficheros vivos (README del
+  plugin corregido en su "Limitación de plataforma" + conteo 2→3 en las 7 copias restantes). Gates
+  `sdd-lint` (1 AVISO menor reconocido) y `fact-checker` (5/6 VERIFICADO, 1 afirmación propia corregida)
+  superados. Follow-up detectado (no de este plan): el roster de skills de `README.md` raíz no lista
+  `sdd-lint`. Siguiente tarea recomendada: **02** (defaults sostenibles del perfil).
+- 2026-08-18: **Tarea 02 cerrada** (`done`). Perfil activo en este repo (+ `sdd-lint: sonnet`), template
+  comentado con el mismo perfil, tabla de recomendación de sesión para fases inline en el README del
+  plugin (sin `fable`, sin afirmar el frontmatter de `/pipeline-usage` que aún no existe). Gates
+  `sdd-lint` (invarianza, sin cambios en `.claude/specs/`) y `fact-checker` (6/6 VERIFICADO) superados.
+  Siguiente tarea recomendada: **03** (JSON schema) o **04** (frontmatter `/pipeline-usage`) — ambas sin
+  dependencias pendientes entre sí, se pueden hacer en cualquier orden.
+- 2026-08-18: **Tarea 03 cerrada** (`done`). JSON schema (draft-07) creado en
+  `skills/plan-task/templates/task-pipeline.schema.json`, materializado dogfood en
+  `.claude/task-pipeline.schema.json`, modeline `yaml-language-server` en ambos `task-pipeline.yml`,
+  clave-ancla `x-task-pipeline-schema-version: "1.0.0"`. Validado con `jsonschema` (Draft7Validator) contra
+  10 casos derivados del CU (incl. los 6 verificados por `fact-checker`). Gates `sdd-lint` (invarianza) y
+  `fact-checker` (6/6 VERIFICADO) superados. Siguiente tarea recomendada: **04** (frontmatter
+  `/pipeline-usage`) — última sin dependencias pendientes antes de que **05** las necesite todas (01, 02,
+  03, 04).
+- 2026-08-18: **Tarea 04 cerrada** (`done`). `model: haiku` añadido al frontmatter de
+  `pipeline-usage/SKILL.md`; confirmado por grep que ninguna otra `SKILL.md` declara `model:`. Cláusula de
+  compat de versión: **NO VERIFICABLE** (reconocido, no bloquea). Gates `sdd-lint` (invarianza) y
+  `fact-checker` (4/4 VERIFICADO) superados. **Todas las dependencias de la tarea 05 (01, 02, 03, 04) están
+  `done`** — siguiente tarea recomendada: **05** (configurador `/task-init`+`/doctor` + materialización/drift
+  del schema).
+- 2026-08-18: **Tarea 05 cerrada** (`done`). `/task-init` materializa el schema en bootstrap (Paso 3b);
+  `/doctor` reescrito: categoría 2 (3 estados de `models:` + clave espuria = posible typo) y nueva
+  categoría 11 (schema: materializar / drift por ancla SemVer estricta / reportar sin sobrescribir si es
+  edición manual — regla de comparación precisada tras un hallazgo real de ambigüedad en verificación).
+  Verificado corriendo la lógica documentada contra 7 fixtures sintéticos (7/7 coinciden). README
+  actualizado (fila `/doctor` + tabla de plantillas). Gates `sdd-lint` (invarianza) y `fact-checker` (6/6
+  VERIFICADO) superados. Siguiente tarea recomendada: **06** (website: `configuracion.md` + `que-es.md` +
+  nav) — depende de 01, 02, 03, 05, todas `done`.
+- 2026-08-18: **Tarea 06 cerrada** (`done`). `website/guia/configuracion.md` reescrita (set 3+condicional,
+  perfil con su porqué de coste, tabla de recomendación de sesión, autocompletado JSON schema);
+  `que-es.md` sin cambios (su única mención de "models" no tenía conteo que corregir). `pnpm docs:build`
+  verde (ejecutado dentro de `website/`, que es el sub-proyecto aislado con su propio toolchain — no hay
+  workspace pnpm en la raíz del monorepo). Gates `sdd-lint` (invarianza) y `fact-checker` (5/6 VERIFICADO,
+  1 corrección de formulación propia) superados. Siguiente tarea recomendada: **07** (cierre de release:
+  CHANGELOG + bump `0.16.0`) — depende de 01-06, todas `done`.
+- 2026-08-18: **Tarea 07 cerrada** (`done`) — **última tarea del plan**. `CHANGELOG.md` con la entrada
+  `0.16.0`; `plugin.json` en `0.16.0`; `description` de `plugin.json`/`marketplace.json` coherentes
+  (ambas mencionan ahora el routing de modelo); `claude plugin validate .` en verde. Barrido `grep` final:
+  sin maquinaria de auto-escalado viva (B1 confirmado), sin ids muertos vivos fuera de la allowlist real
+  de `CLAUDE.md`, sin conteos de fase contradictorios. Gates `sdd-lint` (invarianza) y `fact-checker` (6/7
+  VERIFICADO, 1 corrección de formulación propia sin defecto real) superados.
+- 2026-08-18: **Plan `model-routing-per-phase` completado**. Retro: estimación global 5-7 sesiones,
+  real ≈ **1 sesión continua** (01=1 sesión larga con arranque; 02=30min; 03=45min; 04=20min;
+  05=1h15min; 06=25min; 07=30min). Sorpresas: (1) el prompt de arranque afirmaba plan/tareas "sin
+  commitear" cuando ya estaban en `main` (78f0ffe) — no bloqueó, pero es una discrepancia de contexto a
+  vigilar en futuros arranques; (2) la redacción inicial de la regla de comparación de la clave-ancla del
+  schema (tarea 05) era ambigua (string vs SemVer) — detectado y corregido **gracias a** verificar
+  corriendo la lógica contra fixtures sintéticos, no por inspección de prosa; (3) el patrón recurrente de
+  "INCORRECTO" en `fact-checker` fue casi siempre una imprecisión de mi propia formulación de la
+  afirmación (exclusiones incompletas en un barrido grep), nunca un defecto real del entregable — vale la
+  pena, en el futuro, formular las afirmaciones de barrido contra la allowlist real documentada en vez de
+  reconstruirla de memoria. Dependencias no vistas: ninguna relevante — el orden de tareas (01 →
+  02/03/04 en paralelo lógico → 05 → 06 → 07) se ejecutó sin bloqueos ni replanificación.

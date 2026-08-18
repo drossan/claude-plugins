@@ -4,6 +4,46 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.16.0] — 2026-08-18
+
+**Routing de modelo por fase reconciliado + JSON schema con autocompletado** (#67), del plan
+`model-routing-per-phase`: contrato canónico (3 fases siempre ruteables + `sdd-lint` condicional), perfil
+por defecto sostenible (Sonnet, con Opus solo en `design-review`), JSON schema para editar el YAML con
+autocompletado, y un configurador ligero en `/task-init`/`/doctor` (**ofrecer**, no imponer). La invariante
+"el template no impone coste" se mantiene intacta en todo el plan.
+
+### Added
+- **Contrato canónico del set ruteable**: "3 fases siempre ruteables (`design-review`, `scenario-coverage`,
+  `fact-checker`) + `sdd-lint`, condicional a `features.sdd` on" — documentado y reconciliado en 9 copias
+  vivas (README del plugin, README raíz, `plan-task/SKILL.md`, `CLAUDE.md`, `task-lifecycle.md`,
+  `flujo-del-pipeline.md`, `HOW-TO-START-A-TASK.md`, cabeceras de ambos `task-pipeline.yml`).
+- **JSON schema** (`skills/plan-task/templates/task-pipeline.schema.json`) para autocompletado/validación
+  de editor de `task-pipeline.yml` vía modeline `# yaml-language-server`; cubre `mode`/`stack`(+`packages`)/
+  `features`(+opt-in)/`models`, con `anyOf[enum(opus|sonnet|haiku|fable|inherit), string]` para el valor de
+  cada fase (autocompleta alias sin rechazar ids libres). Clave-ancla `x-task-pipeline-schema-version` para
+  detección de drift.
+- **`/task-init` materializa el schema** en bootstrap; **`/doctor`** lo materializa con diff + aprobación
+  si falta en un repo ya adoptado, y detecta su **drift** por la clave-ancla (regla SemVer estricta:
+  cualquier sufijo o valor no-semver se trata como edición manual, nunca se sobrescribe).
+- **`/doctor` reconoce los 3 estados de `models:`** (ausente del todo / presente-comentado / activo) y
+  **ofrece** —una sola frase, sin wizard fase-a-fase— recrear el bloque comentado o descomentarlo con el
+  perfil recomendado; señala claves espurias (`models.grilling`, `models.qa-fase`) como posible typo.
+- **`model: haiku`** en el frontmatter de `/pipeline-usage` (única skill read-only de un solo turno donde
+  el override estático "pega" limpio).
+- **Tabla de recomendación de modelo de sesión** para las fases inline (`grilling`=opus,
+  `/plan-task`/`/mutation`/`/doctor`/`/task-init`=sonnet) en el README del plugin y en `website/`.
+
+### Changed
+- **Perfil por defecto sostenible**: `design-review: opus` + resto `sonnet` (incl. `sdd-lint: sonnet`) —
+  bloque comentado en el template (invariante intacta) y activo en este repo.
+- **"Limitación de plataforma" del README corregida**: un `SKILL.md` sí admite `model:` en frontmatter,
+  pero es por-turno + estático; el routing robusto y per-repo sigue siendo subagente-only (re-confirmado
+  contra `code.claude.com/docs/en/skills.md`).
+
+### Removed
+- N/A — el "hint de escalado automático a Opus" evaluado durante la planificación se descartó **antes**
+  de implementarse (ver ADR `0001-modelos-por-defecto-sostenibles`); no había nada que retirar del código.
+
 ## [0.15.0] — 2026-08-14
 
 **Stack multi-lenguaje por-package (#35)** y **capa de SDD nativo opt-in (#36)**, del plan

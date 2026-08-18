@@ -39,7 +39,7 @@ Checkpoints humanos: **`grilling`** y **aprobación del plan** son **no negociab
 | `design-review` | Revisión holística adversaria del plan vía **subagente fresco** (sin sesgo de autor): coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad. Tras `grilling`. |
 | `scenario-coverage` | Endurecimiento QA de los escenarios Gherkin vía **subagente fresco**: cobertura por dimensiones (fronteras, errores, estado, requisitos ausentes…) con descarte explícito. Tras descomponer en tareas. |
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
-| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` ausente, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
+| `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` en sus tres estados —ausente/comentada/activa—, JSON schema ausente o con la clave-ancla desactualizada, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
 | `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec **EARS** · caso-de-uso **Gherkin** · ADR **MADR**) por inspección — mecánico (comandos `grep`/`test` fijos) + semántico (subagente fresco). **ERROR bloquea / AVISO no**; corre entre `/mutation` y `fact-checker`. Invocable `/sdd-lint [package]`. Helper Bash opcional para CI en `scripts/sdd-lint.sh`. Frontera con `/doctor` (presencia) y `fact-checker` (afirmaciones): `sdd-lint` = **contenido** de los artefactos. |
 | `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
@@ -148,25 +148,76 @@ criterios. Cada criterio trae su frontera resuelta con un ejemplo en la skill `p
 
 Si un repo no sigue esta convención, **bootstraséala con `/task-init`** (una vez tras instalar el plugin); `/plan-task` también avisa/ayuda si te la saltas.
 
+### Autocompletado con JSON schema
+
+`.claude/task-pipeline.yml` referencia un **JSON schema** (`.claude/task-pipeline.schema.json`, en este
+repo) vía el modeline `# yaml-language-server: $schema=./task-pipeline.schema.json` en la primera línea
+del fichero. Es **ayuda de editor** (autocompletado + validación en tiempo de edición vía
+`yaml-language-server`, p.ej. la extensión `redhat.vscode-yaml`) — **no** valida en runtime: las skills
+siguen leyendo el YAML sin parser, como siempre.
+
+- Cubre **todo** el fichero: `mode`, `stack` (+ `packages`), `features` (+ los bloques opt-in) y `models`.
+- El valor de una clave de `models:` acepta `anyOf[enum(opus|sonnet|haiku|fable|inherit), string libre]`:
+  el editor sugiere los alias, pero no rechaza un id de modelo libre (`claude-sonnet-5`, por ejemplo). Un
+  valor no-escalar (lista, mapa) sí se marca como error.
+- El schema **fuente** vive en `skills/plan-task/templates/task-pipeline.schema.json` (misma carpeta que
+  el resto de plantillas materializables — `${CLAUDE_PLUGIN_ROOT}` no se expande en el cuerpo de un
+  `SKILL.md`, así que se referencia con ruta relativa). En este repo se **materializa** una copia en
+  `.claude/task-pipeline.schema.json`, junto al `.claude/task-pipeline.yml` que la referencia (mismo
+  patrón que usarán los repos consumidores). Trae una clave-ancla top-level
+  `x-task-pipeline-schema-version` que `/doctor` usa para detectar drift entre el schema materializado y
+  el que trae la versión instalada del plugin.
+- **Ruta rota** (p.ej. tras mover el `.yml`): el YAML sigue parseando con normalidad — el modeline es un
+  comentario — solo se pierde el autocompletado, sin aviso (limitación del editor, no del plugin).
+
 ## Routing de modelo por fase (`models:`)
 
-Las fases que lanzan un **subagente** (`design-review`, `scenario-coverage`, `fact-checker`) pueden correr con un modelo distinto al de tu sesión. Se configura en la sección `models:` de `.claude/task-pipeline.yml`:
+Las fases que lanzan un **subagente** son ruteables: **3 siempre** (`design-review`, `scenario-coverage`,
+`fact-checker`) **+ `sdd-lint`**, que rutea **solo con `features.sdd: true`** (con el flag off —default—,
+`models.sdd-lint` no tiene efecto: el gate no corre). Se configura en la sección `models:` de
+`.claude/task-pipeline.yml`:
 
 ```yaml
 models:
   design-review: opus        # alias o id de modelo
   # scenario-coverage:       # ausente / inherit → hereda la sesión
   # fact-checker:            # ausente / inherit → hereda la sesión (verificar es barato)
+  # sdd-lint:                # solo tiene efecto con features.sdd: true
 ```
 
 - **Clave ausente o `inherit`** → la fase hereda el modelo de la sesión (no se fuerza nada).
 - **Alias o id de modelo** → se pasa como `model` al lanzar el subagente (Agent tool).
 - **Valor inválido** (typo / id inexistente) → la skill **avisa** y cae a inherit; nunca lanza un subagente con un `model` roto.
 - **Clave para una fase inline** → se ignora (esa fase hereda la sesión).
+- **`sdd-lint` con `features.sdd` off** → la clave no tiene efecto (el gate no corre; no es drift).
 
-**Limitación de plataforma.** Solo las fases con **subagente** se pueden rutar, porque el modelo se fija por invocación de la Agent tool. Las fases **inline** —`grilling`, `mutation` y el propio `/plan-task`— corren en la sesión actual y **heredan su modelo**: no hay forma robusta de cambiárselo desde una skill, ni existe un "modelo óptimo" automático que el pipeline pueda elegir por ti (verificado contra `code.claude.com/docs`). Si quieres una fase inline en otro modelo, cambia el modelo de la sesión.
+**Limitación de plataforma.** Un `SKILL.md` **sí** admite una clave `model:` en su frontmatter (mismos
+alias que `/model`, o `inherit`) — pero ese override es **estático** (un valor fijo escrito en el fichero,
+no calculado al invocarse) y **por-turno**: aplica solo al turno en el que se invoca la skill; el
+siguiente prompt retoma el modelo de la sesión (verificado 2026-08-18 contra
+`code.claude.com/docs/en/skills.md`, sección "Frontmatter reference"). Rutear dinámicamente según lo que
+diga el `.claude/task-pipeline.yml` de cada repo exige leer ese valor en tiempo de ejecución y pasarlo
+como `model` a una invocación — algo que solo la **Agent tool** (subagente) permite. Por eso el routing
+**robusto y per-repo sigue siendo subagente-only**: las fases **inline** —`grilling`, `mutation` y el
+propio `/plan-task`— corren en la sesión actual y **heredan su modelo**, tampoco existe un "modelo óptimo"
+automático que el pipeline pueda elegir por ti. Si quieres una fase inline en otro modelo, cambia el
+modelo de la sesión; el frontmatter estático solo tiene sentido en una skill **read-only de un solo
+turno**, donde ese turno es todo lo que hace.
 
 > El template (`skills/plan-task/templates/task-pipeline.yml`) trae `models:` **comentado**: no impone modelos a los repos que adoptan el plugin. Este repo (source del plugin) sí pinea `design-review: opus`.
+
+### Recomendación de modelo de sesión para fases inline
+
+Las fases inline no se rutan (arriba); esto es una **recomendación**, no una configuración:
+
+| Fase inline | Modelo de sesión recomendado |
+|---|---|
+| `grilling` | Opus — interrogatorio adversario, es donde el criterio del modelo fuerte más pesa |
+| `/plan-task`, `/mutation`, `/doctor`, `/task-init` | Sonnet — orquestación/verificación mecánica, rinde bien sin coste de Opus |
+| `/pipeline-usage` | Haiku — read-only y de un solo turno, el único caso donde el frontmatter estático de la skill "pega" limpio |
+
+**Plan complejo** (contrato nuevo, decisión arquitectónica): sube `design-review` a Opus a mano en `models:`
+(o la sesión entera) — no hay heurística automática que lo decida por ti (ver más abajo).
 
 ### `effort`: se fija por sesión, no por fase
 
@@ -431,6 +482,7 @@ El plugin trae las **semillas** que `/plan-task` materializa en el repo (no se i
 |---|---|
 | `skills/plan-task/templates/task-lifecycle.md` | `docs/guides/task-lifecycle.md` (flujo canónico, una vez) |
 | `skills/plan-task/templates/task-pipeline.yml` | `.claude/task-pipeline.yml` (config del repo: preset/stack/features, una vez) |
+| `skills/plan-task/templates/task-pipeline.schema.json` | `.claude/task-pipeline.schema.json` (JSON schema para autocompletado; una vez en bootstrap por `/task-init`, o con diff + aprobación por `/doctor` si falta en un repo ya adoptado; `/doctor` también vigila su drift por la clave-ancla `x-task-pipeline-schema-version`) |
 | `skills/plan-task/templates/honesty-rules.md` | `.claude/honesty-rules.md` (honestidad **y disciplina de trabajo**; lleva el ancla `template-version`; `@import` opt-in al `CLAUDE.md`, una vez) |
 | `skills/plan-task/templates/coding-standards.md` | `.claude/specs/general/coding-standards.md` (no-duplicación; user-owned, una vez) |
 | `skills/plan-task/templates/HOW-TO-START-A-TASK.md` | `.claude/specs/<package>/HOW-TO-START-A-TASK.md` (una vez por package) |

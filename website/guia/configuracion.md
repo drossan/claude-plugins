@@ -62,10 +62,46 @@ Las capas opt-in (`sdd`, `git-automation`, `github-tracking`, `caveman`) están 
 
 ## Modelos por fase (`models`)
 
-Fija el modelo de las fases que lanzan **subagente** (`design-review`, `scenario-coverage`, `fact-checker`):
-clave ausente/`inherit` = modelo de la sesión; alias/id válido = se pasa al subagente. Las fases **inline**
-(`grilling`, `mutation`, `plan-task`) heredan la sesión y no se rutan. El **`effort`** se fija por sesión, no
-por fase. Detalle en el [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#routing-de-modelo-por-fase-models).
+Fija el modelo de las fases que lanzan **subagente**: **3 siempre ruteables** (`design-review`,
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`** (condicional, solo con `features.sdd` on). Clave
+ausente/`inherit` = modelo de la sesión; alias (`opus`/`sonnet`/`haiku`/`fable`) o id de modelo libre =
+se pasa al subagente; valor inválido = aviso + inherit. Las fases **inline** (`grilling`, `mutation`,
+`plan-task`, `doctor`, `task-init`) heredan la sesión y no se rutan por aquí.
+
+**Perfil recomendado** (por coste — el pipeline lanza varias pasadas de subagente por plan, y en Opus
+ese coste se dispara):
+
+```yaml
+models:
+  design-review: opus        # 1×/plan, la revisión de más valor — donde el modelo fuerte más pesa
+  scenario-coverage: sonnet
+  fact-checker: sonnet
+  sdd-lint: sonnet            # solo tiene efecto con features.sdd: true
+```
+
+`design-review` en Opus captura casi toda la calidad donde importa; el resto en Sonnet captura casi todo
+el ahorro (son las pasadas repetidas/de cierre). Es el bloque **comentado** del template — no se te
+impone — y el que este mismo repo dogfoodea activo.
+
+**Recomendación de modelo de sesión** para las fases inline (no se rutan, es solo una guía):
+
+| Fase inline | Modelo de sesión recomendado |
+|---|---|
+| `grilling` | Opus |
+| `/plan-task`, `/mutation`, `/doctor`, `/task-init` | Sonnet |
+| `/pipeline-usage` | Haiku (fijado en su propio frontmatter — read-only, un solo turno) |
+
+**Plan complejo**: sube `design-review` a Opus a mano (o la sesión entera) — no hay heurística automática
+de escalado, a propósito (ver el porqué en el README del plugin).
+
+**Autocompletado con JSON schema**: `.claude/task-pipeline.yml` referencia un JSON schema
+(`.claude/task-pipeline.schema.json`) vía el modeline `# yaml-language-server`, que tu editor (con la
+extensión `redhat.vscode-yaml` u otra compatible) usa para sugerir claves y valores — incluidos los alias
+de `models:` — sin rechazar un id de modelo libre. Es ayuda de editor, no valida en runtime. `/task-init`
+lo materializa en el bootstrap; `/doctor` lo mantiene al día (materializa si falta, avisa de drift).
+
+El **`effort`** se fija por sesión, no por fase — no hay ni habrá una clave `effort:` en el YAML (la Agent
+tool no la acepta por invocación). Detalle completo en el [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#routing-de-modelo-por-fase-models).
 
 > **Los dos checkpoints humanos** (`grilling` y la aprobación del plan) **no son configurables** por ningún
 > flag ni preset: son por diseño.
