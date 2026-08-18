@@ -135,7 +135,7 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   `sdd-lint: sonnet` (activo); invariante **intacta**  · depends_on: 01
 - [x] `task-pipeline-model-routing-per-phase-03` (P2) — JSON schema del `task-pipeline.yml` completo +
   modeline (este repo ruta relativa) + `anyOf[enum,string]` para modelos  · depends_on: 01
-- [ ] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
+- [x] `task-pipeline-model-routing-per-phase-04` (P2) — Frontmatter `model: haiku` en **`/pipeline-usage`**
   (solo esa; con cláusula de compat de versión)  · depends_on: —
 - [ ] `task-pipeline-model-routing-per-phase-05` (P3) — `/task-init` + `/doctor`: **ofrecer descomentar** el
   bloque `models:` (sin wizard) + **materializar el schema**; `/doctor` **detecta drift** del schema, **recrea**
@@ -209,3 +209,9 @@ Estado actual (verificado; `.claude/task-pipeline.yml` reconfirmado 2026-08-18 =
   `fact-checker` (6/6 VERIFICADO) superados. Siguiente tarea recomendada: **04** (frontmatter
   `/pipeline-usage`) — última sin dependencias pendientes antes de que **05** las necesite todas (01, 02,
   03, 04).
+- 2026-08-18: **Tarea 04 cerrada** (`done`). `model: haiku` añadido al frontmatter de
+  `pipeline-usage/SKILL.md`; confirmado por grep que ninguna otra `SKILL.md` declara `model:`. Cláusula de
+  compat de versión: **NO VERIFICABLE** (reconocido, no bloquea). Gates `sdd-lint` (invarianza) y
+  `fact-checker` (4/4 VERIFICADO) superados. **Todas las dependencias de la tarea 05 (01, 02, 03, 04) están
+  `done`** — siguiente tarea recomendada: **05** (configurador `/task-init`+`/doctor` + materialización/drift
+  del schema).
