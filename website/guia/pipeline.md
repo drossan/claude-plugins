@@ -11,11 +11,11 @@ flowchart TD
     DR --> AP["aprobacion del plan"]
     AP --> T["descomponer en tareas + Gherkin"]
     T --> SC["scenario-coverage"]
-    SC --> HO["handoff TDD (Red - Green - Refactor)"]
+    SC --> HO["handoff TDD + prompt de la 1a tarea"]
     HO --> M["gate: mutation (break 80)"]
     M --> SL["gate: sdd-lint (solo si features.sdd)"]
     SL --> FC["gate: fact-checker (INCORRECTO bloquea)"]
-    FC --> D["tarea done + commit/PR"]
+    FC --> D["tarea done + prompt de la siguiente / code review si es la ultima"]
 
     classDef human fill:#fde68a,stroke:#b45309,color:#111
     classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
@@ -37,6 +37,13 @@ capas de doc se encienden/apagan por preset (`mode`) o flag. Ver [Configuración
   `scenario-coverage`, 1 tarea sin caminos de error reales). Lo confirma el owner **una vez por pasada**,
   se registra en el Plan change log y caduca si una re-planificación rompe los criterios. Los criterios
   completos, con su frontera resuelta por ejemplo, están en la skill `plan-task`.
+
+**Siempre hay un siguiente paso explícito, sin pedirlo.** Al crear el plan, `/plan-task` entrega el **prompt
+de arranque de la primera tarea** (bloque copiable y autocontenido, para una sesión nueva). Al cerrar cada
+tarea entrega el de la **siguiente**; si era la **última del plan**, en vez de prompt **pregunta si quieres
+el code review del plan y con qué modelo** (Opus · Sonnet · Haiku · no) y, si aceptas, lo lanza un subagente
+fresco sobre el diff de la rama del plan **antes de abrir la PR**. Durante `grilling` solo se preguntan
+**decisiones** que cambien el plan: nada que el código o la propia petición ya respondan.
 
 ## Los gates de cierre
 

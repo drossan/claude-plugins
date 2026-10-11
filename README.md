@@ -4,15 +4,15 @@ Marketplace personal de **plugins para [Claude Code](https://code.claude.com/doc
 
 > El nombre interno del marketplace es **`local-plugins`** (definido en `marketplace.json`), así que en los comandos `install` se referencia como `<plugin>@local-plugins` aunque el repo se llame `claude-plugins`.
 
-> 📖 **Portal de documentación**: [drossan.github.io/claude-plugins](https://drossan.github.io/claude-plugins/) — VitePress, se publica vía GitHub Pages con cada release (tag `v*`). *Quedará vivo tras encender Pages (Settings → Pages → Source: GitHub Actions) y el primer tag; el fuente está en [`website/`](website/).*
+> 📖 **Portal de documentación**: [drossan.github.io/claude-plugins](https://drossan.github.io/claude-plugins/) — VitePress, se publica vía GitHub Pages con cada release (tag `v*`). El fuente está en [`website/`](website/).
 
 ## Plugins incluidos
 
 | Plugin | Skills | Para qué sirve |
 |---|---|---|
-| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage`, `fact-checker`, `/pipeline-usage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker) → gate de cierre `fact-checker` (verifica las afirmaciones de la sesión). Incluye `/pipeline-usage` (analítica de uso on-demand: tokens/modelo/tiempo por fase) y los modos opcionales **caveman** (compresión de output opt-in) y **github-tracking** (proyección one-way a GitHub Issues opt-in; con detección de ids duplicados y reconciliación best-effort en `/doctor`). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
+| **task-pipeline** | `/task-init`, `/plan-task`, `/mutation`, `/doctor`, `grilling`, `design-review`, `scenario-coverage`, `fact-checker`, `/sdd-lint`, `/pipeline-usage` | Pipeline guiado de tarea/plan: bootstrap con `/task-init` → plan mode → plan en `pending` → `grilling` → `design-review` → tareas en Gherkin → `scenario-coverage` → TDD → gate de mutation testing (Stryker) → gate de cierre `fact-checker` (verifica las afirmaciones de la sesión). Al crear el plan y al cerrar cada tarea entrega **sola** el prompt para arrancar la siguiente en una sesión nueva; al cerrar la última pregunta si quieres **code review** y con qué modelo. Incluye `/pipeline-usage` (analítica de uso on-demand: tokens/modelo/tiempo por fase) y los modos opcionales **caveman** (compresión de output opt-in) y **github-tracking** (proyección one-way a GitHub Issues opt-in; con detección de ids duplicados y reconciliación best-effort en `/doctor`). Configurable por repo (`.claude/task-pipeline.yml`). Ver [`task-pipeline/README.md`](task-pipeline/README.md). |
 
-Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`, `/task-pipeline:fact-checker`, `/task-pipeline:pipeline-usage`.
+Las skills quedan *namespaced* por el plugin: `/task-pipeline:task-init`, `/task-pipeline:plan-task`, `/task-pipeline:mutation`, `/task-pipeline:doctor`, `/task-pipeline:grilling`, `/task-pipeline:design-review`, `/task-pipeline:scenario-coverage`, `/task-pipeline:fact-checker`, `/task-pipeline:sdd-lint`, `/task-pipeline:pipeline-usage`.
 
 ## Instalar
 
@@ -47,6 +47,7 @@ Una vez instalado, las skills se invocan **namespaced por el plugin**:
 /task-pipeline:scenario-coverage                               # endurece QA de los escenarios Gherkin (subagente fresco)
 /task-pipeline:doctor                                          # diagnostica/alinea un repo ya adoptado (verifica → fix con aprobación)
 /task-pipeline:fact-checker                                    # gate de cierre: verifica las afirmaciones de la sesión (VERIFICADO/INCORRECTO/NO VERIFICABLE)
+/task-pipeline:sdd-lint [<package>]                             # gate de cierre de la capa SDD opt-in (formato + completitud)
 /task-pipeline:pipeline-usage                                  # analítica de uso on-demand (tokens/modelo/tiempo por fase y subagente)
 ```
 
@@ -77,11 +78,14 @@ O añadir este repo como marketplace local:
 claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json          # manifest del marketplace (name, owner, plugins[])
+├── website/                      # portal de documentación (VitePress, pnpm)
 └── task-pipeline/
     ├── .claude-plugin/
     │   └── plugin.json           # manifest del plugin (name, version, description, author)
     ├── README.md                 # cómo funciona y qué convención asume
     ├── CHANGELOG.md              # historial de versiones (SemVer)
+    ├── docs/                     # flujo-del-pipeline.md y notas de diseño
+    ├── scripts/                  # sdd-lint.sh (helper opcional para CI) + fixtures
     ├── hooks/
     │   ├── hooks.json            # SessionStart → bootstrap.sh · UserPromptSubmit → caveman.sh
     │   ├── bootstrap.sh          # auto-repara el scaffolding en repos ya adoptados
@@ -95,6 +99,7 @@ claude-plugins/
         ├── design-review/SKILL.md
         ├── scenario-coverage/SKILL.md
         ├── fact-checker/SKILL.md
+        ├── sdd-lint/SKILL.md
         └── pipeline-usage/SKILL.md
 ```
 

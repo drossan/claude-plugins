@@ -213,12 +213,14 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 
 > La skill `/plan-task` orquesta todo este flujo (plan mode → plan en `pending/` →
 > `grilling` → `design-review` → tareas Gherkin → `scenario-coverage` → handoff TDD
-> → gate de mutation). Los pasos de abajo son lo que sigue, y lo que haces tú si lo
-> conduces a mano.
+> → gate de mutation). Al terminar entrega **sola** el prompt de arranque de la
+> primera tarea. Los pasos de abajo son lo que sigue, y lo que haces tú si lo conduces a mano.
 
 1. Redacta el plan con la plantilla.
 2. Corre la skill `grilling` antes de aprobar para sacar huecos, supuestos ocultos
    e ítems inviables (rama por rama). Itera hasta que el plan sobreviva al interrogatorio.
+   Solo se preguntan **decisiones** que cambien el plan: nada que el código o la propia petición
+   ya respondan, ni verificaciones de implementación.
 3. Corre la skill `design-review`: un subagente fresco revisa el plan COMO UN TODO
    (coherencia, tamaño correcto, mantenibilidad, escalabilidad real, reversibilidad).
    Ajusta el plan con los hallazgos.
@@ -326,6 +328,16 @@ particular:
 7. Mueve la tarea a `.claude/tasks/completed/<package>/`, `status: done`, rellena
    `actual:`, bump `updated`.
 8. Marca el `[x]` en la sección **Tasks** del plan y bump el `updated` del plan.
+9. **Siguiente paso, sin que lo pidan** (último ítem del cierre, tras el resumen final):
+   - **Quedan tareas** → entrega el **prompt de arranque de la siguiente** (la primera por orden con todas
+     sus `depends_on` en `done`), en bloque de código y autocontenido: id de tarea y de plan, rutas a leer
+     (este lifecycle, el `HOW-TO-START-A-TASK.md`, el plan, la tarea) y "Arrancar una tarea". Si ninguna
+     está desbloqueada, di qué la bloquea.
+   - **Era la última del plan** → no hay siguiente prompt: **pregunta (`AskUserQuestion`) si se quiere el
+     code review del plan y con qué modelo** (Opus · Sonnet · Haiku · no). Si acepta: subagente fresco con
+     ese modelo sobre `git diff <integración>...plan/<package>/<name-plan>`, hallazgos sin filtrar y
+     decisión con el owner, **antes de abrir la PR** (ver "Cerrar un plan"). Sin canal para preguntar, no
+     se ejecuta: se deja indicado como pendiente.
 
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
@@ -407,6 +419,8 @@ Es el registro canónico; no lo dupliques.
 ## Cerrar un plan
 
 1. Al cerrar la última tarea:
+   - **Code review del plan** (ofrecido en el paso 9 de "Cerrar una tarea"): si el owner lo aceptó, se
+     hace **antes** de abrir la PR.
    - Plan → `completed`: mover a `.claude/plans/completed/<package>/`, `status: completed`, bump `updated`.
    - **(Opcional, `features.github-tracking`)** si el plan tiene `issue:`, proyecta el cierre del **padre**:
      campo **Status del Project → `Done`** y `gh issue close` — GitHub **no** la auto-cierra al cerrar las
