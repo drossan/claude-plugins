@@ -4,6 +4,26 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.17.0] — 2026-10-11
+
+**Continuidad entre sesiones y preguntas con criterio.** El agente deja de esperar a que le pidan el
+siguiente paso, y `grilling` deja de preguntar lo que el código o la petición ya responden.
+
+### Added
+- **Prompt de arranque automático**: al crear un plan, `/plan-task` (Paso 6) entrega sin que se pida el
+  prompt autocontenido para iniciar la primera tarea en una sesión nueva. Al cerrar cada tarea (Paso 9 /
+  `task-lifecycle` → "Cerrar una tarea", paso 9) entrega el de la siguiente tarea desbloqueada.
+- **Oferta de code review al cerrar la última tarea del plan**: pregunta (`AskUserQuestion`) si se quiere y
+  con qué modelo (Opus · Sonnet · Haiku); si acepta, subagente fresco sobre el diff de la rama del plan
+  **antes de abrir la PR**. Sin canal para preguntar no se ejecuta.
+
+### Changed
+- **Filtro de preguntas en `plan-task` Paso 4**: solo se preguntan decisiones que cambien el plan; se
+  descartan las que se responden leyendo el código, las que la petición ya resuelve y las verificaciones de
+  implementación. La skill `grilling` (de terceros) no se toca.
+- README raíz: skill `/sdd-lint` añadida (faltaba en tabla, namespaced, uso y árbol), nota de Pages ya
+  obsoleta retirada, árbol del repo completado (`website/`, `docs/`, `scripts/`).
+
 ## [0.16.0] — 2026-08-18
 
 **Routing de modelo por fase reconciliado + JSON schema con autocompletado** (#67), del plan
