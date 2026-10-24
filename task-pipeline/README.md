@@ -351,7 +351,7 @@ instante de la invocación):
 | Fase | Cuándo | Notas |
 |---|---|---|
 | `start` | Al arrancar la tarea, tras moverla a `active` | Solo en la activación `pending → active`; `blocked → active`, cancelar y la reapertura `done → active` **no** invocan. La sesión relee la tarea después. |
-| `close` | Al cerrarla: **tras** `mutation`, **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub | No se invoca si `mutation` falla; se **reintenta** tras un fallo posterior. |
+| `close` | Al cerrarla, **al llegar a su hueco**: tras `mutation` (o tras lint/tests si no hay gate de mutation) y **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub | No se invoca si falla un paso previo (tests, lint/typecheck, `mutation` activo); se **reintenta** tras un fallo posterior y se repite tras una reapertura. Deja la línea `provider phase=close: <resultado>` en el session log. |
 
 El contrato es **experimental**: puede cambiar entre versiones (el campo `contract` lo versiona) y aún no se ha
 validado contra un provider real, solo contra un stub de prueba. Sin plan legible, `plan=` va vacío con aviso.
@@ -364,7 +364,7 @@ pipeline **no valida su contenido** (no hay gate equivalente a `sdd-lint`). Term
 cuenta como OK. No hay timeout propio.
 
 **Requisitos y riesgos del provider:**
-- **Debe ser idempotente**: `close` se reintenta tras un fallo posterior, así que invocarlo dos veces sobre la
+- **Debe ser idempotente**: `close` se reintenta tras un fallo posterior o una reapertura, así que invocarlo dos veces sobre la
   misma tarea no debe duplicar ni corromper su salida.
 - **Riesgos de seguridad conocidos.** `.claude/task-pipeline.yml` viaja con el repo, de modo que **un repo
   clonado puede nombrar como provider cualquier skill que tengas instalada**, y el pipeline la invoca **sin

@@ -21,6 +21,9 @@ Identifica **cada afirmación factual** de la conversación reciente. Ejemplos: 
 tests pasan», «la biblioteca Z soporta W», «este import es correcto», «el gate de mutation pasó». Si no
 hay ninguna afirmación factual verificable, dilo y termina — no inventes ninguna.
 
+En modo SDD `external`, incluye «el provider se invocó con `phase=close`» y pasa al verificador la ruta del session log
+de la tarea (su evidencia es la **última** línea `provider phase=close: <resultado>`).
+
 ## Paso 2 — Lanzar el subagente verificador (Agent tool)
 
 **Modelo del subagente (config-driven).** Antes de lanzarlo, lee `models.fact-checker` en
@@ -44,6 +47,10 @@ Para cada afirmación que se te pase, verifícala de forma INDEPENDIENTE:
   ejecutarlo, la salida correcta es NO VERIFICABLE (por falta de stack) — nunca VERIFICADO.
 - Afirmaciones de bibliotecas → revisa el paquete real o su documentación.
 - Afirmaciones de imports → confirma que el paquete está en el manifiesto de dependencias.
+- «El provider se invocó con phase=close» → lee el session log que se te indica: la evidencia es la ÚLTIMA línea
+  `provider phase=close: <resultado>`. Es AUTODECLARADA (prueba que se anotó, no que el provider corriera): dilo
+  en el veredicto. Si la línea falta → NO VERIFICABLE, nunca INCORRECTO. Resultado `ausente` o `error` → aviso a
+  reconocer, no INCORRECTO.
 
 Nunca aceptes afirmaciones de «confía en mí». Nunca hagas afirmaciones propias: solo emites veredictos
 sobre las afirmaciones que se te dan. No modifiques ningún fichero. Si no puedes verificar algo, la

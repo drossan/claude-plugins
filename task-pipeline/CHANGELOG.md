@@ -27,8 +27,9 @@ versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 
 ### Known gaps
 - Los lifecycles materializados en 0.18.0–0.18.3 **no se detectan**: la cat. 13 de `/doctor` solo mira el heading
-  «Modo SDD». Re-sincroniza a mano los pasos 4b y 3c y la DoD desde la plantilla actual. Hueco aceptado, sin
-  detección nueva.
+  «Modo SDD». Re-sincroniza a mano los pasos 4b, 3c y 4, la DoD (incluida la nota de líneas de otro modo) y el bullet nativo
+  de «Modo SDD» desde la plantilla actual; los `HOW-TO-START-A-TASK.md` ya materializados tampoco se actualizan
+  solos. Hueco aceptado, sin detección nueva.
 
 ## [0.18.3] — 2026-10-24
 

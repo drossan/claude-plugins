@@ -390,6 +390,7 @@ Feature: SDD delegado en un plugin externo
     When se evalúa su DoD
     Then la línea "SDD gestionado con <provider>" se trata como no aplicable
     And aplican las líneas del modo nativo (spec/CU o "sin cambios de spec/CU", y el gate sdd-lint)
+    And el Gherkin inline de la tarea no se migra a la fuerza al CU
 
   Scenario: La regla de líneas de DoD de otro modo es visible
     Given docs/guides/task-lifecycle.md y su plantilla

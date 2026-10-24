@@ -22,3 +22,6 @@
 - **fact-checker** (Sonnet): 8/8 VERIFICADO (validate, docs:build, README, portal, barrido, lifecycle×2, FR-013, ids muertos).
 - Ficheros: README, portal `sdd.md`, lifecycle (repo+plantilla), `templates/task-pipeline.yml`, `sdd-lint/SKILL.md`, CU, `spec.md`.
 - Tiempo real: ~1h. Follow-ups: el resto de B4/B6/B7/B8 y release 0.18.4 → tarea 02.
+
+## 2026-10-24 — Nota posterior (code review del plan, tarea 02)
+- El code review señaló que el `[x]` de `sdd-lint` se marcó sin re-ejecutar el semántico tras añadir FR-013. Se **re-ejecutó** en la sesión de la tarea 02 (Sonnet, sobre `spec.md` con FR-013 y el CU): **0 ERROR**, solo avisos (FR-013 compuesto, escenarios documentales con varias aserciones, solape de escenarios de reintento). La casilla queda respaldada a posteriori; no estaba respaldada en el cierre de esta tarea.

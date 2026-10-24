@@ -16,7 +16,7 @@ updated: 2026-10-24
 
 ## Description
 
-Huecos de redacción del cierre en modo `external` y release del seguimiento. Plan: `.claude/plans/pending/task-pipeline/sdd-externo-seguimiento.md`.
+Huecos de redacción del cierre en modo `external` y release del seguimiento. Plan: `.claude/plans/active/task-pipeline/sdd-externo-seguimiento.md`.
 
 ## Spec
 

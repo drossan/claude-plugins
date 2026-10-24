@@ -16,7 +16,7 @@ updated: 2026-10-24
 
 ## Description
 
-El primer code review dejó sin documentar los riesgos del provider externo y frases que afirman que `off`/nativo son idénticos al comportamiento previo. Plan: `.claude/plans/pending/task-pipeline/sdd-externo-seguimiento.md`.
+El primer code review dejó sin documentar los riesgos del provider externo y frases que afirman que `off`/nativo son idénticos al comportamiento previo. Plan: `.claude/plans/active/task-pipeline/sdd-externo-seguimiento.md`.
 
 ## Spec
 

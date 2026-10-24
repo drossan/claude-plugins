@@ -216,7 +216,7 @@ Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), 
 Regla de modos (`off`/`native`/`external`): «Modo SDD» de `docs/guides/task-lifecycle.md`. **Entre** el gate de mutation y `fact-checker`, y solo según el modo:
 
 - **Modo nativo (`sdd: true`)**: cada tarea corre `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de formato/completitud **bloquea** el cierre; **AVISO** se reconoce. Es un **gate de cierre** (no una fase de `/plan-task`) e **intrínseco al modo nativo** (sin flag propio). Ver la skill `/sdd-lint`.
-- **Modo `external`**: en vez de `sdd-lint`, se invoca la skill del provider con `contract=1 phase=close task=<ruta> plan=<ruta>` (también `phase=start` al arrancar la tarea). Provider ausente o con error → **aviso que el owner reconoce**; lo que reporta → aviso, **nunca ERROR**. No se invoca si `mutation` falla. Detalle en «Cerrar una tarea» (paso 3c) y «Arrancar una tarea» (paso 4b) del lifecycle.
+- **Modo `external`**: en vez de `sdd-lint`, se invoca la skill del provider con `contract=1 phase=close task=<ruta> plan=<ruta>` (también `phase=start` al arrancar la tarea). Provider ausente o con error → **aviso que el owner reconoce**; lo que reporta → aviso, **nunca ERROR**. Se invoca al llegar al hueco de cierre (tras `mutation`, o tras lint/tests sin gate de mutation) y no si falla un paso previo. Detalle en «Cerrar una tarea» (paso 3c) y «Arrancar una tarea» (paso 4b) del lifecycle.
 - **Modo `off`**: no corre nada.
 
 ## Paso 8 — Gate de cierre por tarea: fact-checker (no-negociable)

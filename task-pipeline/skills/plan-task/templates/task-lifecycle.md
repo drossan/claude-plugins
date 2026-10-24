@@ -74,7 +74,7 @@ skills (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-revi
 
 - **`native`** — la capa SDD descrita en «Flujo SDD» (spec EARS + CU Gherkin + ADR MADR, gate `sdd-lint`).
   Equivalente en comportamiento al previo a `external`, salvo: una tarea que ya enlaza a un CU sigue ese enlace en
-  cualquier modo, la línea de DoD de `external` es no aplicable en nativo y la cat. 13 de `/doctor`.
+  cualquier modo, la línea de DoD de `external` es no aplicable en nativo y la cat. 13 de `/doctor` detecta el lifecycle anterior a la regla de modos.
 - **`external`** — el SDD lo gestiona un plugin externo (`provider: "<plugin>:<skill>"`). Lo **nativo se
   apaga**: sin plantillas ni scaffolding SDD, sin gate `sdd-lint` ni efecto de `models.sdd-lint`, y el Gherkin
   vuelve a vivir en la tarea. Lo único que sobrevive: **si una tarea ya enlaza a un CU, ese enlace se sigue
@@ -241,7 +241,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
 - [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo en modo nativo (`sdd: true`)
-- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker` (siempre se invoca; «sin cambios» solo describe lo que el provider reportó, en el session log); con la línea `provider phase=close: <resultado>` en el session log; un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker` (se invoca siempre que el cierre llega a su hueco; «sin cambios» solo describe lo que el provider reportó, en el session log); con la línea `provider phase=close: <resultado>` en el session log; un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
@@ -257,7 +257,7 @@ Feature: <capacidad bajo esta tarea>
 > contra el modo **vigente al cerrar**, no contra el de la creación de la tarea. Si el modo cambió, **las del otro
 > modo no aplican** y aplican las del modo vigente: nativo → `external` (la línea `sdd-lint` y la de spec/CU dejan de
 > aplicar; aplica «SDD gestionado con `<provider>`») y `external` → nativo (la línea del provider deja de aplicar;
-> aplican spec/CU, o «sin cambios de spec/CU», y el gate `sdd-lint`). Nunca se marca una línea que no aplica.
+> aplican spec/CU, o «sin cambios de spec/CU», y el gate `sdd-lint`). Una línea que no aplica se **borra** de la DoD de la tarea (o se anota `N/A: modo <vigente>`) y no cuenta para «done»; nunca se marca como cumplida. Si una tarea creada en `external` con el Gherkin inline se cierra en nativo, el Gherkin **no se migra a la fuerza** (ver «Convivencia / toggle a mitad» en «Flujo SDD»): basta la línea de spec/CU o «sin cambios de spec/CU».
 
 La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 `task.md`) al crear cada plan/tarea. No las re-inventes por sesión.
