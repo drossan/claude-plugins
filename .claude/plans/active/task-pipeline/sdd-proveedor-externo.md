@@ -71,7 +71,7 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 - [x] `task-pipeline-sdd-proveedor-externo-01` (P1) — Contrato `features.sdd.provider`: schemas + template YAML + regla de modos única (lifecycle) + `spec.md`/CU del repo  · depends_on: —
 - [x] `task-pipeline-sdd-proveedor-externo-02` (P1) — Lectores nativos: redacción «modo nativo» y seguir siempre el enlace al CU  · depends_on: task-pipeline-sdd-proveedor-externo-01
 - [x] `task-pipeline-sdd-proveedor-externo-03` (P1) — Invocación del provider (arranque/cierre, contrato `phase/task/plan`), degradación y stub de verificación  · depends_on: task-pipeline-sdd-proveedor-externo-02
-- [ ] `task-pipeline-sdd-proveedor-externo-04` (P2) — Activación y salud en `/task-init` y `/doctor`  · depends_on: task-pipeline-sdd-proveedor-externo-02
+- [x] `task-pipeline-sdd-proveedor-externo-04` (P2) — Activación y salud en `/task-init` y `/doctor`  · depends_on: task-pipeline-sdd-proveedor-externo-02
 - [ ] `task-pipeline-sdd-proveedor-externo-05` (P3) — Docs, portal y release  · depends_on: task-pipeline-sdd-proveedor-externo-03, task-pipeline-sdd-proveedor-externo-04
 
 ## Registro de cambios del plan

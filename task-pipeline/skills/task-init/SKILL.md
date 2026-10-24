@@ -135,19 +135,32 @@ existe, respétala e informa.
 
 ## Paso 1.6 — Activación SDD (opcional, opt-in con confirm)
 
-La capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR) es **opt-in** y **default off**. Para que sea
-**descubrible** (no un flag que nadie enciende), al inicializar el repo **ofrécela explícitamente**:
+La capa **SDD** es **opt-in** y **default off**, con dos formas: **nativa** (spec EARS + casos de uso Gherkin +
+ADR MADR) o **externa** (delegada en un plugin SDD que ya usas). Para que sea **descubrible**, al inicializar
+el repo **ofrécela explícitamente**. La regla de qué valor de `features.sdd` es `off`/`native`/`external` vive
+**solo** en `docs/guides/task-lifecycle.md` → «Modo SDD»: aquí se enlaza, no se repite.
 
-- Si `.claude/task-pipeline.yml` **no** tiene `features.sdd: true`, lanza **`AskUserQuestion`**: "¿Activar la
-  capa SDD (specs EARS + casos de uso Gherkin + ADR MADR)?". **Nunca la actives en silencio.**
-- **Al confirmar** → escribe `features.sdd: true` (descomentado) en `features:` **y** materializa el scaffold
-  ADR inicial: lee `../plan-task/templates/adr-index.md` con **Read** y escríbelo en
+- **Ya activo → no preguntes** (idempotente): si `features.sdd` ya resuelve a `native` **o** a `external`
+  (incluido el bloque `{ enabled: true, provider: … }`), no reofrezcas. Pasar de nativo a externo es manual
+  (editar `features.sdd`). Un `features.sdd` malformado (`yes`, `"true"`, …) resuelve a `off`: trátalo como
+  tal y **ofrece la activación** sin tratarlo como config inválida.
+- Si resuelve a `off`, lanza **`AskUserQuestion`** con tres opciones: **nativo** · **externo** · **no**.
+  **Nunca la actives en silencio.**
+- **Nativo** → escribe `features.sdd: true` (descomentado) en `features:` **y** materializa el scaffold ADR
+  inicial: lee `../plan-task/templates/adr-index.md` con **Read** y escríbelo en
   `.claude/specs/adr/adr-index.md` (crea `.claude/specs/adr/` si falta). El resto (spec/CU por package) lo
   crea el **flujo SDD** on-demand al trabajar (no lo autogeneres aquí).
-- **Al declinar** → deja `features.sdd` **off** (comentado, como el template), sin materializar nada SDD.
-- **Sin canal para `AskUserQuestion`** (entorno no interactivo) → **no** actives a ciegas: deja el estado y
-  **repórtalo** ("SDD no activado: sin canal para confirmar").
-- **Idempotente**: si `features.sdd` ya es `true`, **no** vuelvas a preguntar.
+- **Externo** → pide el `provider` (`<plugin>:<skill>`) como **texto libre** con `AskUserQuestion`. **No
+  compruebes** que exista al escribirlo (de eso avisa `/doctor`). Muestra el diff y escribe, **tras
+  aprobación**, `features.sdd: { enabled: true, provider: "<valor>" }`. **No** materializa scaffolding SDD
+  nativo (ni `adr-index.md`). Reglas de la entrada:
+  - Vacío, solo espacios o cancelar → **no escribe nada** y reporta «SDD no activado».
+  - Quita espacios laterales y **entrecomilla** siempre el valor (cubre `: ` y `#`), de modo que el YAML siga
+    siendo válido; si contiene comillas, escápalas.
+  - Diff rechazado → no escribe nada.
+- **No** → deja `features.sdd` **off** (comentado, como el template), sin materializar nada SDD.
+- **Sin canal para `AskUserQuestion`** (entorno no interactivo) → **no** actives a ciegas: no escribas nada y
+  **repórtalo** («SDD no activado: sin canal para confirmar»).
 
 ## Paso 2 — HOW-TO del package (si aplica)
 

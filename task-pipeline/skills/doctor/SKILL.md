@@ -64,16 +64,17 @@ artefacto del plugin — ver "Propiedad" abajo).
    no es drift**; doctor puede ofrecerlo comentado como nicety, **nunca** reportarlo como problema.
    La lógica que lo consume (los pasos condicionales de `/plan-task` y del lifecycle) es
    **plugin-owned**; la **reconciliación** del drift md↔GitHub es una categoría aparte (ver abajo).
-   Lo mismo, por último, con **`features.sdd`** (booleano opt-in, default off — capa SDD) y con el schema
+   Lo mismo, por último, con **`features.sdd`** (opt-in, default off — capa SDD, booleano o bloque con
+   `provider`) y con el schema
    **`stack.packages`** (override de stack por-package): su **ausencia no es drift** (mismo criterio que
    caveman/github-tracking); doctor puede ofrecerlos comentados como nicety, **nunca** como problema. Para
    **`features.sdd`** en concreto, en Fase 2 doctor puede ir más allá del comentario y **ofrecer activarla**
-   (`AskUserQuestion` → escribir `features.sdd: true` + materializar el scaffold, ver "Activación SDD" en
-   Fase 2); **nunca** la activa en silencio.
-   `features.sdd` con un **valor no-booleano/malformado** (`quizas`, `yes`, `{ enabled: true }`, …) se trata
-   como **off** por fail-safe — **no** como "config inválida" que bloquee. La detección del **scaffolding SDD
-   ausente** (solo con el flag on) y de **claves `stack.packages` huérfanas/malformadas** son categorías
-   propias (ver abajo).
+   (`AskUserQuestion` → nativo / externo / no, ver "Activación SDD" en Fase 2); **nunca** la activa en
+   silencio. El modo (`off`/`native`/`external`) se resuelve **solo** con la regla de `docs/guides/task-lifecycle.md`
+   → «Modo SDD» (no la repitas aquí). Un `features.sdd` **malformado** (`quizas`, `yes`, …) resuelve a
+   **off** por fail-safe — **no** es "config inválida" que bloquee, y se **ofrece** la activación. La
+   detección del **scaffolding SDD ausente** (solo en modo nativo), la **salud del SDD externo** y las
+   **claves `stack.packages` huérfanas/malformadas** son categorías propias (ver abajo).
    Igual con el bloque **`features.git-automation`** (opt-in, default off) y el flag
    **`features.conventional-commits`**: la **ausencia de `git-automation` no es drift** (ofrecible comentado
    como nicety, nunca problema); la de `conventional-commits` = **ON** histórico (tampoco drift). Un toggle de
@@ -84,7 +85,8 @@ artefacto del plugin — ver "Propiedad" abajo).
    `features.sdd`** (sin flag propio): con `features.sdd` **off**, su ausencia **no es drift**; la skill/helper
    son **plugin-owned** (llegan al actualizar el plugin), así que doctor **no** los materializa — si con SDD on
    faltasen (instalación desalineada), es **solo-reporte** ("actualiza el plugin"). doctor **no** ejecuta
-   `sdd-lint`.
+   `sdd-lint`. En modo `external` tampoco tiene efecto `models.sdd-lint`: su presencia **no** es drift ni
+   se avisa.
 3. **Rutas muertas en hooks** — si un hook del plugin resuelve un directorio de plantillas que no existe
    (`test -d`), repórtalo. Los hooks son **del plugin** (ver Propiedad): solo-reporte.
 4. **Estructura de convención incompleta** — falta alguna carpeta esperada:
@@ -186,9 +188,10 @@ artefacto del plugin — ver "Propiedad" abajo).
      forma **idempotente** (recipe add-then-remove del ciclo de vida); **no** hay detección nueva del drift
      `status:*`↔`.md`↔Project (es residual aceptado: se re-alinea al re-proyectar, no se diagnostica aparte).
 
-9. **Scaffolding SDD ausente** (repo-owned, **condicional al flag `features.sdd`**) — patrón nuevo en
-   doctor: *detección de presencia de plantillas condicional a un flag*. **Solo** si `features.sdd` está
-   **on** (booleano `true`; cualquier otro valor → off → **no evalúes** esta categoría). Compara los
+9. **Scaffolding SDD ausente** (repo-owned, **condicional al modo nativo**) — patrón nuevo en
+   doctor: *detección de presencia de plantillas condicional a un flag*. **Solo** en modo **nativo**
+   (`features.sdd: true`); en `off` **y en `external` → no evalúes** esta categoría (en `external` el
+   provider gestiona el SDD: **no** exijas plantillas ni `adr-index.md`). Compara los
    artefactos SDD presentes en el repo contra la **lista canónica de plantillas SDD** — **no la re-listes
    aquí**: la fija `../plan-task/templates/README.md` (sección "Plantillas SDD (opt-in, `features.sdd`)"),
    **única fuente** (leerla con `Read`). Reglas:
@@ -234,6 +237,22 @@ artefacto del plugin — ver "Propiedad" abajo).
     - **Modeline roto** (apunta a una ruta que no resuelve): no es un problema del plugin — es coste
       documentado de la ruta relativa (ver README → "Autocompletado con JSON schema"); **no** lo reportes
       como drift, el YAML sigue parseando con normalidad.
+
+12. **Salud del SDD externo** (repo-owned, **solo-reporte** — nunca escribe) — evalúa `features.sdd` con la
+    regla de «Modo SDD» del lifecycle:
+    - **Bloque sin `provider` efectivo** (`{ enabled: true }`, `provider` vacío/no-string, …): hay
+      **intención de activar** pero el modo en runtime **sigue `off`** — avísalo y di qué falta. Lo mismo
+      con **claves desconocidas** bajo `features.sdd` (p. ej. `provder`): **posible typo**, nómbrala; si
+      además falta `provider`, dilo en el mismo aviso.
+    - **Provider configurado no instalado** (modo `external`): separa `<plugin>` de `<skill>` por el
+      primer `:` y comprueba best-effort (skills visibles en la sesión, o `installed_plugins.json` y el
+      `installPath` del plugin) **distinguiendo** «**plugin ausente**» de «**plugin instalado pero sin esa
+      skill**» (drift de nombre) — el mensaje debe nombrar cuál de los dos falta. Si no puedes comprobarlo,
+      di «no verificado», no «ausente». Un provider que apunta a una skill de `task-pipeline` ya resuelve a
+      `off` (lo avisa el lifecycle); no lo dupliques.
+    - **Artefactos nativos huérfanos** (modo `external`): si existen `spec.md`, `casos-de-uso/` o ADR en
+      `.claude/specs/`, **avisa** de que el provider ya no los gestiona. **No** migres, conviertas ni
+      borres nada.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -291,7 +310,7 @@ añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
 `CLAUDE.md` **no** se aplica: solo se sugiere); materializar una **pieza SDD faltante** desde su semilla
-(solo con `features.sdd` on — cat. 9), con diff + aprobación (una segunda pasada ya no la reporta).
+(solo en modo nativo — cat. 9), con diff + aprobación (una segunda pasada ya no la reporta).
 
 **Drift del schema por ancla (cat. 11):** igual que `honesty-rules.md` (cat. 6b), el check es **comparar
 la clave `x-task-pipeline-schema-version`**, no diffear el JSON entero. Si el schema del repo **no** está
@@ -313,13 +332,21 @@ auto-editar**. **Aviso extra (T-H)**: si alguna de las tareas en conflicto **ya 
 en GitHub por `features.github-tracking`), advierte que renumerar **desincroniza** el `.md` de su issue → hay
 que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
 
-**Activación SDD (nicety opt-in — cat. 2 + cat. 9):** si `features.sdd` está **ausente/off**, ofrece
-**activarla** con `AskUserQuestion` ("¿Activar la capa SDD: specs EARS + casos de uso Gherkin + ADR MADR?").
-Al **confirmar**: escribe `features.sdd: true` (con diff + aprobación) **y** materializa el scaffold SDD
-ausente (cat. 9: `.claude/specs/adr/adr-index.md` desde `../plan-task/templates/adr-index.md`; el resto
-—spec/CU por package— lo crea el flujo SDD on-demand). Al **declinar**, o **sin canal** para preguntar, **no**
-actives nada (déjalo off y repórtalo). Si ya está `true`, **no** re-preguntes (idempotente). **Nunca** se
-auto-activa: es opt-in con confirmación humana.
+**Activación SDD (nicety opt-in — cat. 2 + cat. 9):** si `features.sdd` resuelve a **`off`** (ausente,
+`false` o malformado como `yes` — se trata como off, no como config inválida), ofrece **activarla** con
+`AskUserQuestion`: **nativo** · **externo** · **no**.
+- **Nativo** → escribe `features.sdd: true` (con diff + aprobación) **y** materializa el scaffold SDD
+  ausente (cat. 9: `.claude/specs/adr/adr-index.md` desde `../plan-task/templates/adr-index.md`; el resto
+  —spec/CU por package— lo crea el flujo SDD on-demand).
+- **Externo** → pide `provider` (`<plugin>:<skill>`) como **texto libre**, **sin comprobar que exista** al
+  escribirlo (de eso avisa la cat. 12). Vacío, solo espacios o cancelar → **no escribe nada** y reporta
+  «SDD no activado». Quita espacios laterales y **entrecomilla** el valor (cubre `: ` y `#`) para que el YAML
+  siga siendo válido. Con diff + aprobación escribe `features.sdd: { enabled: true, provider: "<valor>" }`;
+  **no** materializa scaffolding nativo.
+- **No**, diff rechazado, o **sin canal** para preguntar → **no** escribas nada (déjalo off y repórtalo:
+  «SDD no activado»); en ese caso `/doctor` sigue siendo solo-reporte.
+- **Ya activo** (`native` **o** `external`, bloque incluido) → **no** re-preguntes (idempotente). Pasar de
+  nativo a externo es manual: no se reofrece. **Nunca** se auto-activa: es opt-in con confirmación humana.
 
 **Reconciliación md↔GitHub (solo con el flag on):** re-proyecta **desde el `.md`** (la fuente de verdad):
 crear la issue que falta, cerrar la que quedó `open`, con **diff + aprobación** problema a problema. Lo **no
