@@ -56,7 +56,7 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 
 ## Estimación global
 
-- **Tareas totales**: 5 (ver lista al final).
+- **Tareas totales**: 8 (5 iniciales + 06, 07 y 08 del code review; ver lista al final).
 - **Esfuerzo estimado**: 5–6 sesiones.
 - **Recursos**: este repo; sin dependencias nuevas.
 
@@ -75,6 +75,7 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 - [x] `task-pipeline-sdd-proveedor-externo-05` (P3) — Docs, portal y release  · depends_on: task-pipeline-sdd-proveedor-externo-03, task-pipeline-sdd-proveedor-externo-04
 - [x] `task-pipeline-sdd-proveedor-externo-06` (P3) — Correcciones del code review: ancla de la regla única, versión de schema, contradicciones lifecycle/template/YAML  · depends_on: task-pipeline-sdd-proveedor-externo-05
 - [x] `task-pipeline-sdd-proveedor-externo-07` (P3) — `/doctor` detecta el lifecycle materializado anterior a 0.18.0 (follow-up A1)  · depends_on: task-pipeline-sdd-proveedor-externo-06
+- [x] `task-pipeline-sdd-proveedor-externo-08` (P3) — Correcciones del 2.º code review: rechazo de provider propio, cat. 13 sin sobrescribir prosa, regla de modos sin duplicar, textos «on» y bajos  · depends_on: task-pipeline-sdd-proveedor-externo-07
 
 ## Registro de cambios del plan
 
@@ -104,3 +105,5 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 - 2026-10-24: tarea 06 cerrada (0.18.1). Plan completado. Nota retro: estimado 5–6 sesiones + 06 (2h); la verificación por inspección no vio 9 anclas rotas ni contradicciones que el code review sí encontró → verificar slugs con `github-slugger` al enlazar anclas.
 - 2026-10-24: a petición del owner, el plan se **reabre** (`completed → active`, antes de mergear la PR #84) para añadir la tarea 07 (A1: `/doctor` detecta el lifecycle sin «Modo SDD»). Escenarios incorporados al CU. Se omiten `design-review`/`scenario-coverage`: una sola categoría de `/doctor` análoga a la cat. 5, sin contrato nuevo. La nota retro y el `completed` se repetirán al cerrar la 07.
 - 2026-10-24: tarea 07 cerrada (0.18.2). Plan completado de nuevo. Nota retro: la 07 (A1) estimada 2h, real ≈ 1h; una categoría de `/doctor` análoga a la cat. 5 cabía sin contrato nuevo, como se previó al reabrir.
+- 2026-10-24: 2.º code review del plan (Opus, a petición del owner) → 0 altos, 5 medios (M-a…M-e), 11 bajos (B-a…B-k). Decisión del owner: **ampliar el alcance**; el plan se reabre (`completed → active`) para la **tarea 08** con M-a…M-d y B-a…B-k. M-e (tareas 06–08 sin `issue:`) queda pendiente de confirmar con el owner por ser una acción en GitHub. Se omiten `design-review`/`scenario-coverage`: correcciones de coherencia sin contrato nuevo.
+- 2026-10-24: tarea 08 cerrada (0.18.3). Plan completado de nuevo. Nota retro: el 2.º review halló 16 ítems de coherencia que el 1.º y la inspección no vieron (la regla duplicada en 5 sitios); el build del portal cazó un enlace roto que el grep no.

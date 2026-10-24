@@ -129,7 +129,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
 - [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); corre **tras `mutation`, antes de `fact-checker`**  · solo en modo nativo (`sdd: true`)
-- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`, **tras `mutation`, antes de `fact-checker`**), o «sin cambios» en el session log; un aviso (provider ausente/con error/reporte) se reconoce con nota en el session log; **nunca ERROR**  · solo en modo `external`
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`, **tras `mutation`, antes de `fact-checker`**; «sin cambios» solo describe lo que reportó, en el session log); un aviso (provider ausente/con error/reporte) se reconoce con nota en el session log; **nunca ERROR**  · solo en modo `external`
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD** — spec (EARS) + caso de uso (Gherkin) creados/actualizados en esta tarea, **o** declarado **"sin cambios de spec/CU"** (aquí y en el session log). El Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)

@@ -155,6 +155,9 @@ el repo **ofrécela explícitamente**. La regla de qué valor de `features.sdd` 
   aprobación**, `features.sdd: { enabled: true, provider: "<valor>" }`. **No** materializa scaffolding SDD
   nativo (ni `adr-index.md`). Reglas de la entrada:
   - Vacío, solo espacios o cancelar → **no escribe nada** y reporta «SDD no activado».
+  - Un valor que apunta al propio pipeline (`task-pipeline:<skill>` o un nombre sin `:` que coincide con una
+    de sus skills — regla de «Modo SDD» del lifecycle) → **no lo escribas**: explica que se rechaza (modo
+    efectivo `off`) y reporta «SDD no activado».
   - Quita espacios laterales y **entrecomilla** siempre el valor (cubre `: ` y `#`), de modo que el YAML siga
     siendo válido; si contiene comillas, escápalas.
   - Diff rechazado → no escribe nada.

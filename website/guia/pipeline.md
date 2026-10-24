@@ -77,13 +77,13 @@ Cada fase, con **qué haces · qué ves · por qué existe**.
 - **Por qué**: el pipeline conduce *hasta* el código; escribirlo sigue siendo trabajo real, guiado por el
   contrato Gherkin.
 
-### 8 · Gates de cierre — `mutation → sdd-lint → fact-checker`
+### 8 · Gates de cierre — `mutation → sdd-lint / provider → fact-checker`
 Al cerrar cada tarea corren **en orden**. La semántica: **un ERROR bloquea el cierre; un AVISO se reconoce y
 sigue.**
 
 ```mermaid
 flowchart LR
-    M("mutation · break 80"):::gate --> SL("sdd-lint · formato + completitud"):::gate
+    M("mutation · break 80"):::gate --> SL("sdd-lint · nativo / provider · external"):::gate
     SL -->|"AVISO / limpio"| FC("fact-checker · afirmaciones"):::gate
     SL -->|"ERROR"| BLK("cierre BLOQUEADO"):::gate
     FC -->|"INCORRECTO"| BLK

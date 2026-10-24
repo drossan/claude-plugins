@@ -46,7 +46,7 @@ artefacto del plugin — ver "Propiedad" abajo).
      COMENTADO** (perfil de referencia, sin valores activos) — acción distinta de "ofrecer descomentar"
      (ver Fase 2).
    - **Presente y comentada por completo**: **ofrece, en una sola frase**, descomentarla con el perfil
-     recomendado (`design-review: opus` + resto `sonnet`, incl. `sdd-lint: sonnet`). **Sin** cuestionario
+     recomendado (`design-review: opus` + resto `sonnet`; `sdd-lint: sonnet` solo si el modo es nativo). **Sin** cuestionario
      fase-a-fase — es una oferta única, no un wizard.
    - **Activa** (alguna sub-clave con valor real, aunque sea una sola y el resto siga comentado — "a
      medias" cuenta como **configurado**): no se ofrece nada, no dar la lata.
@@ -245,11 +245,13 @@ artefacto del plugin — ver "Propiedad" abajo).
       con **claves desconocidas** bajo `features.sdd` (p. ej. `provder`): **posible typo**, nómbrala; si
       además falta `provider`, dilo en el mismo aviso.
     - **Provider configurado no instalado** (modo `external`): separa `<plugin>` de `<skill>` por el
-      primer `:` y comprueba best-effort (skills visibles en la sesión, o `installed_plugins.json` y el
+      primer `:` (un valor **sin `:`** es solo un nombre de skill: comprueba la skill y di «plugin no
+      verificado») y comprueba best-effort (skills visibles en la sesión, o `installed_plugins.json` y el
       `installPath` del plugin) **distinguiendo** «**plugin ausente**» de «**plugin instalado pero sin esa
       skill**» (drift de nombre) — el mensaje debe nombrar cuál de los dos falta. Si no puedes comprobarlo,
       di «no verificado», no «ausente».
-    - **Provider que apunta a `task-pipeline`** (`task-pipeline:<skill>`): el lifecycle lo rechaza y el modo
+    - **Provider que apunta a `task-pipeline`** (`task-pipeline:<skill>` **o** un nombre sin `:` que coincide
+      con una skill del plugin, según la regla de «Modo SDD»): el lifecycle lo rechaza y el modo
       efectivo es **`off`**, pero con modo `off` el lifecycle no corre, así que **no avisa** — avísalo tú
       aquí: hay intención de activar pero el SDD sigue `off` hasta que se nombre un plugin externo.
     - **Artefactos nativos huérfanos** (modo `external`): si existen `spec.md`, `casos-de-uso/` o ADR en
@@ -259,14 +261,18 @@ artefacto del plugin — ver "Propiedad" abajo).
 13. **Lifecycle anterior a 0.18.0: falta «Modo SDD»** (drift de plantilla, repo-owned — análoga a la cat. 5) —
     desde **0.18.0** `docs/guides/task-lifecycle.md` define la regla única off/native/external (sección
     «Modo SDD») y los pasos de invocación del provider. El lifecycle no lleva ancla de versión: la señal es la
-    **presencia del heading «Modo SDD»** (`grep -n "Modo SDD"`). Si el fichero existe y **no lo contiene**, repórtalo
-    como lifecycle anterior a 0.18.0; si lo contiene, **no reportes nada**. Gravedad según `features.sdd`:
-    - **Bloque con `provider`** (intención de `external`): drift que importa — el lifecycle no define el modo
-      `external` ni invoca al provider. En Fase 2 ofrece re-materializar desde
-      `../plan-task/templates/task-lifecycle.md` con diff + aprobación (como la cat. 5).
-    - **Off o `true`**: solo **aviso informativo**, sin ofrecer cambios obligatorios.
-    No uses una ancla de versión nueva ni toques prosa personalizada sin enseñar el diff. Si el fichero no existe,
-    ya lo cubre la cat. 4/restauración del hook: no lo dupliques aquí.
+    **presencia del heading** «Modo SDD» (`grep -nE "^#+ Modo SDD"`; una mención suelta, como la de la fila de
+    la tabla de `features.sdd`, **no** cuenta). Si el fichero existe y **no tiene ese heading**, repórtalo como
+    lifecycle anterior a 0.18.0; si lo tiene, **no reportes nada**. Gravedad según `features.sdd`:
+    - **Bloque con `enabled: true` y `provider`** (intención de `external`): drift que importa — el lifecycle
+      no define el modo `external` ni invoca al provider. En Fase 2 **no reescribas el fichero entero**
+      (casi todos los repos lo adaptaron): propón **añadir solo** la sección «Modo SDD» y los pasos 4b/3c
+      desde `../plan-task/templates/task-lifecycle.md`, con diff + aprobación; si el usuario personalizó
+      esa zona, aplica la regla 4 (aviso con lo que falta, sin auto-editar).
+    - **Off, `true` o `enabled: false`** (incl. bloque con `provider` apagado a propósito): solo **aviso
+      informativo**, sin ofrecer cambios obligatorios.
+    No uses una ancla de versión nueva. Si el fichero no existe, ya lo cubre la restauración del hook
+    `SessionStart`: no lo dupliques aquí.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -354,9 +360,11 @@ que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
   —spec/CU por package— lo crea el flujo SDD on-demand).
 - **Externo** → pide `provider` (`<plugin>:<skill>`) como **texto libre**, **sin comprobar que exista** al
   escribirlo (de eso avisa la cat. 12). Vacío, solo espacios o cancelar → **no escribe nada** y reporta
-  «SDD no activado». Un valor `task-pipeline:<skill>` también: **explica** que el pipeline rechaza su propio
-  plugin como provider (modo efectivo `off`), **no lo escribas** y reporta «SDD no activado». Quita espacios laterales y **entrecomilla** el valor (cubre `: ` y `#`) para que el YAML
-  siga siendo válido. Con diff + aprobación escribe `features.sdd: { enabled: true, provider: "<valor>" }`;
+  «SDD no activado». Un valor que apunta al propio pipeline (`task-pipeline:<skill>` o un nombre sin `:` que
+  coincide con una de sus skills — regla de «Modo SDD») también: **explica** que se rechaza (modo efectivo
+  `off`), **no lo escribas** y reporta «SDD no activado». Quita espacios laterales y **entrecomilla** el valor
+  (cubre `: ` y `#`; si contiene comillas, escápalas) para que el YAML siga siendo válido. Si ya hay un
+  bloque `features.sdd` que resuelve a `off` (cat. 12), el diff lo **reemplaza**, no añade una segunda clave. Con diff + aprobación escribe `features.sdd: { enabled: true, provider: "<valor>" }`;
   **no** materializa scaffolding nativo.
 - **No**, diff rechazado, o **sin canal** para preguntar → **no** escribas nada (déjalo off y repórtalo:
   «SDD no activado»); en ese caso `/doctor` sigue siendo solo-reporte.

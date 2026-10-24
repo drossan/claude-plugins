@@ -45,7 +45,7 @@
 >    - Una skill = un `SKILL.md` con frontmatter `name` + `description`; el cuerpo son **instrucciones**
 >      (no código ejecutable). Admite `model:` en frontmatter, pero por-turno + estático — el routing
 >      robusto sigue siendo subagente-only: **3 fases siempre ruteables** (`design-review`,
->      `scenario-coverage`, `fact-checker`) **+ `sdd-lint`** (condicional, con `features.sdd` on).
+>      `scenario-coverage`, `fact-checker`) **+ `sdd-lint`** (condicional, solo en modo nativo: `features.sdd: true`).
 >    - Los hooks salen **en silencio** si el repo no ha adoptado la convención (no ensuciar repos ajenos).
 >    - El `templates/` es lo que se materializa en repos consumidores: **no impongas** coste/comportamiento
 >      ahí (p.ej. `models:` comentado).

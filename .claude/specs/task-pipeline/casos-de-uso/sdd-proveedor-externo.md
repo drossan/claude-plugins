@@ -29,9 +29,9 @@
 ## Escenario principal (éxito)
 
 1. El pipeline lee `features.sdd` y resuelve el modo `external` (bloque con `enabled: true` y `provider` string no vacío).
-2. Al arrancar una tarea, invoca la skill del provider con `phase=start task=<ruta> plan=<ruta>`.
+2. Al arrancar una tarea, invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>`.
 3. La sesión implementa la tarea; el Gherkin vive en la tarea (o se sigue el enlace a un CU si lo trae).
-4. Al cerrar, tras `mutation` y antes de `fact-checker`, invoca al provider con `phase=close task=<ruta> plan=<ruta>`.
+4. Al cerrar, tras `mutation` y antes de `fact-checker`, invoca al provider con `contract=1 phase=close task=<ruta> plan=<ruta>`.
 5. La DoD marca la línea «SDD gestionado con `<provider>`» y la tarea se cierra.
 
 ## Extensiones (flujos alternativos y de error)
@@ -40,8 +40,8 @@
 - **1b.** Bloque sin `provider`, con `provider` vacío o no-string, o con `enabled` no booleano: modo `off`.
 - **2a.** La skill del provider no está instalada: aviso que el owner reconoce; no se bloquea el `.md`.
 - **2b.** La skill del provider falla al ejecutarse: aviso que el owner reconoce; no se bloquea el `.md`.
-- **4a.** El provider reporta un problema en sus artefactos: se traslada como aviso, nunca como ERROR.
 - **3a.** La tarea ya enlaza a un CU (creada antes del cambio de modo): el enlace se sigue igualmente.
+- **4a.** El provider reporta un problema en sus artefactos: se traslada como aviso, nunca como ERROR.
 
 ## Reglas de negocio
 
@@ -49,7 +49,7 @@
 - **RN-2** — El pipeline no valida el nombre ni el contenido que produce el provider.
 - **RN-3** — Contrato de invocación v1 (experimental): `contract=1 phase=start|close task=<ruta> plan=<ruta>`. Las rutas son relativas a la raíz del repo y **existen** en el instante de la invocación: `start` tras mover la tarea a `active`; `close` antes de moverla a `completed`. Si la tarea no tiene plan legible, `plan=` va vacío con aviso, sin bloquear.
 - **RN-4** — Con `external`, el **gate automático** de `sdd-lint` y `models.sdd-lint` no tienen efecto y `/doctor` no exige scaffolding SDD nativo. La invocación **manual** de `/sdd-lint` audita igualmente y avisa de que el SDD lo gestiona el provider (como con SDD off).
-- **RN-5** — El valor de `provider` se pasa como **un único identificador**, nunca interpolado como argumentos. Un provider que resuelve a una skill del propio `task-pipeline` se rechaza con aviso (modo efectivo `off`). Que un repo clonado pueda nombrar cualquier skill instalada es un riesgo conocido y documentado en el README.
+- **RN-5** — El valor de `provider` se pasa como **un único identificador**, nunca interpolado como argumentos. Un provider que resuelve a una skill del propio `task-pipeline` (con prefijo `task-pipeline:` o un nombre sin `:` que coincide con una de sus skills) se rechaza con aviso (modo efectivo `off`). Que un repo clonado pueda nombrar cualquier skill instalada es un riesgo conocido y documentado en el README.
 - **RN-6** — Orden de cierre: `phase=close` se invoca tras `mutation`, antes de `fact-checker`, del auto-commit y de la proyección a GitHub, de modo que lo que genere el provider entra en el commit.
 - **RN-7** — Reentrada: `start` se invoca solo en la activación `pending → active` (ni `blocked → active` ni la reapertura `done → active` lo repiten); `close` se reintenta tras un fallo (el provider debe ser idempotente, documentado) y no se invoca si `mutation` falla. Terminar sin error ni reporte cuenta como OK. Reconocer un aviso es dejar una nota en el session log; el pipeline lo señala y no cierra en silencio.
 - **RN-8** — Sin respuesta, o sin canal para un provider interactivo, se trata como error del provider (aviso). No hay timeout propio.
@@ -189,6 +189,12 @@ Feature: SDD delegado en un plugin externo
 
   Scenario: Provider que apunta al propio pipeline
     Given un repo con features.sdd con provider "task-pipeline:plan-task"
+    When el pipeline resuelve el modo SDD
+    Then el modo efectivo es off
+    And se avisa de que el provider es una skill del propio task-pipeline
+
+  Scenario: Provider sin prefijo que coincide con una skill del pipeline
+    Given un repo con features.sdd con provider "doctor"
     When el pipeline resuelve el modo SDD
     Then el modo efectivo es off
     And se avisa de que el provider es una skill del propio task-pipeline

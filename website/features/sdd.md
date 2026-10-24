@@ -81,12 +81,12 @@ flowchart TD
 
 ## Garantías opt-in
 
-- **Fail-safe**: SOLO `true` (booleano) activa el modo nativo, y SOLO un bloque con `enabled: true` y
-  `provider` no vacío activa el externo. Cualquier otra cosa (`"true"`, `yes`, `1`, un bloque sin
-  `provider`, comentado…) → **off**, sin error de parseo.
+- **Fail-safe**: ante la duda, **off**, sin error de parseo. La tabla de resolución (qué valores dan `native`,
+  `external` u `off`, incluido el rechazo de un provider del propio pipeline) vive solo en
+  [Modo SDD](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off--native--external).
 - **Fuera de todo preset**: `mode: full` **no** lo enciende; es una decisión explícita.
 - **Ausencia ≠ drift**: `/doctor` no reporta la falta del flag ni de las plantillas SDD salvo que el flag
-  esté **on** (mismo criterio que `caveman`/`github-tracking`).
+  esté **on en modo nativo** (en `external` no hay plantillas SDD que reportar) (mismo criterio que `caveman`/`github-tracking`).
 - **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`). El modo
   nativo es también byte-idéntico al de antes de existir `external`.
 

@@ -4,6 +4,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.3] — 2026-10-24
+
+**Correcciones del 2.º code review** (coherencia de la regla de modos SDD; sin gate nuevo).
+
+### Fixed
+- Un `provider` sin `:` que coincide con una skill de `task-pipeline` (p.ej. `doctor`) se rechaza igual que
+  `task-pipeline:<skill>`; la regla vive solo en «Modo SDD» y `/task-init` y `/doctor` la aplican.
+- `/doctor` cat. 13: la señal es el **heading** «Modo SDD» (no cualquier mención) y el fix **añade solo la
+  sección** y los pasos 4b/3c en vez de reescribir el lifecycle; `enabled: false` es solo aviso.
+- README, portal, ambos schemas y la plantilla YAML dejan de repetir la regla de resolución y la enlazan.
+- DoD de `external`: `phase=close` se invoca siempre («sin cambios» solo describe lo que el provider reportó).
+- Textos «con `features.sdd` on» → modo nativo; CU con `contract=1` y orden de extensiones; diagrama de estados
+  del plan con la reapertura `completed → active`; diagrama de gates del portal; escape de comillas en `/doctor`.
+
 ## [0.18.2] — 2026-10-24
 
 ### Added

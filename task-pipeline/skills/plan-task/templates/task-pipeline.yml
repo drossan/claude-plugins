@@ -99,15 +99,14 @@ features:
   # SDD (Spec-Driven Development) — capa OPCIONAL opt-in (default off). Con `sdd: true` (modo nativo) la
   # tarea trabaja contra specs (EARS) + casos de uso (Gherkin, única fuente) + ADR (MADR): plantillas en
   # `.claude/specs/`. NO forma parte de ningún preset (mode: full NO lo enciende) y su AUSENCIA no es drift
-  # para /doctor (como caveman/github-tracking). FAIL-SAFE: `sdd: true` (booleano) → nativo; el bloque
-  # válido de abajo → externo; ausente / false / "true" string / yes / 1 / TRUE / comentado / bloque
-  # incompleto → off. Con off (default) el Gherkin vive en la tarea, como hoy (comportamiento idéntico).
+  # para /doctor (como caveman/github-tracking). FAIL-SAFE: ante la duda, off (la regla de resolución
+  # vive en docs/guides/task-lifecycle.md → «Modo SDD»). Con off (default) el Gherkin vive en la tarea, como hoy (comportamiento idéntico).
   # Detalle en el README del plugin → "SDD: nativo o externo (opcional)".
   # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
   # sdd: false
   #
-  # SDD EXTERNO (alternativa al nativo): delega en un plugin SDD que ya uses. Forma de bloque; SOLO
-  # `enabled: true` booleano + `provider` string no vacío activa (sin provider → off). Con él, lo nativo
+  # SDD EXTERNO (alternativa al nativo): delega en un plugin SDD que ya uses. Forma de bloque (`enabled: true` +
+  # `provider`; ver «Modo SDD» para lo que resuelve a off). Con él, lo nativo
   # se apaga (sin plantillas ni `sdd-lint`) y el pipeline invoca la skill del provider al arrancar y al
   # cerrar la tarea (contrato experimental). La regla off/nativo/externo vive en docs/guides/task-lifecycle.md.
   # sdd:

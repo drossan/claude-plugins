@@ -82,8 +82,10 @@ modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models
 `enabled` o sin `provider`; `enabled` no booleano (`"true"`) o `false`; `provider` vacío, solo espacios, `null`,
 número o lista. Las **claves extra** dentro del bloque se toleran (`/doctor` las señala como posible typo).
 **YAML ilegible** → `off` con aviso de config ilegible, sin invocar a ningún provider. Un `provider` que
-resuelve a una skill del propio `task-pipeline` (p.ej. `task-pipeline:plan-task`) se **rechaza** con aviso →
-modo efectivo `off`. El `provider` se trata como **un único identificador**, nunca como argumentos
+resuelve a una skill del propio `task-pipeline` se **rechaza** con aviso → modo efectivo `off`: es el que lleva el
+prefijo `task-pipeline:` (p.ej. `task-pipeline:plan-task`) **o** un nombre **sin `:`** que coincide con una de sus
+skills (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`, `scenario-coverage`,
+`fact-checker`, `pipeline-usage`, `sdd-lint`). El `provider` se trata como **un único identificador**, nunca como argumentos
 (`"spec:run phase=close"` es un solo nombre, no dos).
 
 - **`native`** — la capa SDD descrita en «Flujo SDD» (spec EARS + CU Gherkin + ADR MADR, gate `sdd-lint`).
@@ -230,7 +232,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
 - [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo en modo nativo (`sdd: true`)
-- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker`, o «sin cambios» en el session log; un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker` (siempre se invoca; «sin cambios» solo describe lo que el provider reportó, en el session log); un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
@@ -494,7 +496,7 @@ Es el registro canónico; no lo dupliques.
 
 | Entidad | Estados | Notas |
 |---|---|---|
-| Plan | `pending → active → completed` | `cancelled` desde cualquier estado. |
+| Plan | `pending → active → completed` | `cancelled` desde cualquier estado. `completed → active` es la **reapertura** (antes de mergear la PR) y se registra en el Registro de cambios. |
 | Tarea | `pending → active → in-review → done` | `blocked` desde `active` (motivo en el session log) → vuelve a `active` al desbloquear. `cancelled` desde cualquier estado. |
 
 **Plan:**
@@ -505,6 +507,7 @@ stateDiagram-v2
     [*] --> pending
     pending --> active
     active --> completed
+    completed --> active
     completed --> [*]
     pending --> cancelled
     active --> cancelled
