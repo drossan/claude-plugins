@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-proveedor-externo-08
 package: task-pipeline
 plan: sdd-proveedor-externo
-status: active
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-proveedor-externo-07]
 estimate: 3h
-actual:
+actual: 1.5h
 created: 2026-10-24
 updated: 2026-10-24
 ---
@@ -52,13 +52,13 @@ cat. 13 acotada. Criterios en el CU (fuente única); verificación por `grep`/bu
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. -->
-- [ ] Cada hallazgo reproducido antes de corregirse
-- [ ] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
-- [ ] Spec cumplida
-- [ ] **Gate `sdd-lint` superado** — sin ERROR
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — N/A: la tarea no tiene `issue:` (ciclo local puro)
-- [ ] **SDD** — CU actualizado (regla de provider propio, B-d), o «sin cambios de spec/CU»
-- [ ] Doc técnica actualizada (README, CHANGELOG 0.18.3, `plugin.json`) · `technical-docs`
-- [ ] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-08.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)
+- [x] Cada hallazgo reproducido antes de corregirse
+- [x] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
+- [x] Spec cumplida
+- [x] **Gate `sdd-lint` superado** — sin ERROR
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — N/A: la tarea no tiene `issue:` (ciclo local puro)
+- [x] **SDD** — CU actualizado (regla de provider propio, B-d), o «sin cambios de spec/CU»
+- [x] Doc técnica actualizada (README, CHANGELOG 0.18.3, `plugin.json`) · `technical-docs`
+- [x] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-08.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)
