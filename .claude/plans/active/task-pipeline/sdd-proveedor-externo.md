@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-proveedor-externo
 package: task-pipeline
-status: completed
+status: active
 branch: plan/task-pipeline/sdd-proveedor-externo
 issue: 78
 created: 2026-10-24
@@ -74,6 +74,7 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 - [x] `task-pipeline-sdd-proveedor-externo-04` (P2) — Activación y salud en `/task-init` y `/doctor`  · depends_on: task-pipeline-sdd-proveedor-externo-02
 - [x] `task-pipeline-sdd-proveedor-externo-05` (P3) — Docs, portal y release  · depends_on: task-pipeline-sdd-proveedor-externo-03, task-pipeline-sdd-proveedor-externo-04
 - [x] `task-pipeline-sdd-proveedor-externo-06` (P3) — Correcciones del code review: ancla de la regla única, versión de schema, contradicciones lifecycle/template/YAML  · depends_on: task-pipeline-sdd-proveedor-externo-05
+- [ ] `task-pipeline-sdd-proveedor-externo-07` (P3) — `/doctor` detecta el lifecycle materializado anterior a 0.18.0 (follow-up A1)  · depends_on: task-pipeline-sdd-proveedor-externo-06
 
 ## Registro de cambios del plan
 
@@ -101,3 +102,4 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
   Decididas por la sesión por ser rutinarias: concurrencia N/A (una tarea `active` por plan) y cancelar/reabrir no invoca al provider (RN-9); cambio de nativo a externo manual, sin reofrecer (RN-10); `/sdd-lint` manual en `external` audita y avisa, como con SDD off (RN-4).
 - 2026-10-24: code review del plan (Opus, subagente fresco, a petición del owner) → 5 altos, 6 medios, 12 bajos. Decisión del owner: **tarea 06** con A2–A5, M1, M3, M4 y B9. A1 (repos ya adoptados con lifecycle antiguo), M5 (riesgos de seguridad adicionales) y el resto (M2, M6, B1–B8, B10–B12) quedan como follow-ups. Se omiten `design-review`/`scenario-coverage` para la 06: correcciones de coherencia sin contrato ni comportamiento nuevo.
 - 2026-10-24: tarea 06 cerrada (0.18.1). Plan completado. Nota retro: estimado 5–6 sesiones + 06 (2h); la verificación por inspección no vio 9 anclas rotas ni contradicciones que el code review sí encontró → verificar slugs con `github-slugger` al enlazar anclas.
+- 2026-10-24: a petición del owner, el plan se **reabre** (`completed → active`, antes de mergear la PR #84) para añadir la tarea 07 (A1: `/doctor` detecta el lifecycle sin «Modo SDD»). Escenarios incorporados al CU. Se omiten `design-review`/`scenario-coverage`: una sola categoría de `/doctor` análoga a la cat. 5, sin contrato nuevo. La nota retro y el `completed` se repetirán al cerrar la 07.

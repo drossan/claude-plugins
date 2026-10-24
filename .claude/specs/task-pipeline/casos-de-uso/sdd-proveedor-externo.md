@@ -296,4 +296,21 @@ Feature: SDD delegado en un plugin externo
     Given un repo con features.sdd: yes
     When corre /doctor
     Then lo trata como off y ofrece la activación sin tratarlo como config inválida
+
+  Scenario: Doctor detecta un lifecycle materializado anterior a la regla de modos
+    Given un repo con features.sdd en bloque con provider y docs/guides/task-lifecycle.md sin la sección "Modo SDD"
+    When corre /doctor
+    Then reporta que el lifecycle es anterior a 0.18.0 y no define el modo external
+    And ofrece re-materializarlo desde la plantilla actual con diff y aprobación
+    And no escribe nada sin aprobación
+
+  Scenario: Lifecycle al día no se reporta
+    Given un repo con docs/guides/task-lifecycle.md que contiene la sección "Modo SDD"
+    When corre /doctor
+    Then la categoría no reporta drift
+
+  Scenario: Repo sin SDD y con lifecycle antiguo
+    Given un repo con features.sdd off y un lifecycle sin la sección "Modo SDD"
+    When corre /doctor
+    Then lo menciona como aviso informativo sin ofrecer cambios obligatorios
 ```
