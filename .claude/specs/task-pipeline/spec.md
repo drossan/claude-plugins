@@ -60,6 +60,10 @@ de `/pipeline-usage`.
   session log una línea `provider phase=close: <resultado>` que `fact-checker` pueda comprobar. **Si** un paso
   previo de la DoD falla, **entonces** NO DEBERÁ invocarlo; si el provider está ausente o falla, DEBERÁ
   registrarlo como aviso a reconocer y no bloquear el cambio de `status:` del `.md`.
+- **FR-014** — **Cuando** `/doctor` corre en un repo en modo `external`, el sistema DEBERÁ diagnosticar si el
+  provider está instalado (instalado · instalado pero no cargado · instalado sin esa skill · plugin ausente · no
+  verificado) sin escribir nada. **Si** solo puede apoyarse en el respaldo `installed_plugins.json`, **entonces**
+  NO DEBERÁ declarar el provider como activo y, si no puede comprobarlo, DEBERÁ decir «no verificado», nunca «ausente».
 
 ## Requisitos no funcionales
 

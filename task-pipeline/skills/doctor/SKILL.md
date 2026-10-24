@@ -244,12 +244,29 @@ artefacto del plugin — ver "Propiedad" abajo).
       **intención de activar** pero el modo en runtime **sigue `off`** — avísalo y di qué falta. Lo mismo
       con **claves desconocidas** bajo `features.sdd` (p. ej. `provder`): **posible typo**, nómbrala; si
       además falta `provider`, dilo en el mismo aviso.
-    - **Provider configurado no instalado** (modo `external`): separa `<plugin>` de `<skill>` por el
-      primer `:` (un valor **sin `:`** es solo un nombre de skill: comprueba la skill y di «plugin no
-      verificado») y comprueba best-effort (skills visibles en la sesión, o `installed_plugins.json` y el
-      `installPath` del plugin) **distinguiendo** «**plugin ausente**» de «**plugin instalado pero sin esa
-      skill**» (drift de nombre) — el mensaje debe nombrar cuál de los dos falta. Si no puedes comprobarlo,
-      di «no verificado», no «ausente».
+    - **Provider configurado no instalado** (modo `external`; no corre en `off`/`native` ni si el provider
+      apunta a `task-pipeline`, ver el punto siguiente): separa `<plugin>` de `<skill>` por el primer `:`
+      (un valor **sin `:`** es solo un nombre de skill: comprueba la skill y di «plugin no verificado»).
+      **Antes de construir ninguna ruta**, rechaza como identificador inválido un `<plugin>` o `<skill>`
+      que contenga `..`, `/` o `\` (no leas nada fuera de `installPath/skills`).
+      - **Vía principal — skills visibles en la sesión**: busca el nombre **cualificado** `<plugin>:<skill>`
+        (una skill `<skill>` de otro plugin no cuenta). Si está visible → **instalado**.
+      - **Respaldo, solo si no es visible** — `~/.claude/plugins/installed_plugins.json`. Formato **observado
+        y no soportado** (interno, puede cambiar): un objeto con `plugins`, cuyas claves son
+        `<plugin>@<marketplace>` y cuyos valores son listas de entradas con un `installPath`. El provider
+        no lleva marketplace: compara por el prefijo `<plugin>@` (acepta varios marketplaces) y **no**
+        deduzcas qué entrada aplica a este repo; basta con que **alguna** tenga
+        `installPath/skills/<skill>/SKILL.md`. Resultado: alguna entrada con esa skill → «**instalado pero
+        no cargado en esta sesión**» (recargar los plugins y repetir); entradas sin esa skill (o con
+        `installPath` inexistente) → «**instalado sin esa skill**»; ninguna clave con ese prefijo, o la
+        lista vacía → «**plugin ausente**». El respaldo **solo afina el diagnóstico y nunca declara el
+        provider como activo ni «OK»** (registra instalación, no activación).
+      - **«No verificado», nunca «ausente»**: fichero inexistente, ilegible, vacío o que no parsea; raíz que
+        no es objeto o `plugins` ausente/nulo/array; valor de una clave que no es lista; entradas sin
+        `installPath` string; `SKILL.md` ilegible o directorio; `HOME` sin definir.
+      - **Gravedad**: «plugin ausente» e «instalado sin esa skill» → **drift**; «no verificado» e «instalado
+        pero no cargado» → **aviso**. El mensaje nombra qué falta (la skill, no el plugin, si el plugin
+        está instalado). Solo-reporte e idempotente: dos ejecuciones dan el mismo reporte.
     - **Provider que apunta a `task-pipeline`** (`task-pipeline:<skill>` **o** un nombre sin `:` que coincide
       con una skill del plugin, según la regla de «Modo SDD»): el lifecycle lo rechaza y el modo
       efectivo es **`off`**, pero con modo `off` el lifecycle no corre, así que **no avisa** — avísalo tú

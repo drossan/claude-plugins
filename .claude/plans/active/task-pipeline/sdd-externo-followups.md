@@ -79,7 +79,7 @@ La PR #91 (0.18.4) cerró el seguimiento del SDD externo y dejó follow-ups expl
 ## Tasks
 
 - [x] `task-pipeline-sdd-externo-followups-01` (P1) — Check de enlaces a GitHub en el build del portal (B11)  · depends_on: —
-- [ ] `task-pipeline-sdd-externo-followups-02` (P2) — `doctor`: detección precisa del provider instalado (B12)  · depends_on: —
+- [x] `task-pipeline-sdd-externo-followups-02` (P2) — `doctor`: detección precisa del provider instalado (B12)  · depends_on: —
 - [ ] `task-pipeline-sdd-externo-followups-03` (P3) — Simplificaciones del review y release 0.18.5  · depends_on: task-pipeline-sdd-externo-followups-01, task-pipeline-sdd-externo-followups-02
 
 ## Registro de cambios del plan
