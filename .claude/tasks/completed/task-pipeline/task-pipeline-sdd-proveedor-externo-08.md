@@ -7,6 +7,7 @@ priority: 3
 depends_on: [task-pipeline-sdd-proveedor-externo-07]
 estimate: 3h
 actual: 1.5h
+issue: 87
 created: 2026-10-24
 updated: 2026-10-24
 ---
