@@ -40,9 +40,14 @@ en `.claude/task-pipeline.yml` — ninguna se activa sola y su ausencia no es "d
 ## Siguiente paso
 
 - [Instalación](./instalacion.md) — añade el marketplace e instala el plugin.
+- [Tu primer plan](./tu-primer-plan.md) — un caso real de principio a fin, con lo que ves y decides en cada checkpoint.
 - [El pipeline](./pipeline.md) — el flujo completo, fase a fase.
 - [Configuración](./configuracion.md) — `task-pipeline.yml`: presets, stack, features, models.
 
-> **Fuente canónica**: el README del plugin y la guía de ciclo de vida documentan el detalle exhaustivo.
-> Ver [`task-pipeline/README.md`](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md)
-> y [`docs/guides/task-lifecycle.md`](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md).
+## Profundizar (opcional)
+
+Todo lo anterior se entiende sin salir del portal. Si quieres la **referencia técnica exhaustiva** para
+máquina/consumidores —tablas de límites, nombres exactos de opciones— está en el
+[README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md) y en la
+[guía de ciclo de vida](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md).
+No hace falta para empezar.
