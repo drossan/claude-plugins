@@ -4,6 +4,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.1] — 2026-10-24
+
+**Correcciones del code review de 0.18.0** (coherencia de la regla única de modos SDD; sin comportamiento nuevo).
+
+### Fixed
+- Las 9 referencias a «Modo SDD» apuntaban a un ancla inexistente (`#modo-sdd-off-native-external`); el slug real
+  es `#modo-sdd-off--native--external` (comprobado con `github-slugger`).
+- `x-task-pipeline-schema-version` sube a `1.1.0` en ambos schemas, para que `/doctor` detecte el drift del
+  bloque `{ enabled, provider }`.
+- Contradicciones «solo `true` activa» en la fila `features.sdd` del lifecycle y su plantilla, y en el comentario
+  de `templates/task-pipeline.yml`; título del README corregido en la plantilla del lifecycle.
+- `phase=start` se invoca solo en `pending → active`: `blocked → active` y la reapertura `done → active` no lo
+  repiten (lifecycle, README y CU, RN-7/RN-9).
+- `/doctor` avisa de un `provider` que apunta a `task-pipeline` (modo efectivo `off`) y no lo escribe al activar.
+- Descripciones (`plugin.json`, `marketplace.json`, YAML, `templates/README.md`) alineadas con los tres modos.
+
 ## [0.18.0] — 2026-10-24
 
 **SDD con proveedor externo.** `features.sdd` acepta un bloque `{ enabled: true, provider: "<plugin>:<skill>" }`

@@ -52,7 +52,7 @@ Una clave explícita pisa el preset. Resumen (detalle y garantías en las págin
 | `closing-documentation.*` | ON | Las 3 capas de doc de cierre (código / técnica / session log). |
 | `mutation-gate` | `80` | Gate de mutation y su umbral `break`; `false` lo desactiva. |
 | `conventional-commits` | ON | Formato `<task-id>: <conventional commit>`; **aplica incluso sin git-automation**. |
-| [`sdd`](../features/sdd.md) | off | Capa **SDD**: nativa (`true`: spec EARS + CU Gherkin + ADR MADR + gate `/sdd-lint`) o externa (bloque `{ enabled, provider }`). Los tres modos: [regla única](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off-native-external). |
+| [`sdd`](../features/sdd.md) | off | Capa **SDD**: nativa (`true`: spec EARS + CU Gherkin + ADR MADR + gate `/sdd-lint`) o externa (bloque `{ enabled, provider }`). Los tres modos: [regla única](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off--native--external). |
 | [`git-automation`](../features/git-automation.md) | off | `auto-commit` (cierre de tarea) · `auto-pr` (cierre de plan) · `co-author`. |
 | [`github-tracking`](../features/github-tracking.md) | off | Proyección one-way `.md`→GitHub (issue padre + sub-issues). |
 | [`caveman`](../features/caveman.md) | off | Comprime el output del hilo principal. |

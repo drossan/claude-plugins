@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-proveedor-externo-06
 package: task-pipeline
 plan: sdd-proveedor-externo
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-proveedor-externo-05]
 estimate: 2h
-actual:
+actual: 1h
 created: 2026-10-24
 updated: 2026-10-24
 ---
@@ -54,13 +54,13 @@ Tarea de coherencia documental: sin comportamiento nuevo. Criterios de aceptaci�
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. -->
-- [ ] Cada hallazgo reproducido antes de corregirse; ningún enlace a la regla apunta a un slug inexistente
-- [ ] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
-- [ ] Spec cumplida
-- [ ] **Gate `sdd-lint` superado** — sin ERROR
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · `features.github-tracking`
-- [ ] **SDD** — spec/CU actualizados (M4 toca RN-7/RN-9), o «sin cambios de spec/CU» aquí y en el session log
-- [ ] Doc técnica actualizada · `technical-docs`
-- [ ] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-06.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)
+- [x] Cada hallazgo reproducido antes de corregirse; ningún enlace a la regla apunta a un slug inexistente
+- [x] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
+- [x] Spec cumplida
+- [x] **Gate `sdd-lint` superado** — sin ERROR
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — N/A: la tarea no tiene `issue:` (ciclo local puro)
+- [x] **SDD** — CU actualizado (M4 toca RN-7/RN-9), o «sin cambios de spec/CU» aquí y en el session log
+- [x] Doc técnica actualizada · `technical-docs`
+- [x] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-06.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)

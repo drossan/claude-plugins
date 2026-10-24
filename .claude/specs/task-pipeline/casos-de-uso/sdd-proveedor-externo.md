@@ -51,9 +51,9 @@
 - **RN-4** — Con `external`, el **gate automático** de `sdd-lint` y `models.sdd-lint` no tienen efecto y `/doctor` no exige scaffolding SDD nativo. La invocación **manual** de `/sdd-lint` audita igualmente y avisa de que el SDD lo gestiona el provider (como con SDD off).
 - **RN-5** — El valor de `provider` se pasa como **un único identificador**, nunca interpolado como argumentos. Un provider que resuelve a una skill del propio `task-pipeline` se rechaza con aviso (modo efectivo `off`). Que un repo clonado pueda nombrar cualquier skill instalada es un riesgo conocido y documentado en el README.
 - **RN-6** — Orden de cierre: `phase=close` se invoca tras `mutation`, antes de `fact-checker`, del auto-commit y de la proyección a GitHub, de modo que lo que genere el provider entra en el commit.
-- **RN-7** — Reentrada: `start` se invoca una vez por activación de la tarea; `close` se reintenta tras un fallo (el provider debe ser idempotente, documentado) y no se invoca si `mutation` falla. Terminar sin error ni reporte cuenta como OK. Reconocer un aviso es dejar una nota en el session log; el pipeline lo señala y no cierra en silencio.
+- **RN-7** — Reentrada: `start` se invoca solo en la activación `pending → active` (ni `blocked → active` ni la reapertura `done → active` lo repiten); `close` se reintenta tras un fallo (el provider debe ser idempotente, documentado) y no se invoca si `mutation` falla. Terminar sin error ni reporte cuenta como OK. Reconocer un aviso es dejar una nota en el session log; el pipeline lo señala y no cierra en silencio.
 - **RN-8** — Sin respuesta, o sin canal para un provider interactivo, se trata como error del provider (aviso). No hay timeout propio.
-- **RN-9** — Cancelar o reabrir una tarea no invoca al provider. Solo hay una tarea `active` por plan, así que el pipeline no añade exclusión entre tareas.
+- **RN-9** — Cancelar, desbloquear (`blocked → active`) o reabrir (`done → active`) una tarea no invoca `start` al provider. Solo hay una tarea `active` por plan, así que el pipeline no añade exclusión entre tareas.
 - **RN-10** — El cambio de nativo a externo es manual (editar `features.sdd`); `/doctor` no reofrece la activación si ya hay modo `external`.
 
 ## Criterios de aceptación (Gherkin)

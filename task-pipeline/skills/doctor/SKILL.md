@@ -248,8 +248,10 @@ artefacto del plugin — ver "Propiedad" abajo).
       primer `:` y comprueba best-effort (skills visibles en la sesión, o `installed_plugins.json` y el
       `installPath` del plugin) **distinguiendo** «**plugin ausente**» de «**plugin instalado pero sin esa
       skill**» (drift de nombre) — el mensaje debe nombrar cuál de los dos falta. Si no puedes comprobarlo,
-      di «no verificado», no «ausente». Un provider que apunta a una skill de `task-pipeline` ya resuelve a
-      `off` (lo avisa el lifecycle); no lo dupliques.
+      di «no verificado», no «ausente».
+    - **Provider que apunta a `task-pipeline`** (`task-pipeline:<skill>`): el lifecycle lo rechaza y el modo
+      efectivo es **`off`**, pero con modo `off` el lifecycle no corre, así que **no avisa** — avísalo tú
+      aquí: hay intención de activar pero el SDD sigue `off` hasta que se nombre un plugin externo.
     - **Artefactos nativos huérfanos** (modo `external`): si existen `spec.md`, `casos-de-uso/` o ADR en
       `.claude/specs/`, **avisa** de que el provider ya no los gestiona. **No** migres, conviertas ni
       borres nada.
@@ -340,7 +342,8 @@ que re-proyectar / actualizar la issue (ver la reconciliación de `/doctor`).
   —spec/CU por package— lo crea el flujo SDD on-demand).
 - **Externo** → pide `provider` (`<plugin>:<skill>`) como **texto libre**, **sin comprobar que exista** al
   escribirlo (de eso avisa la cat. 12). Vacío, solo espacios o cancelar → **no escribe nada** y reporta
-  «SDD no activado». Quita espacios laterales y **entrecomilla** el valor (cubre `: ` y `#`) para que el YAML
+  «SDD no activado». Un valor `task-pipeline:<skill>` también: **explica** que el pipeline rechaza su propio
+  plugin como provider (modo efectivo `off`), **no lo escribas** y reporta «SDD no activado». Quita espacios laterales y **entrecomilla** el valor (cubre `: ` y `#`) para que el YAML
   siga siendo válido. Con diff + aprobación escribe `features.sdd: { enabled: true, provider: "<valor>" }`;
   **no** materializa scaffolding nativo.
 - **No**, diff rechazado, o **sin canal** para preguntar → **no** escribas nada (déjalo off y repórtalo:

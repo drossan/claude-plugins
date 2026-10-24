@@ -18,7 +18,7 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 ## Plantillas SDD (opt-in, `features.sdd`)
 
 > **Lista canónica** de las plantillas de la capa **SDD** (Spec-Driven Development). Están **gated por
-> `features.sdd`** (opt-in, default off): sin el flag no se materializan ni se vigilan. Esta tabla es la
+> `features.sdd`** (opt-in, default off; solo modo nativo): sin el flag no se materializan ni se vigilan. Esta tabla es la
 > **única fuente** de sus nombres/ubicaciones — `/doctor` la **referencia** para detectar plantillas SDD
 > ausentes cuando el flag está on (no re-enumera la lista en otro sitio).
 
@@ -29,8 +29,9 @@ primera vez y luego viven ahí (y se ajustan a las particularidades del repo).
 | `adr.md` | `.claude/specs/adr/NNNN-titulo.md` | Decisión de arquitectura (MADR 4.0.0, `NNNN` desde `0001`). |
 | `adr-index.md` | `.claude/specs/adr/adr-index.md` | Índice de ADR (numeración `NNNN` desde `0001`, **sin `ADR-0000`** de relleno). |
 
-Con `features.sdd` **off** (default) esta capa no existe: el Gherkin vive en la tarea (`task.md`), como hoy.
-El flag lo introduce su propia tarea del plan; el flujo imperativo (Gherkin↔CU) se cablea en la del flujo SDD.
+Estas plantillas son de la capa **nativa** (`features.sdd: true`). Con `features.sdd` **off** (default) o en modo
+**`external`** (bloque con `provider`) esta capa no existe: el Gherkin vive en la tarea (`task.md`), como hoy.
+La regla de los tres modos está en `docs/guides/task-lifecycle.md` → «Modo SDD».
 
 ## Cómo las usa `/plan-task`
 

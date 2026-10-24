@@ -3,7 +3,7 @@
 #
 # Las skills del plugin (/plan-task, /mutation, /task-init) LEEN este archivo y lo
 # respetan; además, design-review, scenario-coverage y fact-checker (siempre) + sdd-lint
-# (solo con features.sdd on) leen su fase en `models:`.
+# (solo en modo nativo, sdd: true) leen su fase en `models:`.
 # No hay parser: el modelo lo interpreta. Edítalo para adaptar el pipeline a ESTE
 # repo (stack, qué fases son obligatorias, etc.).
 #
@@ -96,12 +96,13 @@ features:
   #   #                        # colaborador ASIGNABLE del repo (si no → avisa y sigue). Solo la sub-issue.
   #   # issue-type-plan: Plan  # avanzado: issue types se definen en el ORG; sin ellos → label `plan`
 
-  # SDD nativo (Spec-Driven Development) — capa OPCIONAL opt-in (default off). Con `sdd: true` la tarea
-  # trabaja contra specs (EARS) + casos de uso (Gherkin, única fuente) + ADR (MADR): plantillas en
+  # SDD (Spec-Driven Development) — capa OPCIONAL opt-in (default off). Con `sdd: true` (modo nativo) la
+  # tarea trabaja contra specs (EARS) + casos de uso (Gherkin, única fuente) + ADR (MADR): plantillas en
   # `.claude/specs/`. NO forma parte de ningún preset (mode: full NO lo enciende) y su AUSENCIA no es drift
-  # para /doctor (como caveman/github-tracking). FAIL-SAFE: SOLO `sdd: true` (booleano) activa; ausente /
-  # false / "true" string / yes / 1 / TRUE / comentado / forma-bloque → off. Con off (default) el Gherkin
-  # vive en la tarea, como hoy (comportamiento idéntico). Detalle en el README del plugin → "SDD nativo".
+  # para /doctor (como caveman/github-tracking). FAIL-SAFE: `sdd: true` (booleano) → nativo; el bloque
+  # válido de abajo → externo; ausente / false / "true" string / yes / 1 / TRUE / comentado / bloque
+  # incompleto → off. Con off (default) el Gherkin vive en la tarea, como hoy (comportamiento idéntico).
+  # Detalle en el README del plugin → "SDD: nativo o externo (opcional)".
   # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
   # sdd: false
   #
@@ -134,7 +135,7 @@ features:
 
 # ── Modelos por fase (subagentes) ─────────────────────────────────────────────
 # Fija el modelo de las fases que lanzan un SUBAGENTE: 3 SIEMPRE (`design-review`,
-# `scenario-coverage`, `fact-checker`) + `sdd-lint` (condicional, solo con features.sdd on).
+# `scenario-coverage`, `fact-checker`) + `sdd-lint` (condicional, solo en modo nativo: sdd: true).
 # Las fases INLINE (`grilling`, `mutation`, `plan-task`) heredan el modelo de la sesión y NO
 # se rutan (limitación de plataforma — el porqué en el README del plugin → "Routing de
 # modelo por fase").

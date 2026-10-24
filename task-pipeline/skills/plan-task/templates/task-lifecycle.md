@@ -41,7 +41,7 @@ las claves que declara); la **regla de resolución canónica** vive en el README
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en checkpoints. No forma parte de ningún preset; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
-| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**.  Modos `off`/`native`/`external`: ver [Modo SDD](#modo-sdd-off-native-external). |
+| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (cualquier valor no canónico → off; reglas en «Modo SDD»); **ausencia ≠ drift**.  Modos `off`/`native`/`external`: ver [Modo SDD](#modo-sdd-off--native--external). |
 | `features.conventional-commits` | `true`(default)/`false` | Formato `<task-id>: <conventional commit>`. Comportamiento histórico, configurable; `false` lo relaja. **Ausencia = ON**. |
 | `features.git-automation` | bloque; opt-in (default `off`) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea), `auto-pr` (cierre de **plan**; requiere `auto-commit`), `co-author` (default off). **Fuera de todo preset**; fail-safe; **ausencia ≠ drift**. |
 
@@ -77,7 +77,7 @@ modo efectivo `off`. El `provider` se trata como **un único identificador**, nu
   vuelve a vivir en la tarea. Lo único que sobrevive: **si una tarea ya enlaza a un CU, ese enlace se sigue
   siempre**, sea cual sea el modo. El pipeline **invoca la skill del provider** al arrancar la tarea y al
   cerrarla; el contrato (versión 1, **experimental**) y la semántica de avisos están en el README del
-  plugin → «SDD con proveedor externo».
+  plugin → «SDD: nativo o externo (opcional)».
 - **`off`** — sin capa SDD; el Gherkin vive en la tarea.
 
 > **Los schemas son ayuda de editor, no validación.** `task-pipeline.schema.json` acepta `provider: ""` y
@@ -311,11 +311,11 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
 4b. **(Solo modo `external`)** invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>`
-   **tras** mover la tarea a `active` (las rutas son relativas a la raíz y existen). **Una vez por activación**
-   (cancelar o reabrir no invoca). El `provider` se pasa como **un único identificador**; `plan=` va vacío con
+   **tras** mover la tarea a `active` (las rutas son relativas a la raíz y existen). **Solo en la activación `pending → active`**
+   (`blocked → active`, cancelar y la reapertura `done → active` no invocan). El `provider` se pasa como **un único identificador**; `plan=` va vacío con
    aviso si no hay plan legible. **Relee la tarea** al terminar: el provider puede haberla modificado. Si el
    provider no está instalado, falla o no responde → **aviso que el owner reconoce** (nota en el session log); la
-   tarea arranca igualmente y la línea de DoD del SDD queda sin marcar. Contrato y semántica en README del plugin → «SDD con proveedor externo».
+   tarea arranca igualmente y la línea de DoD del SDD queda sin marcar. Contrato y semántica en README del plugin → «SDD: nativo o externo (opcional)».
 5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el arranque a su issue
    (best-effort): campo **Status del Project → `In progress`**, label **`status: in-progress`** (recipe
    add-then-remove) y **assignee** según la clave `assignee` (ver la tabla completa y el recipe en "Cerrar

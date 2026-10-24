@@ -9,7 +9,7 @@ plugin de SDD).
 
 `features.sdd` se resuelve a `off`, `native` o `external`. La regla —tabla y casos límite— está escrita una
 sola vez en la
-[guía de ciclo de vida → "Modo SDD"](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off-native-external); aquí solo el resumen:
+[guía de ciclo de vida → "Modo SDD"](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off--native--external); aquí solo el resumen:
 
 | Modo | Cómo se activa | Qué hace |
 |---|---|---|

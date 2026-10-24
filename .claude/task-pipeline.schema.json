@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/drossan/claude-plugins/task-pipeline.schema.json",
-  "x-task-pipeline-schema-version": "1.0.0",
+  "x-task-pipeline-schema-version": "1.1.0",
   "title": "task-pipeline.yml",
   "description": "Ayuda de editor (autocompletado/validación) para .claude/task-pipeline.yml del plugin task-pipeline. No es validación en runtime: las skills leen el YAML sin parser de schema. x-task-pipeline-schema-version (top-level, en este fichero de schema, no en el YAML de datos) es la clave-ancla que /doctor compara entre el schema materializado en un repo consumidor y el que trae la versión instalada del plugin para detectar drift.",
   "type": "object",

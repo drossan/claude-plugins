@@ -140,7 +140,7 @@ sede canónica de la regla de resolución; las demás sedes (el YAML seed, los d
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. Ver [GitHub tracking](#github-tracking-opcional). |
-| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** nativa (spec EARS + casos de uso Gherkin + ADR MADR) o delegada en un **provider externo**. **Fuera de todo preset**; fail-safe (solo `true` booleano → `native`; solo bloque con `enabled: true` y `provider` no vacío → `external`; todo lo demás → off); **ausencia ≠ drift**. Regla única: [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off-native-external). Ver [SDD: nativo o externo](#sdd-nativo-o-externo-opcional). |
+| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** nativa (spec EARS + casos de uso Gherkin + ADR MADR) o delegada en un **provider externo**. **Fuera de todo preset**; fail-safe (solo `true` booleano → `native`; solo bloque con `enabled: true` y `provider` no vacío → `external`; todo lo demás → off); **ausencia ≠ drift**. Regla única: [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off--native--external). Ver [SDD: nativo o externo](#sdd-nativo-o-externo-opcional). |
 | `features.conventional-commits` | `true`(default)/`false` | Exige el formato `<task-id>: <conventional commit>`. Es el comportamiento **histórico**, ahora configurable: `false` lo relaja. **Ausencia = ON** (no cambia nada). |
 | `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in (no gate de DoD): `auto-commit` (commit al cerrar tarea), `auto-pr` (PR al cerrar el **plan**; requiere `auto-commit`), `co-author` (default **false** = sin trailer de co-autor). **Fuera de todo preset**; fail-safe (solo `true` activa; no-canónico → off); **ausencia ≠ drift**. Ver [Git automation](#git-automation-opcional). |
 
@@ -285,7 +285,7 @@ que inyecta una directiva mínima de compresión.
 
 Capa **opt-in** (default `off`) de **Spec-Driven Development**: eleva la fuente de verdad de la prosa en
 `docs/` a artefactos **vivos**. `features.sdd` se resuelve a uno de **tres modos**; la regla (tabla y casos
-límite) está escrita **una sola vez** en [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off-native-external) y aquí no se repite.
+límite) está escrita **una sola vez** en [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off--native--external) y aquí no se repite.
 
 | Modo | Cómo se activa | Qué hace |
 |---|---|---|
@@ -348,7 +348,7 @@ instante de la invocación):
 
 | Fase | Cuándo | Notas |
 |---|---|---|
-| `start` | Al arrancar la tarea, tras moverla a `active` | Una vez por activación; cancelar o reabrir **no** invoca. La sesión relee la tarea después. |
+| `start` | Al arrancar la tarea, tras moverla a `active` | Solo en la activación `pending → active`; `blocked → active`, cancelar y la reapertura `done → active` **no** invocan. La sesión relee la tarea después. |
 | `close` | Al cerrarla: **tras** `mutation`, **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub | No se invoca si `mutation` falla; se **reintenta** tras un fallo posterior. |
 
 El contrato es **experimental**: puede cambiar entre versiones (el campo `contract` lo versiona) y aún no se ha

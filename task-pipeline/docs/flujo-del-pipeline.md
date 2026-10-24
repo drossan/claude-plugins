@@ -42,7 +42,7 @@ flowchart TD
 ```
 
 Los **gates de cierre por tarea** corren en orden: **`mutation` → `sdd-lint` (modo nativo) o provider `phase=close` (modo `external`) →
-`fact-checker`**. `mutation` y el gate SDD son configurables/condicionales ([Modo SDD](../../docs/guides/task-lifecycle.md#modo-sdd-off-native-external)); `fact-checker` y los dos
+`fact-checker`**. `mutation` y el gate SDD son configurables/condicionales ([Modo SDD](../../docs/guides/task-lifecycle.md#modo-sdd-off--native--external)); `fact-checker` y los dos
 checkpoints humanos (`grilling`, aprobación del plan) **no son negociables**.
 
 ## Las skills
@@ -127,7 +127,7 @@ pipeline base de arriba. Cada capa se enciende con su flag:
 
 | Capa | Flag | Qué aporta |
 |---|---|---|
-| **SDD: nativo o externo** | `features.sdd` | Tres modos `off`/`native`/`external` ([regla única](../../docs/guides/task-lifecycle.md#modo-sdd-off-native-external)). En **nativo**: specs vivas: requisitos **EARS** (`spec.md`), casos de uso **Gherkin** (`caso-de-uso.md`, única fuente del Gherkin), decisiones **ADR/MADR**. Con activación asistida (`/task-init`/`/doctor` preguntan) y **gate `/sdd-lint`** de formato + completitud al cerrar. En **externo** (`provider`): se apaga lo nativo y el pipeline invoca la skill del provider al arrancar y cerrar la tarea (contrato v1 experimental; detalle en el [README](../README.md#sdd-nativo-o-externo-opcional)). |
+| **SDD: nativo o externo** | `features.sdd` | Tres modos `off`/`native`/`external` ([regla única](../../docs/guides/task-lifecycle.md#modo-sdd-off--native--external)). En **nativo**: specs vivas: requisitos **EARS** (`spec.md`), casos de uso **Gherkin** (`caso-de-uso.md`, única fuente del Gherkin), decisiones **ADR/MADR**. Con activación asistida (`/task-init`/`/doctor` preguntan) y **gate `/sdd-lint`** de formato + completitud al cerrar. En **externo** (`provider`): se apaga lo nativo y el pipeline invoca la skill del provider al arrancar y cerrar la tarea (contrato v1 experimental; detalle en el [README](../README.md#sdd-nativo-o-externo-opcional)). |
 | **Git automation** | `features.git-automation` | `auto-commit` al cerrar la tarea, `auto-pr` al cerrar el plan, `co-author` configurable. |
 | **Conventional commits** | `features.conventional-commits` | **Default ON**: exige `<task-id>: <conventional commit>`; `false` lo relaja. |
 | **GitHub tracking** | `features.github-tracking` | Proyección one-way `.md`→GitHub: plan→issue **padre**, tarea→**sub-issue**, con estado (label + Project) y assignee. |
