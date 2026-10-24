@@ -100,7 +100,7 @@ features:
   # tarea trabaja contra specs (EARS) + casos de uso (Gherkin, única fuente) + ADR (MADR): plantillas en
   # `.claude/specs/`. NO forma parte de ningún preset (mode: full NO lo enciende) y su AUSENCIA no es drift
   # para /doctor (como caveman/github-tracking). FAIL-SAFE: ante la duda, off (la regla de resolución
-  # vive en docs/guides/task-lifecycle.md → «Modo SDD»). Con off (default) el Gherkin vive en la tarea, como hoy (comportamiento idéntico).
+  # vive en docs/guides/task-lifecycle.md → «Modo SDD»). Con off (default) el Gherkin vive en la tarea, como antes de existir `external` (equivalente en comportamiento; una tarea que ya enlaza a un CU sigue ese enlace).
   # Detalle en el README del plugin → "SDD: nativo o externo (opcional)".
   # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
   # sdd: false

@@ -61,6 +61,12 @@ Traslada el informe del subagente **tal cual**, con cada afirmación en su categ
 (VERIFICADO / INCORRECTO / NO VERIFICABLE) y su evidencia. No suavices un INCORRECTO ni escondas un
 NO VERIFICABLE. En una pasada mixta, la presencia de un INCORRECTO no oculta el resto de entradas.
 
+> **Provider SDD en modo `external`**: si el repo está en modo `external`, una de las afirmaciones a verificar es
+> «el provider se invocó con `phase=close`». La evidencia es la **última** línea `provider phase=close: <resultado>`
+> del session log de la tarea, y es **autodeclarada**: prueba que se anotó, no que el provider corriera (dilo así en
+> el informe). Sin esa línea → `NO VERIFICABLE`, nunca `INCORRECTO`. Un resultado `ausente` o `error` es un aviso a
+> reconocer, no `INCORRECTO`. Un reintento añade una línea nueva (append-only): se toma la última.
+
 > **En el cierre de una tarea** (gate orquestado por la DoD): `INCORRECTO` **bloquea** el cierre hasta
 > corregir la afirmación; `NO VERIFICABLE` es un **aviso que hay que reconocer** explícitamente (frecuente
 > en repos sin stack de tests), pero no bloquea; `VERIFICADO` pasa.

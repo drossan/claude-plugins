@@ -302,7 +302,9 @@ Artefactos **vivos** —**spec** de requisitos (EARS), **casos de uso** (Gherkin
 cada tarea mantiene. **Qué envía el plugin** (plantillas, **no** contenido — nada se autogenera): las semillas
 `spec.md`, `caso-de-uso.md`, `adr.md` y `adr-index.md` (lista canónica en `skills/plan-task/templates/README.md`),
 que se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-uso/<id>.md` y
-`.claude/specs/adr/NNNN-*.md`. Con el modo nativo el comportamiento es **idéntico al previo** a `external`.
+`.claude/specs/adr/NNNN-*.md`. Con el modo nativo el comportamiento es **equivalente al previo** a `external`, con tres salvedades: una tarea que
+ya enlaza a un CU sigue ese enlace en cualquier modo, la línea de DoD de `external` es no aplicable en nativo y la
+categoría 13 de `/doctor` detecta el lifecycle anterior a la regla de modos.
 
 - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios` de la tarea **enlaza** al CU en vez de
   copiar el bloque. Anti-duplicación: **ADR** = *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** =
@@ -364,11 +366,22 @@ cuenta como OK. No hay timeout propio.
 **Requisitos y riesgos del provider:**
 - **Debe ser idempotente**: `close` se reintenta tras un fallo posterior, así que invocarlo dos veces sobre la
   misma tarea no debe duplicar ni corromper su salida.
-- **Riesgo de seguridad conocido**: `.claude/task-pipeline.yml` viaja con el repo, de modo que **un repo
-  clonado puede nombrar como provider cualquier skill que tengas instalada**, y el pipeline la invocará sin
-  confirmación en la primera invocación. Revisa el `provider` de un repo ajeno antes de trabajar en él. El
-  valor se trata como un único identificador (nunca como argumentos), y un provider que resuelve a una skill
-  del propio `task-pipeline` se **rechaza** con aviso (modo efectivo `off`).
+- **Riesgos de seguridad conocidos.** `.claude/task-pipeline.yml` viaja con el repo, de modo que **un repo
+  clonado puede nombrar como provider cualquier skill que tengas instalada**, y el pipeline la invoca **sin
+  pedir confirmación en ninguna invocación** (ni en la primera ni en las siguientes). Cuatro riesgos concretos:
+  1. **Automatización sin revisión**: con `features.git-automation.auto-commit`/`auto-pr`, lo que el provider
+     escribe en `phase=close` entra en el commit y la PR sin que nadie lo revise.
+  2. **Reescritura de la tarea en `phase=start`** (*hipótesis, no reproducida*): el provider puede modificar el
+     `.md` de la tarea y el pipeline la **relee y sigue sus instrucciones**; si el provider no es de fiar, eso
+     sería una vía de inyección de instrucciones.
+  3. **Garantías que dependen del modelo, no de un parser**: que el `provider` se trate como un único
+     identificador y que se rechace una skill del propio `task-pipeline` lo aplica el modelo siguiendo el
+     lifecycle; no hay código que lo imponga.
+  4. **Sin confirmación en toda invocación**: el pipeline no pregunta nunca antes de invocar al provider, ni en `start` ni en `close`.
+
+  **Consejo.** El mismo `task-pipeline.yml` de un repo ajeno fija el provider **y** la automatización: revisa el
+  fichero entero (`features.sdd` **y** `features.git-automation`) antes de trabajar en él, y **no uses
+  `auto-commit`/`auto-pr` con providers que no sean de confianza**. Son riesgos documentados, sin mitigación técnica.
 
 ## Git automation (opcional)
 

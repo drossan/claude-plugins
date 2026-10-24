@@ -72,9 +72,7 @@ Lista de bullets verificables, no prosa. Enlaza la(s) spec(s) del artefacto.>
        Criterios de aceptación (Gherkin) en el/los caso(s) de uso:
        - [.claude/specs/<pkg>/casos-de-uso/<id>.md](...)
      Con SDD `off` o `external` (sin enlace a CU): el Gherkin vive AQUÍ, como abajo. Una tarea que ya enlaza a un CU
-     lo sigue enlazando en cualquier modo. Regla de modos: «Modo SDD» de `docs/guides/task-lifecycle.md`.
-     Las líneas de DoD de otro modo (p. ej. `sdd-lint` en una tarea creada en nativo y cerrada en `external`)
-     se tratan como no aplicables. -->
+     lo sigue enlazando en cualquier modo. Regla de modos: «Modo SDD» de `docs/guides/task-lifecycle.md`. -->
 
 ```gherkin
 Feature: <capacidad que aporta esta tarea>
@@ -121,7 +119,9 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 <!-- Las líneas marcadas (flag) solo aplican si su flag en .claude/task-pipeline.yml
      no está desactivado (por preset `mode` o clave explícita). Default (o sin
      archivo) = todas obligatorias. Si desactivas un flag en el repo, borra su línea
-     de esta DoD al materializar la tarea. -->
+     de esta DoD al materializar la tarea.
+     Las líneas «solo en modo nativo» / «solo en modo `external`» se evalúan contra el modo vigente al cerrar: las del
+     otro modo no aplican, en ambos sentidos (nota visible en `docs/guides/task-lifecycle.md` → DoD). -->
 - [ ] Tests escritos ANTES de la implementación (TDD) — Red → Green → Refactor  · (flag `features.tdd`)
 - [ ] Cada escenario Gherkin tiene al menos un test (camino feliz + bordes/errores)  · (flag `features.tdd`)
 - [ ] Todos los tests en verde
@@ -129,7 +129,7 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
 - [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); corre **tras `mutation`, antes de `fact-checker`**  · solo en modo nativo (`sdd: true`)
-- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`, **tras `mutation`, antes de `fact-checker`**; «sin cambios» solo describe lo que reportó, en el session log); un aviso (provider ausente/con error/reporte) se reconoce con nota en el session log; **nunca ERROR**  · solo en modo `external`
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`, **tras `mutation`, antes de `fact-checker`**; «sin cambios» solo describe lo que reportó, en el session log, con la línea `provider phase=close: <resultado>`); un aviso (provider ausente/con error/reporte) se reconoce con nota en el session log; **nunca ERROR**  · solo en modo `external`
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
 - [ ] **SDD** — spec (EARS) + caso de uso (Gherkin) creados/actualizados en esta tarea, **o** declarado **"sin cambios de spec/CU"** (aquí y en el session log). El Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)

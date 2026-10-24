@@ -55,6 +55,11 @@ de `/pipeline-usage`.
   regla fail-safe del lifecycle («Modo SDD»): `true` booleano → `native`; bloque con `enabled: true` booleano y
   `provider` string no vacío → `external`; cualquier otra cosa → `off`. **Si** el `provider` apunta a una skill
   del propio `task-pipeline` o el YAML es ilegible, **entonces** el modo efectivo DEBERÁ ser `off` con aviso.
+- **FR-013** — **Cuando** una tarea en modo `external` llega al hueco de cierre (tras `mutation`, o tras
+  lint/tests si no hay gate de mutation), el sistema DEBERÁ invocar al provider con `phase=close` y dejar en el
+  session log una línea `provider phase=close: <resultado>` que `fact-checker` pueda comprobar. **Si** un paso
+  previo de la DoD falla, **entonces** NO DEBERÁ invocarlo; si el provider está ausente o falla, DEBERÁ
+  registrarlo como aviso a reconocer y no bloquear el cambio de `status:` del `.md`.
 
 ## Requisitos no funcionales
 

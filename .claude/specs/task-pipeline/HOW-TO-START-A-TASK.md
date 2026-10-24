@@ -58,6 +58,11 @@
 >    (frecuente aquí, stack `none`), pero no bloquea; `VERIFICADO` pasa. Aplica **aunque el stack sea
 >    `none`** (TDD/mutation son N/A; este gate no se desactiva por preset). Ver la skill `/fact-checker`.
 >
+> **(Solo modo SDD `external`, `features.sdd: { enabled: true, provider }`)** Al arrancar la tarea (`pending → active`) se
+> invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>` y se **relee la tarea**; al cerrar,
+> `phase=close` ocupa el hueco de `sdd-lint` y deja la línea `provider phase=close: <resultado>` en el session log. En este
+> repo el modo es nativo, así que no aplica. Detalle en `docs/guides/task-lifecycle.md` → «Modo SDD» y pasos 4b/3c.
+>
 > Marcar verificación como hecha sin haber corrido el hook/skill/inspección correspondiente está prohibido.
 > Si la sesión no puede completar la tarea, queda en `status: blocked` con el progreso en el histórico.
 >
@@ -94,6 +99,8 @@ REGLAS ESTRICTAS DE LA SESIÓN:
 - GATE (antes de tocar nada): status: active + depends_on en done (si no → PARAR); en la rama
   plan/task-pipeline/<name-plan> (main es la integración; no hay dev); una sola tarea active.
 - Verifica cada escenario Gherkin como criterio de aceptación (no test automatizado).
+- Modo SDD `external` (si el repo lo usa): `phase=start` al arrancar la tarea y `phase=close` en el hueco de cierre,
+  con la línea `provider phase=close: <resultado>` en el session log (ver el lifecycle, pasos 4b y 3c).
 - Barrido grep reforzado: sin `grill-me`/`/task`/`skills/task/` vivos como identificador operativo
   (allowlist: atribución + CHANGELOG ≤ 0.8.1 son legítimos).
 - Commits en la rama del plan con `<task-id>: <conventional commit>`.
