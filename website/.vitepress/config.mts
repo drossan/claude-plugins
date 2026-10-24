@@ -59,7 +59,7 @@ export default withMermaid(defineConfig({
       {
         text: 'Capas opcionales',
         items: [
-          { text: 'SDD nativo', link: '/features/sdd' },
+          { text: 'SDD: nativo o externo', link: '/features/sdd' },
           { text: 'Git automation', link: '/features/git-automation' },
           { text: 'GitHub tracking', link: '/features/github-tracking' },
           { text: 'Modo caveman', link: '/features/caveman' },

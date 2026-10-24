@@ -13,7 +13,7 @@ flowchart TD
     T --> SC["scenario-coverage"]
     SC --> HO["handoff TDD + prompt de la 1a tarea"]
     HO --> M["gate: mutation (break 80)"]
-    M --> SL["gate: sdd-lint (solo si features.sdd)"]
+    M --> SL["gate: sdd-lint (nativo) o provider phase=close (external)"]
     SL --> FC["gate: fact-checker (INCORRECTO bloquea)"]
     FC --> D["tarea done + prompt de la siguiente / code review si es la ultima"]
 
@@ -48,7 +48,7 @@ fresco sobre el diff de la rama del plan **antes de abrir la PR**. Durante `gril
 | `/mutation` | Gate de mutation testing con Stryker (Vitest), por tarea, bucle de matar survivors. |
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin: verifica (read-only) y corrige el drift (identificadores viejos, `models:` en sus tres estados —ausente/comentada/activa—, JSON schema ausente o con la clave-ancla desactualizada, estructura incompleta, reglas de honestidad ausentes **o desactualizadas** por comparación de anclas) **solo tras tu aprobación** y con diff. Frontera con `/task-init` (que bootstrapea desde cero). |
 | `fact-checker` | **Gate de cierre**: verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía **subagente fresco** de solo lectura; salida VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD de cierre (tras `/mutation`, antes de commit) — **no** se auto-ejecuta. Frontera con `/doctor`: `fact-checker` = veracidad de afirmaciones; `doctor` = drift de convención. |
-| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec **EARS** · caso-de-uso **Gherkin** · ADR **MADR**) por inspección — mecánico (comandos `grep`/`test` fijos) + semántico (subagente fresco). **ERROR bloquea / AVISO no**; corre entre `/mutation` y `fact-checker`. Invocable `/sdd-lint [package]`. Helper Bash opcional para CI en `scripts/sdd-lint.sh`. Frontera con `/doctor` (presencia) y `fact-checker` (afirmaciones): `sdd-lint` = **contenido** de los artefactos. |
+| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo en modo nativo, `features.sdd: true`): valida **formato + completitud** de los artefactos SDD (spec **EARS** · caso-de-uso **Gherkin** · ADR **MADR**) por inspección — mecánico (comandos `grep`/`test` fijos) + semántico (subagente fresco). **ERROR bloquea / AVISO no**; corre entre `/mutation` y `fact-checker`. Invocable `/sdd-lint [package]`. Helper Bash opcional para CI en `scripts/sdd-lint.sh`. Frontera con `/doctor` (presencia) y `fact-checker` (afirmaciones): `sdd-lint` = **contenido** de los artefactos. |
 | `/pipeline-usage` | **Analítica de uso on-demand** (read-only): tokens (input/output/cache), modelo, tiempo y desglose **por fase** (design-review, grilling, plan-task…) y **por subagente** de la sesión, leyendo el transcript. **Best-effort** (el formato del transcript es interno/no soportado): el titular es el total de sesión y avisa cuando las cifras pueden estar incompletas. No hay recolección por hooks: invocarla es el opt-in. |
 
 ## Convención que asume el plugin
@@ -140,7 +140,7 @@ sede canónica de la regla de resolución; las demás sedes (el YAML seed, los d
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal para ahorrar tokens, con backoff en los checkpoints. **No** forma parte de ningún preset; valor no-canónico → `off`. Ver [Modo caveman](#modo-caveman-featurescaveman). |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. Ver [GitHub tracking](#github-tracking-opcional). |
-| `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): activa la capa **SDD** (spec EARS + casos de uso Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. Ver [SDD nativo](#sdd-nativo-opcional). |
+| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** nativa (spec EARS + casos de uso Gherkin + ADR MADR) o delegada en un **provider externo**. **Fuera de todo preset**; fail-safe (solo `true` booleano → `native`; solo bloque con `enabled: true` y `provider` no vacío → `external`; todo lo demás → off); **ausencia ≠ drift**. Regla única: [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off-native-external). Ver [SDD: nativo o externo](#sdd-nativo-o-externo-opcional). |
 | `features.conventional-commits` | `true`(default)/`false` | Exige el formato `<task-id>: <conventional commit>`. Es el comportamiento **histórico**, ahora configurable: `false` lo relaja. **Ausencia = ON** (no cambia nada). |
 | `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in (no gate de DoD): `auto-commit` (commit al cerrar tarea), `auto-pr` (PR al cerrar el **plan**; requiere `auto-commit`), `co-author` (default **false** = sin trailer de co-autor). **Fuera de todo preset**; fail-safe (solo `true` activa; no-canónico → off); **ausencia ≠ drift**. Ver [Git automation](#git-automation-opcional). |
 
@@ -180,7 +180,7 @@ siguen leyendo el YAML sin parser, como siempre.
 ## Routing de modelo por fase (`models:`)
 
 Las fases que lanzan un **subagente** son ruteables: **3 siempre** (`design-review`, `scenario-coverage`,
-`fact-checker`) **+ `sdd-lint`**, que rutea **solo con `features.sdd: true`** (con el flag off —default—,
+`fact-checker`) **+ `sdd-lint`**, que rutea **solo en modo nativo (`features.sdd: true`)** (en `off` y en `external`,
 `models.sdd-lint` no tiene efecto: el gate no corre). Se configura en la sección `models:` de
 `.claude/task-pipeline.yml`:
 
@@ -189,14 +189,14 @@ models:
   design-review: opus        # alias o id de modelo
   # scenario-coverage:       # ausente / inherit → hereda la sesión
   # fact-checker:            # ausente / inherit → hereda la sesión (verificar es barato)
-  # sdd-lint:                # solo tiene efecto con features.sdd: true
+  # sdd-lint:                # solo tiene efecto en modo nativo (features.sdd: true)
 ```
 
 - **Clave ausente o `inherit`** → la fase hereda el modelo de la sesión (no se fuerza nada).
 - **Alias o id de modelo** → se pasa como `model` al lanzar el subagente (Agent tool).
 - **Valor inválido** (typo / id inexistente) → la skill **avisa** y cae a inherit; nunca lanza un subagente con un `model` roto.
 - **Clave para una fase inline** → se ignora (esa fase hereda la sesión).
-- **`sdd-lint` con `features.sdd` off** → la clave no tiene efecto (el gate no corre; no es drift).
+- **`sdd-lint` en modo `off` o `external`** → la clave no tiene efecto (el gate no corre; no es drift).
 
 **Limitación de plataforma.** Un `SKILL.md` **sí** admite una clave `model:` en su frontmatter (mismos
 alias que `/model`, o `inherit`) — pero ese override es **estático** (un valor fijo escrito en el fichero,
@@ -281,27 +281,29 @@ que inyecta una directiva mínima de compresión.
   (los informes de `/pipeline-usage` son por sesión, sin control A/B): actívalo si quieres
   probarlo, no esperes un ahorro garantizado. `off` por defecto y en el template.
 
-## SDD nativo (opcional)
+## SDD: nativo o externo (opcional)
 
 Capa **opt-in** (default `off`) de **Spec-Driven Development**: eleva la fuente de verdad de la prosa en
-`docs/` a artefactos **vivos** —**spec** de requisitos (EARS), **casos de uso** (Gherkin) y **ADR** (MADR
-4.0.0)— que cada tarea mantiene. Se activa con `features.sdd: true` en `.claude/task-pipeline.yml`.
+`docs/` a artefactos **vivos**. `features.sdd` se resuelve a uno de **tres modos**; la regla (tabla y casos
+límite) está escrita **una sola vez** en [Modo SDD](../docs/guides/task-lifecycle.md#modo-sdd-off-native-external) y aquí no se repite.
 
-**Qué envía el plugin** (plantillas, **no** contenido — nada se autogenera): las semillas `spec.md`,
-`caso-de-uso.md`, `adr.md` y `adr-index.md` (lista canónica en `skills/plan-task/templates/README.md`), que
-se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-uso/<id>.md` y
-`.claude/specs/adr/NNNN-*.md`.
+| Modo | Cómo se activa | Qué hace |
+|---|---|---|
+| `off` (default) | ausente, `false` o cualquier valor no canónico | Sin capa SDD; el Gherkin vive en la tarea. |
+| `native` | `sdd: true` | Capa nativa del plugin (abajo). |
+| `external` | bloque `{ enabled: true, provider: "<plugin>:<skill>" }` | Lo nativo se apaga y el pipeline **invoca la skill del provider**. |
 
-**Garantías opt-in:**
-- **Fail-safe**: SOLO `features.sdd: true` (booleano) activa. Ausente / `false` / `"true"` / `yes` / `1` /
-  `TRUE` / la forma-bloque `{ enabled: true }` / comentado → **off**, sin error de parseo.
-- **Fuera de todo preset**: `mode: full` **no** lo enciende; es una decisión explícita.
-- **Ausencia ≠ drift**: `/doctor` no reporta la falta del flag ni de las plantillas SDD salvo que el flag
-  esté **on** (mismo criterio que `caveman`/`github-tracking`).
-- **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`), como
-  siempre.
+Fail-safe: ante la duda, `off`. `mode: full` **no** lo enciende, y `/doctor` no reporta la **ausencia** del flag
+(**ausencia ≠ drift**).
 
-**Flujo imperativo (con el flag on):**
+### Modo nativo (`sdd: true`)
+
+Artefactos **vivos** —**spec** de requisitos (EARS), **casos de uso** (Gherkin) y **ADR** (MADR 4.0.0)— que
+cada tarea mantiene. **Qué envía el plugin** (plantillas, **no** contenido — nada se autogenera): las semillas
+`spec.md`, `caso-de-uso.md`, `adr.md` y `adr-index.md` (lista canónica en `skills/plan-task/templates/README.md`),
+que se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-uso/<id>.md` y
+`.claude/specs/adr/NNNN-*.md`. Con el modo nativo el comportamiento es **idéntico al previo** a `external`.
+
 - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios` de la tarea **enlaza** al CU en vez de
   copiar el bloque. Anti-duplicación: **ADR** = *por qué* · **Spec (EARS)** = *qué* · **CU (Gherkin)** =
   *cómo + aceptación*.
@@ -316,11 +318,57 @@ se materializan en `.claude/specs/<pkg>/spec.md`, `.claude/specs/<pkg>/casos-de-
 
 El flujo completo, paso a paso, vive en `docs/guides/task-lifecycle.md` → "Flujo SDD".
 
-**Gate de validación (`/sdd-lint`).** Con SDD on, al **cerrar una tarea** (entre `/mutation` y `fact-checker`)
+**Gate de validación (`/sdd-lint`).** En modo nativo, al **cerrar una tarea** (entre `/mutation` y `fact-checker`)
 corre `sdd-lint`: valida **formato + completitud** de los artefactos (EARS bien-formado, estado MADR
 coherente, disciplina Gherkin, `[NECESITA ACLARACIÓN]` sin resolver, enlaces/trazabilidad). **ERROR bloquea**
 el cierre; **AVISO** se reconoce. Invocable a mano (`/sdd-lint [package]`) para auditar; y un **helper Bash
 opcional** (`scripts/sdd-lint.sh`) que un repo con CI puede cablear para validación desatendida.
+
+### Modo externo (`provider`)
+
+Para repos que ya usan **otro plugin de SDD** y quieren que el pipeline delegue en él:
+
+```yaml
+features:
+  sdd:
+    enabled: true
+    provider: "mi-plugin:mi-skill"   # un único identificador <plugin>:<skill>
+```
+
+Con `external`, **lo nativo se apaga**: sin plantillas ni scaffolding SDD, sin gate `sdd-lint` ni efecto de
+`models.sdd-lint`, y el Gherkin vuelve a vivir en la tarea. Lo único que sobrevive: **si una tarea ya enlaza a
+un CU, ese enlace se sigue siempre**, sea cual sea el modo. El cambio de nativo a externo es **manual** (editar
+`features.sdd`); no se migran ni borran artefactos nativos, y `/doctor` solo **avisa** de los huérfanos.
+`/task-init` y `/doctor` ofrecen nativo vs externo con confirmación explícita; el valor de `provider` se pide
+como texto libre y **no se comprueba** al escribirlo.
+
+**Contrato de invocación v1 (experimental).** El pipeline invoca la skill del provider con
+`contract=1 phase=start|close task=<ruta> plan=<ruta>` (rutas relativas a la raíz del repo, que existen en el
+instante de la invocación):
+
+| Fase | Cuándo | Notas |
+|---|---|---|
+| `start` | Al arrancar la tarea, tras moverla a `active` | Una vez por activación; cancelar o reabrir **no** invoca. La sesión relee la tarea después. |
+| `close` | Al cerrarla: **tras** `mutation`, **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub | No se invoca si `mutation` falla; se **reintenta** tras un fallo posterior. |
+
+El contrato es **experimental**: puede cambiar entre versiones (el campo `contract` lo versiona) y aún no se ha
+validado contra un provider real, solo contra un stub de prueba. Sin plan legible, `plan=` va vacío con aviso.
+
+**Degradación: avisar, no bloquear.** Provider no instalado, con error, sin respuesta (o sin canal para uno
+interactivo) → **aviso que el owner reconoce** dejando una nota en el session log; la tarea sigue y la línea de
+DoD «SDD gestionado con `<provider>`» queda **sin marcar** hasta entonces (el pipeline la señala, no cierra en
+silencio). Lo que el provider reporta sobre sus artefactos se traslada como **aviso, nunca ERROR**: el
+pipeline **no valida su contenido** (no hay gate equivalente a `sdd-lint`). Terminar sin error ni reporte
+cuenta como OK. No hay timeout propio.
+
+**Requisitos y riesgos del provider:**
+- **Debe ser idempotente**: `close` se reintenta tras un fallo posterior, así que invocarlo dos veces sobre la
+  misma tarea no debe duplicar ni corromper su salida.
+- **Riesgo de seguridad conocido**: `.claude/task-pipeline.yml` viaja con el repo, de modo que **un repo
+  clonado puede nombrar como provider cualquier skill que tengas instalada**, y el pipeline la invocará sin
+  confirmación en la primera invocación. Revisa el `provider` de un repo ajeno antes de trabajar en él. El
+  valor se trata como un único identificador (nunca como argumentos), y un provider que resuelve a una skill
+  del propio `task-pipeline` se **rechaza** con aviso (modo efectivo `off`).
 
 ## Git automation (opcional)
 

@@ -4,6 +4,30 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.0] — 2026-10-24
+
+**SDD con proveedor externo.** `features.sdd` acepta un bloque `{ enabled: true, provider: "<plugin>:<skill>" }`
+para delegar el SDD en otro plugin. Release minor: el modo nativo (`sdd: true`) queda byte-idéntico.
+
+### Added
+- **Tres modos SDD `off`/`native`/`external`**, resueltos por una regla única y fail-safe (guía del lifecycle →
+  «Modo SDD»); schemas (`.claude/` y `templates/`) y template YAML con el ejemplo comentado.
+- **Invocación del provider** al arrancar (`phase=start`) y cerrar (`phase=close`, entre `mutation` y
+  `fact-checker`, antes del auto-commit y de la proyección a GitHub) la tarea, con el contrato
+  `contract=1 phase=… task=<ruta> plan=<ruta>` (**v1, experimental**). Provider ausente o con error = aviso que
+  el owner reconoce, nunca bloqueo; lo que reporta el provider se traslada como aviso, nunca ERROR.
+- **Activación y salud guiadas**: `/task-init` y `/doctor` ofrecen nativo vs externo con confirmación;
+  `/doctor` (categoría 12, solo-reporte) avisa de `{ enabled: true }` sin provider, de provider no instalado y
+  de artefactos nativos huérfanos.
+
+### Changed
+- En `external` lo nativo se apaga (sin scaffolding, sin `sdd-lint`, sin efecto de `models.sdd-lint`) y el Gherkin
+  vuelve a la tarea; si una tarea ya enlaza a un CU, ese enlace se sigue siempre. Los lectores nativos
+  (`mutation`, `scenario-coverage`, `sdd-lint`, `task.md`, `plan-task`) hablan de «modo nativo (`sdd: true`)».
+- README, `flujo-del-pipeline.md` y el portal describen los tres modos enlazando la regla única; el README
+  documenta el riesgo de que un repo clonado nombre cualquier skill instalada como provider y que el provider
+  debe ser idempotente. «SDD nativo» pasa a «SDD: nativo o externo» (ancla `#sdd-nativo-o-externo-opcional`).
+
 ## [0.17.1] — 2026-10-24
 
 **Portal de documentación rehecho (`website/`), sin cambios en el plugin.** Release patch: solo docs.

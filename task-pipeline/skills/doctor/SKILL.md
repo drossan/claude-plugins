@@ -51,7 +51,7 @@ artefacto del plugin — ver "Propiedad" abajo).
    - **Activa** (alguna sub-clave con valor real, aunque sea una sola y el resto siga comentado — "a
      medias" cuenta como **configurado**): no se ofrece nada, no dar la lata.
    **Set ruteable reconocido**: **3 siempre** (`design-review`, `scenario-coverage`, `fact-checker`) **+
-   `sdd-lint`** (condicional, solo con `features.sdd` on) — ver README del plugin → "Routing de modelo por
+   `sdd-lint`** (condicional, solo en modo nativo, `sdd: true`) — ver README del plugin → "Routing de modelo por
    fase". Una **clave de fase concreta ausente** (p.ej. `models.fact-checker`) **no** es drift — el
    default es inherit. Una **clave espuria** — de una fase **inline** (`models.grilling`) o que **no
    corresponde a ninguna fase conocida** (`models.qa-fase`) — se **señala como posible typo**, nunca se

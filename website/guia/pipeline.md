@@ -17,7 +17,7 @@ flowchart TD
     HO --> M
     subgraph cierre ["Gates de cierre · por tarea"]
       direction TB
-      M("mutation · break 80"):::gate --> SL("sdd-lint · solo features.sdd"):::gate --> FC("fact-checker · INCORRECTO bloquea"):::gate
+      M("mutation · break 80"):::gate --> SL("sdd-lint · nativo / provider · external"):::gate --> FC("fact-checker · INCORRECTO bloquea"):::gate
     end
     FC --> D(["tarea done · prompt de la siguiente / code review si es la última"]):::normal
 
@@ -98,9 +98,10 @@ flowchart LR
 
 - **Mutation testing** (Stryker por defecto; agnóstico por-package): verifica que los tests realmente **matan
   mutantes**, no solo que pasan en verde. Configurable por repo (umbral `break`; `false` lo desactiva).
-- **`sdd-lint`** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec
-  EARS · caso-de-uso Gherkin · ADR MADR). **ERROR** bloquea el cierre; **AVISO** se reconoce. Ver
-  [SDD nativo](../features/sdd.md).
+- **`sdd-lint`** (solo en modo nativo, `sdd: true`): valida **formato + completitud** de los artefactos SDD
+  (spec EARS · caso-de-uso Gherkin · ADR MADR). **ERROR** bloquea el cierre; **AVISO** se reconoce. En modo
+  `external` ocupa su hueco la invocación del provider (`phase=close`), que solo avisa, nunca bloquea con
+  ERROR. Ver [SDD: nativo o externo](../features/sdd.md).
 - **`fact-checker`** (no negociable): un subagente fresco verifica las **afirmaciones factuales** de la sesión
   ("la función X hace Y", "el gate de mutation pasó", "el gate `sdd-lint` pasó"). Un **`INCORRECTO`** bloquea
   el cierre; un `NO VERIFICABLE` se reconoce.
