@@ -239,6 +239,7 @@ Feature: <capacidad bajo esta tarea>
 - [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
+- [ ] Si tocaste headings o moviste ficheros bajo `task-pipeline/` o `docs/`: `node website/scripts/check-github-links.mjs` en verde (enlaces del portal a GitHub)  · solo este repo, no va a la plantilla
 ````
 
 > Las líneas de TDD, gate de mutation y documentación se rigen por

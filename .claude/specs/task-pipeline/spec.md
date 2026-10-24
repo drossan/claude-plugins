@@ -75,7 +75,8 @@ de `/pipeline-usage`.
 - **SC-002** — El schema es **JSON válido** (`python3 -m json.tool`) y ambos YAML **parsean** con el modeline.
 - **SC-003** — Correr `/doctor` o `/task-init` sobre un repo **sin** `models:` **ofrece** descomentar y **no**
   escribe nada sin aprobación; con schema viejo, `/doctor` **marca drift**.
-- **SC-004** — `pnpm docs:build` (website) en **verde** con la doc de `configuracion.md` actualizada.
+- **SC-004** — `pnpm docs:build` (website) en **verde** con la doc de `configuracion.md` actualizada; incluye el
+  check de enlaces del portal a GitHub (`website/scripts/check-github-links.mjs`, ver CU-portal-enlaces-github).
 
 ## Casos de uso
 
@@ -84,6 +85,7 @@ de `/pipeline-usage`.
 - [CU-configurador-doctor: Ofrecer `models:` y mantener el schema (`/task-init`, `/doctor`)](./casos-de-uso/configurador-doctor.md)
 - [CU-frontmatter-inline: Modelo por frontmatter en `/pipeline-usage`](./casos-de-uso/frontmatter-inline.md)
 - [CU-sdd-proveedor-externo: Activar SDD delegado en un plugin externo](./casos-de-uso/sdd-proveedor-externo.md)
+- [CU-portal-enlaces-github: Que un enlace roto del portal a GitHub rompa el build](./casos-de-uso/portal-enlaces-github.md)
 
 ## Fuera de alcance
 

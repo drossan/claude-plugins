@@ -55,6 +55,7 @@
 - **RN-8** — Sin respuesta, o sin canal para un provider interactivo, se trata como error del provider (aviso). No hay timeout propio.
 - **RN-9** — Cancelar, desbloquear (`blocked → active`) o reabrir (`done → active`) una tarea no invoca `start` al provider. Solo hay una tarea `active` por plan, así que el pipeline no añade exclusión entre tareas.
 - **RN-10** — El cambio de nativo a externo es manual (editar `features.sdd`); `/doctor` no reofrece la activación si ya hay modo `external`.
+- **RN-11** — Diagnóstico del provider en `/doctor`: la vía principal es la skill visible en la sesión; `installed_plugins.json` es solo un respaldo que afina el diagnóstico (plugin ausente, instalado sin esa skill, instalado pero no cargado en esta sesión, no verificado) y **nunca declara el provider como activo**. El formato del fichero es observado y no soportado. No se deduce qué entrada aplica a este repo.
 
 ## Criterios de aceptación (Gherkin)
 
@@ -427,4 +428,140 @@ Feature: SDD delegado en un plugin externo
     Given el CHANGELOG 0.18.4 ya escrito
     When se repite el grep de "idéntic"
     Then ninguna aparición nueva afirma identidad de SDD sin salvedad
+
+  Scenario Outline: Diagnóstico del provider con skill visible o no en la sesión
+    Given un repo en modo external con provider "spec:run"
+    And la skill "spec:run" <visibilidad> en la sesión
+    And el respaldo installed_plugins.json en estado <respaldo>
+    When corre /doctor
+    Then el diagnóstico es <diagnostico>
+    And no escribe nada
+
+    Examples:
+      | visibilidad | respaldo                                                       | diagnostico                              |
+      | visible     | sin consultar                                                  | instalado                                |
+      | no visible  | entrada de "spec@" con la skill en installPath                 | instalado pero no cargado en esta sesión |
+      | no visible  | entrada de "spec@" sin esa skill en installPath                | instalado sin esa skill                  |
+      | no visible  | entrada de "spec@" con installPath inexistente                 | instalado sin esa skill                  |
+      | no visible  | entrada de "spec@" sin installPath o con installPath no string | no verificado si no queda otra entrada   |
+      | no visible  | clave "spec@mkt" con lista vacía                               | plugin ausente                           |
+      | no visible  | sin ninguna clave con prefijo "spec@"                          | plugin ausente                           |
+      | no visible  | solo "spec-kit@mkt" y "spec" sin arroba                        | plugin ausente                           |
+      | no visible  | fichero inexistente                                            | no verificado                            |
+      | no visible  | fichero vacío o que no parsea                                  | no verificado                            |
+      | no visible  | error de lectura distinto de inexistente                       | no verificado                            |
+      | no visible  | raíz que no es objeto, "plugins" ausente, nulo o array         | no verificado                            |
+      | no visible  | valor de la clave que no es una lista                          | no verificado                            |
+      | no visible  | SKILL.md ilegible o es un directorio                           | no verificado                            |
+      | no visible  | HOME sin definir o ruta del fichero no resoluble               | no verificado                            |
+
+  Scenario: Seguridad de la ruta al buscar la skill
+    Given un provider cuyo componente de skill o plugin contiene "..", "/" o "\"
+    When /doctor construye la ruta a buscar
+    Then lo rechaza como identificador inválido y no lee nada fuera de installPath/skills
+
+  Scenario: El provider que apunta a task-pipeline no se comprueba como instalado
+    Given un provider "task-pipeline:plan-task"
+    When corre /doctor
+    Then avisa de que apunta al propio pipeline y no ejecuta la comprobación de instalación
+
+  Scenario: La comprobación solo corre en modo external
+    Given un repo en modo off o native
+    When corre /doctor
+    Then no consulta installed_plugins.json
+
+  Scenario: Visibilidad por nombre cualificado
+    Given una skill "run" de otro plugin visible en la sesión
+    When /doctor busca "spec:run"
+    Then no la cuenta como visible
+
+  Scenario: Gravedad de cada diagnóstico
+    Given los resultados del diagnóstico del provider
+    When /doctor los reporta
+    Then "plugin ausente" e "instalado sin esa skill" se reportan como drift y "no verificado" e "instalado pero no cargado en esta sesión" como aviso
+
+  Scenario: El mensaje nombra qué falta
+    Given un provider cuyo plugin está instalado pero no expone la skill
+    When /doctor lo reporta
+    Then el mensaje nombra la skill y no el plugin como lo que falta
+
+  Scenario: Reinstalar o recargar cambia el diagnóstico
+    Given un diagnóstico "instalado pero no cargado en esta sesión"
+    When el owner recarga los plugins y repite /doctor
+    Then pasa a "instalado"
+
+  Scenario: Doctor idempotente
+    Given cualquiera de los estados anteriores
+    When corre /doctor dos veces
+    Then el reporte es el mismo y no se escribe nada
+
+  Scenario: El respaldo nunca declara el provider como activo
+    Given un repo en modo external con la skill del provider no visible en la sesión
+    And un installed_plugins.json con la skill presente en installPath
+    When corre /doctor
+    Then no informa de que el provider está activo ni "OK"
+
+  Scenario: Varias entradas del mismo plugin
+    Given un installed_plugins.json con varias entradas de "spec@mkt" para scopes, proyectos y versiones distintos
+    When /doctor busca la skill del provider
+    Then basta con que una entrada tenga la skill en installPath, sin deducir cuál aplica a este repo
+
+  Scenario: El provider no lleva marketplace
+    Given un provider "spec:run" y un installed_plugins.json con la clave "spec@mkt"
+    When /doctor busca el plugin
+    Then compara por el prefijo "spec@" y acepta más de un marketplace
+
+  Scenario: El formato del respaldo se declara no soportado
+    Given la categoría 12 de /doctor
+    When se lee cómo se usa installed_plugins.json
+    Then nombra la ruta, la clave "<plugin>@<marketplace>", la lista de entradas y installPath, y dice que es un formato observado y no soportado
+    And no cita la versión ni la lista de campos
+
+  Scenario: El CU fija la regla del respaldo
+    Given este caso de uso
+    When se buscan las reglas de negocio
+    Then RN-11 dice que el respaldo afina el diagnóstico y nunca declara el provider como activo
+
+  Scenario Outline: Repetición de phase=close tras un fallo o una reapertura
+    Given una tarea en modo external <situacion>
+    When el cierre vuelve a llegar al hueco y se invoca phase=close de nuevo
+    Then el session log añade una línea nueva "provider phase=close:" sin tocar las anteriores
+    And fact-checker toma la última
+
+    Examples:
+      | situacion                                          |
+      | cuyo cierre falló después de invocar al provider   |
+      | cerrada y reabierta (done → active)                |
+
+  Scenario: El riesgo 4 del README no repite la frase anterior
+    Given la lista de riesgos del provider en el README
+    When se lee el riesgo de ausencia de confirmación
+    Then no repite palabra por palabra la frase que lo precede
+
+  Scenario: El Outline de repetición conserva los Then
+    Given el CU tras la edición
+    When se buscan «Cierre repetido tras un fallo», «Cierre tras una reapertura» y «Reintento de phase=close»
+    Then ninguno existe como Scenario y el Outline «Repetición de phase=close…» conserva la unión de sus Then
+
+  Scenario: El riesgo 4 conserva etiqueta y contenido
+    Given el README tras la edición
+    When se lee la lista de riesgos
+    Then siguen siendo cuatro, el 4 nombra la ausencia de confirmación en toda invocación y "primera invocación" no aparece
+
+  Scenario: Release 0.18.5 coherente
+    Given plugin.json y CHANGELOG.md
+    When se lee la versión
+    Then ambos dicen 0.18.5
+    And la entrada 0.18.5 está sobre la 0.18.4, tiene fecha y cita B12 y las simplificaciones
+    And cita B11 solo como nota de website/
+
+  Scenario: El CHANGELOG cita solo lo cerrado
+    Given el plan con sus tareas
+    When se escribe la entrada 0.18.5
+    Then solo describe lo que las tareas cerradas entregaron
+
+  Scenario: La versión anterior no queda como actual
+    Given README, portal y docs
+    When se busca "0.18.4"
+    Then solo aparece como versión histórica
 ```
