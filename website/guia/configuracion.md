@@ -52,7 +52,7 @@ Una clave explícita pisa el preset. Resumen (detalle y garantías en las págin
 | `closing-documentation.*` | ON | Las 3 capas de doc de cierre (código / técnica / session log). |
 | `mutation-gate` | `80` | Gate de mutation y su umbral `break`; `false` lo desactiva. |
 | `conventional-commits` | ON | Formato `<task-id>: <conventional commit>`; **aplica incluso sin git-automation**. |
-| [`sdd`](../features/sdd.md) | off | Capa **SDD** (spec EARS + CU Gherkin + ADR MADR) + gate `/sdd-lint`. |
+| [`sdd`](../features/sdd.md) | off | Capa **SDD**: nativa (`true`: spec EARS + CU Gherkin + ADR MADR + gate `/sdd-lint`) o externa (bloque `{ enabled, provider }`). Los tres modos: [regla única](https://github.com/drossan/claude-plugins/blob/main/docs/guides/task-lifecycle.md#modo-sdd-off--native--external). |
 | [`git-automation`](../features/git-automation.md) | off | `auto-commit` (cierre de tarea) · `auto-pr` (cierre de plan) · `co-author`. |
 | [`github-tracking`](../features/github-tracking.md) | off | Proyección one-way `.md`→GitHub (issue padre + sub-issues). |
 | [`caveman`](../features/caveman.md) | off | Comprime el output del hilo principal. |
@@ -63,7 +63,7 @@ Las capas opt-in (`sdd`, `git-automation`, `github-tracking`, `caveman`) están 
 ## Modelos por fase (`models`)
 
 Fija el modelo de las fases que lanzan **subagente**: **3 siempre ruteables** (`design-review`,
-`scenario-coverage`, `fact-checker`) **+ `sdd-lint`** (condicional, solo con `features.sdd` on). Clave
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`** (condicional, solo en modo nativo, `sdd: true`). Clave
 ausente/`inherit` = modelo de la sesión; alias (`opus`/`sonnet`/`haiku`/`fable`) o id de modelo libre =
 se pasa al subagente; valor inválido = aviso + inherit. Las fases **inline** (`grilling`, `mutation`,
 `plan-task`, `doctor`, `task-init`) heredan la sesión y no se rutan por aquí.
@@ -76,7 +76,7 @@ models:
   design-review: opus        # 1×/plan, la revisión de más valor — donde el modelo fuerte más pesa
   scenario-coverage: sonnet
   fact-checker: sonnet
-  sdd-lint: sonnet            # solo tiene efecto con features.sdd: true
+  sdd-lint: sonnet            # solo tiene efecto en modo nativo (features.sdd: true)
 ```
 
 `design-review` en Opus captura casi toda la calidad donde importa; el resto en Sonnet captura casi todo

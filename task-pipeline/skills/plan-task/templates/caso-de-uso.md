@@ -1,7 +1,7 @@
 # CU-<id> — <título del caso de uso>
 
 > **Plantilla SDD** (Cockburn *fully-dressed* + Gherkin). Materialízala en
-> `.claude/specs/<package>/casos-de-uso/<id>.md`. **Gated por `features.sdd`** (opt-in, default off). Es el
+> `.claude/specs/<package>/casos-de-uso/<id>.md`. **Gated por el modo nativo** (`features.sdd: true`, opt-in, default off). Es el
 > **"CÓMO"** del actor para una capacidad de la `spec.md` del package (enlazado desde ella).
 
 - **Ámbito**: `<sistema / subsistema>`
@@ -45,7 +45,7 @@
 
 ## Criterios de aceptación (Gherkin)
 
-> **Este es el ÚNICO hogar del Gherkin** de esta capacidad (anti-duplicación). Con `features.sdd` **ON**, el
+> **Este es el ÚNICO hogar del Gherkin** de esta capacidad (anti-duplicación). En modo nativo (`sdd: true`), el
 > `## Scenarios (Gherkin)` de la tarea **enlaza aquí en vez de copiar** los escenarios (se cablea en la tarea
 > del flujo SDD). Por eso este bloque **hereda las MISMAS reglas de disciplina que `templates/task.md`** —no
 > puede degradar la calidad que hoy exige la tarea:

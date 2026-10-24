@@ -47,13 +47,14 @@
   avisa y se re-lanza **sin** `model` (fallback a `inherit`). Es un fallo *post*-preflight, distinto del typo.
 - **1g.** La clave es de una fase **inline** (no ruteable) o **no corresponde a ninguna fase conocida**
   (`models.foo`): se **ignora** (sin efecto). `/doctor` puede señalarla como posible typo (ver su CU).
-- **1h.** La fase es `sdd-lint` y `features.sdd` está **off** (o malformado → off por fail-safe): la clave
-  `models.sdd-lint` **no tiene efecto**.
+- **1h.** La fase es `sdd-lint` y `features.sdd` **no** está en modo nativo —`false`, ausente, malformado
+  (→ off por fail-safe) o **bloque con provider** (`{ enabled: true, provider: "spec:run" }`, modo `external`)—:
+  la clave `models.sdd-lint` **no tiene efecto** y no se avisa de drift.
 
 ## Reglas de negocio
 
 - **RN-1** — Fases ruteables: **3 siempre** (`design-review`, `scenario-coverage`, `fact-checker`) **+
-  `sdd-lint` solo con `features.sdd` on**. Las inline (`grilling`, `plan-task`, `mutation`, `doctor`,
+  `sdd-lint` solo con `features.sdd` en modo nativo (`true`)**. Las inline (`grilling`, `plan-task`, `mutation`, `doctor`,
   `task-init`, `pipeline-usage`) **no** se rutan por `models:`.
 - **RN-2** — **Normalización + validación**: el valor se **trimea**; los alias (`opus|sonnet|haiku|fable|
   inherit`) casan **case-insensitive**; cualquier otro valor se trata como **id de modelo** (pass-through).
@@ -148,16 +149,19 @@ Feature: Routing de modelo por fase con subagente
     When corre el pipeline
     Then la clave se ignora (sin efecto en el routing)
 
-  Scenario Outline: sdd-lint rutea solo con SDD on
+  Scenario Outline: sdd-lint rutea solo con SDD nativo
     Given un task-pipeline.yml con "models.sdd-lint: sonnet" y "features.sdd: <sdd>"
     When el gate sdd-lint va a lanzar su subagente semántico
     Then el ruteo de sdd-lint <efecto>
 
     Examples:
-      | sdd     | efecto                              |
-      | true    | aplica (subagente en sonnet)        |
-      | false   | no tiene efecto (sdd-lint no corre) |
-      | quizas  | no tiene efecto (sdd off fail-safe) |
+      | sdd                                       | efecto                                          |
+      | true                                      | aplica (subagente en sonnet)                    |
+      | false                                     | no tiene efecto (sdd-lint no corre)             |
+      | quizas                                    | no tiene efecto (sdd off fail-safe)             |
+      | ausente                                   | no tiene efecto (sdd-lint no corre)             |
+      | { enabled: true, provider: "spec:run" }   | no tiene efecto (modo external, sin aviso drift) |
+      | { enabled: true }                         | no tiene efecto (sin provider = off fail-safe)  |
 
   Scenario: features.sdd pasa de off a on a mitad del plan
     Given tareas cerradas con features.sdd off y "models.sdd-lint: sonnet" ya presente sin efecto

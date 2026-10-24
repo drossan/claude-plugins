@@ -30,7 +30,7 @@ flowchart TD
     SC --> P57["Paso 5.7: proyeccion a GitHub (opcional)"]
     P57 --> HO["Paso 6: handoff TDD + prompt de la 1a tarea"]
     HO --> M["Gate: mutation (break 80)"]
-    M --> SL["Gate: sdd-lint (solo si features.sdd)"]
+    M --> SL["Gate: sdd-lint (nativo) o provider phase=close (external)"]
     SL --> FC["Gate: fact-checker (INCORRECTO bloquea)"]
     FC --> DONE["tarea done + commit/PR"]
     DONE --> P9["Paso 9: prompt de la siguiente tarea, o code review si era la ultima"]
@@ -41,8 +41,8 @@ flowchart TD
     class DR,SC agent
 ```
 
-Los **gates de cierre por tarea** corren en orden: **`mutation` → `sdd-lint` (solo con `features.sdd`) →
-`fact-checker`**. `mutation` y `sdd-lint` son configurables/condicionales; `fact-checker` y los dos
+Los **gates de cierre por tarea** corren en orden: **`mutation` → `sdd-lint` (modo nativo) o provider `phase=close` (modo `external`) →
+`fact-checker`**. `mutation` y el gate SDD son configurables/condicionales ([Modo SDD](../../docs/guides/task-lifecycle.md#modo-sdd-off--native--external)); `fact-checker` y los dos
 checkpoints humanos (`grilling`, aprobación del plan) **no son negociables**.
 
 ## Las skills
@@ -57,7 +57,7 @@ checkpoints humanos (`grilling`, aprobación del plan) **no son negociables**.
 | `/mutation` | Gate de **mutation testing** (Stryker + Vitest), por tarea, con bucle de matar survivors. |
 | `/doctor` | **Mantenimiento**: diagnostica y alinea un repo ya adoptado con la versión actual del plugin (verifica read-only → fix con diff y aprobación). No es un paso del pipeline; se usa tras actualizar el plugin. |
 | `fact-checker` | **Gate de cierre** (no fase de plan): verifica la **veracidad de las afirmaciones** de la sesión (código, tests, librerías, imports) vía subagente fresco → VERIFICADO/INCORRECTO/NO VERIFICABLE. Lo invoca la DoD al cerrar cada tarea (tras `/mutation`), no se auto-ejecuta. Frontera con `/doctor`: veracidad de afirmaciones vs drift de convención. |
-| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo con `features.sdd` on): valida **formato + completitud** de los artefactos SDD (spec EARS · caso-de-uso Gherkin · ADR MADR) — mecánico (comandos `grep`/`test`) + semántico (subagente fresco). ERROR bloquea / AVISO no; corre **entre `/mutation` y `fact-checker`**. Invocable a mano (`/sdd-lint [package]`); helper Bash opcional para CI en `scripts/sdd-lint.sh`. |
+| `/sdd-lint` | **Gate de cierre de la capa SDD** (solo en modo nativo, `features.sdd: true`): valida **formato + completitud** de los artefactos SDD (spec EARS · caso-de-uso Gherkin · ADR MADR) — mecánico (comandos `grep`/`test`) + semántico (subagente fresco). ERROR bloquea / AVISO no; corre **entre `/mutation` y `fact-checker`**. Invocable a mano (`/sdd-lint [package]`); helper Bash opcional para CI en `scripts/sdd-lint.sh`. |
 | `/pipeline-usage` | **Analítica de uso** on-demand (read-only): tokens/modelo/tiempo, desglose **por fase** y **por subagente** de la sesión, leyendo el transcript. Best-effort (formato interno no soportado; titular = total de sesión). **No** es una fase del pipeline: invocarla es el opt-in. |
 
 ## Las dos ideas clave
@@ -117,7 +117,7 @@ que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker. En
 `mutmut` · escape `mutation-command`). Regla de resolución canónica en el README del plugin.
 
 `models:` fija el modelo de las fases con subagente: **3 siempre** (`design-review`,
-`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on. Ver [Routing de
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional al modo nativo (`sdd: true`). Ver [Routing de
 modelo por fase](../README.md#routing-de-modelo-por-fase-models) en el README del plugin.
 
 ## Capas opt-in (default off, salvo que se diga)
@@ -127,7 +127,7 @@ pipeline base de arriba. Cada capa se enciende con su flag:
 
 | Capa | Flag | Qué aporta |
 |---|---|---|
-| **SDD nativo** | `features.sdd` | Specs vivas: requisitos **EARS** (`spec.md`), casos de uso **Gherkin** (`caso-de-uso.md`, única fuente del Gherkin), decisiones **ADR/MADR**. Con activación asistida (`/task-init`/`/doctor` preguntan) y **gate `/sdd-lint`** de formato + completitud al cerrar. |
+| **SDD: nativo o externo** | `features.sdd` | Tres modos `off`/`native`/`external` ([regla única](../../docs/guides/task-lifecycle.md#modo-sdd-off--native--external)). En **nativo**: specs vivas: requisitos **EARS** (`spec.md`), casos de uso **Gherkin** (`caso-de-uso.md`, única fuente del Gherkin), decisiones **ADR/MADR**. Con activación asistida (`/task-init`/`/doctor` preguntan) y **gate `/sdd-lint`** de formato + completitud al cerrar. En **externo** (`provider`): se apaga lo nativo y el pipeline invoca la skill del provider al arrancar y cerrar la tarea (contrato v1 experimental; detalle en el [README](../README.md#sdd-nativo-o-externo-opcional)). |
 | **Git automation** | `features.git-automation` | `auto-commit` al cerrar la tarea, `auto-pr` al cerrar el plan, `co-author` configurable. |
 | **Conventional commits** | `features.conventional-commits` | **Default ON**: exige `<task-id>: <conventional commit>`; `false` lo relaja. |
 | **GitHub tracking** | `features.github-tracking` | Proyección one-way `.md`→GitHub: plan→issue **padre**, tarea→**sub-issue**, con estado (label + Project) y assignee. |

@@ -55,13 +55,13 @@ La versión vive en `task-pipeline/.claude-plugin/plugin.json` (es la que resuel
   `name` + `description`; el cuerpo son **instrucciones que Claude sigue**, no código ejecutable. Un
   `SKILL.md` sí admite `model:` en frontmatter, pero es por-turno + estático — el routing robusto y
   per-repo vía `models:` del YAML sigue siendo **subagente-only**: **3 fases siempre ruteables**
-  (`design-review`, `scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on.
+  (`design-review`, `scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional al modo nativo (`features.sdd: true`).
 - **Las 10 skills** (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`,
   `scenario-coverage`, `fact-checker`, `pipeline-usage`, `sdd-lint`): las 8 primeras orquestan/soportan un
   pipeline (`/plan-task` es el orquestador; el flujo canónico completo está en `docs/guides/task-lifecycle.md`);
   **`pipeline-usage`** es analítica de uso **on-demand** (tokens/modelo/tiempo por fase y subagente), no
   una fase del pipeline; **`sdd-lint`** es el **gate de cierre de la capa SDD** opt-in (valida formato +
-  completitud de spec EARS / caso-de-uso Gherkin / ADR MADR; solo con `features.sdd` on). Frontera clave: **`task-init`** bootstrapea un repo desde cero; **`doctor`**
+  completitud de spec EARS / caso-de-uso Gherkin / ADR MADR; solo en modo nativo, `features.sdd: true`). Frontera clave: **`task-init`** bootstrapea un repo desde cero; **`doctor`**
   realinea un repo **ya adoptado** con la versión actual del plugin (incluye detección de **ids de
   tarea/plan duplicados** y **reconciliación best-effort md↔GitHub**). Además, el modo **caveman**
   (`features.caveman`, opt-in default off) comprime el output vía hook `UserPromptSubmit`; y el **tracking

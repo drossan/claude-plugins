@@ -14,7 +14,7 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand; `sdd-lint`
 | `/doctor` | Diagnostica y alinea un repo **ya adoptado** con la versión actual del plugin (drift, ids duplicados). |
 | `fact-checker` | Gate de cierre: verifica la veracidad de las afirmaciones de la sesión (subagente de solo lectura). |
 | `/pipeline-usage` | Analítica de uso on-demand (tokens/modelo/tiempo por fase y subagente). Read-only, best-effort. |
-| `/sdd-lint` | Gate de cierre de la capa SDD (solo `features.sdd` on): valida formato + completitud de spec EARS / caso-de-uso Gherkin / ADR MADR (mecánico + subagente semántico). ERROR bloquea / AVISO no; entre `/mutation` y `fact-checker`. Helper Bash opcional para CI. |
+| `/sdd-lint` | Gate de cierre de la capa SDD (solo en modo nativo, `features.sdd: true`): valida formato + completitud de spec EARS / caso-de-uso Gherkin / ADR MADR (mecánico + subagente semántico). ERROR bloquea / AVISO no; entre `/mutation` y `fact-checker`. Helper Bash opcional para CI. |
 
 ## Frontera clave
 
@@ -28,7 +28,7 @@ soporte al pipeline; `pipeline-usage` es analítica de uso on-demand; `sdd-lint`
 `grilling`, `design-review`, `scenario-coverage` y `fact-checker` funcionan en cualquier repo. `task-init`,
 `plan-task`, `mutation` y `doctor` asumen la convención `.claude/plans|tasks|specs|context`. `sdd-lint` va
 más allá: asume además la capa SDD (`.claude/specs/<pkg>/` con spec EARS / caso-de-uso / ADR) y solo aporta
-valor con `features.sdd` on.
+valor en modo nativo (`features.sdd: true`).
 
 ## Profundizar (opcional)
 

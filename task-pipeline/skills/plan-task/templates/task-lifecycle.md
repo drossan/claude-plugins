@@ -41,13 +41,50 @@ las claves que declara); la **regla de resolución canónica** vive en el README
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en checkpoints. No forma parte de ningún preset; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
-| `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. |
+| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (cualquier valor no canónico → off; reglas en «Modo SDD»); **ausencia ≠ drift**.  Modos `off`/`native`/`external`: ver [Modo SDD](#modo-sdd-off--native--external). |
 | `features.conventional-commits` | `true`(default)/`false` | Formato `<task-id>: <conventional commit>`. Comportamiento histórico, configurable; `false` lo relaja. **Ausencia = ON**. |
 | `features.git-automation` | bloque; opt-in (default `off`) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea), `auto-pr` (cierre de **plan**; requiere `auto-commit`), `co-author` (default off). **Fuera de todo preset**; fail-safe; **ausencia ≠ drift**. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
 son configurables** — son por diseño.
+
+### Modo SDD: `off` / `native` / `external`
+
+> **Regla única.** Esta sección es la **única** definición de cómo se resuelve `features.sdd`; el resto del
+> plugin (skills, `doctor`, `task-init`, README, portal) la **enlaza**, no la repite.
+
+`features.sdd` se resuelve a uno de tres modos. **Fail-safe**: ante la duda, `off`.
+
+| Valor de `features.sdd` | Modo |
+|---|---|
+| `true` (booleano) | `native` |
+| bloque con `enabled: true` (booleano) **y** `provider` string **no vacío** (tras trim) | `external` |
+| cualquier otra cosa | `off` |
+
+«Cualquier otra cosa» incluye: `false`, ausente, `null`/vacío, `"true"` (string), `yes`, `[true]`; bloque sin
+`enabled` o sin `provider`; `enabled` no booleano (`"true"`) o `false`; `provider` vacío, solo espacios, `null`,
+número o lista. Las **claves extra** dentro del bloque se toleran (`/doctor` las señala como posible typo).
+**YAML ilegible** → `off` con aviso de config ilegible, sin invocar a ningún provider. Un `provider` que
+resuelve a una skill del propio `task-pipeline` se **rechaza** con aviso → modo efectivo `off`: es el que lleva el
+prefijo `task-pipeline:` (p.ej. `task-pipeline:plan-task`) **o** un nombre **sin `:`** que coincide con una de sus
+skills (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`, `scenario-coverage`,
+`fact-checker`, `pipeline-usage`, `sdd-lint`). El `provider` se trata como **un único identificador**, nunca como argumentos
+(`"spec:run phase=close"` es un solo nombre, no dos).
+
+- **`native`** — la capa SDD descrita en «Flujo SDD» (spec EARS + CU Gherkin + ADR MADR, gate `sdd-lint`).
+  Byte-idéntico al comportamiento previo a `external`.
+- **`external`** — el SDD lo gestiona un plugin externo (`provider: "<plugin>:<skill>"`). Lo **nativo se
+  apaga**: sin plantillas ni scaffolding SDD, sin gate `sdd-lint` ni efecto de `models.sdd-lint`, y el Gherkin
+  vuelve a vivir en la tarea. Lo único que sobrevive: **si una tarea ya enlaza a un CU, ese enlace se sigue
+  siempre**, sea cual sea el modo. El pipeline **invoca la skill del provider** al arrancar la tarea y al
+  cerrarla; el contrato (versión 1, **experimental**) y la semántica de avisos están en el README del
+  plugin → «SDD: nativo o externo (opcional)».
+- **`off`** — sin capa SDD; el Gherkin vive en la tarea.
+
+> **Los schemas son ayuda de editor, no validación.** `task-pipeline.schema.json` acepta `provider: ""` y
+> `{ enabled: true }` (sin provider) por ser válidos como tipos, pero en runtime ambos resuelven a `off`. No
+> hay parser: el modelo interpreta el YAML con esta tabla.
 
 ## Layout de directorios
 
@@ -202,10 +239,11 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
-- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo si `features.sdd`
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo en modo nativo (`sdd: true`)
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker` (siempre se invoca; «sin cambios» solo describe lo que el provider reportó, en el session log); un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
-- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo si `features.sdd`
+- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -274,6 +312,12 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 2. Mueve la tarea a `.claude/tasks/active/<package>/`, `status: active`, bump `updated`.
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
+4b. **(Solo modo `external`)** invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>`
+   **tras** mover la tarea a `active` (las rutas son relativas a la raíz y existen). **Solo en la activación `pending → active`**
+   (`blocked → active`, cancelar y la reapertura `done → active` no invocan). El `provider` se pasa como **un único identificador**; `plan=` va vacío con
+   aviso si no hay plan legible. **Relee la tarea** al terminar: el provider puede haberla modificado. Si el
+   provider no está instalado, falla o no responde → **aviso que el owner reconoce** (nota en el session log); la
+   tarea arranca igualmente y la línea de DoD del SDD queda sin marcar. Contrato y semántica en README del plugin → «SDD: nativo o externo (opcional)».
 5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el arranque a su issue
    (best-effort): campo **Status del Project → `In progress`**, label **`status: in-progress`** (recipe
    add-then-remove) y **assignee** según la clave `assignee` (ver la tabla completa y el recipe en "Cerrar
@@ -303,14 +347,24 @@ particular:
    `false`. `features.mutation-gate` **no** es per-package (solo `stack.*` lo es). Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
-3b. **Gate `sdd-lint`** (solo con `features.sdd` on): **entre** el gate de mutation y `fact-checker`, corre
+3b. **Gate `sdd-lint`** (solo en modo nativo, `sdd: true`): **entre** el gate de mutation y `fact-checker`, corre
    la skill `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de
    formato/completitud **bloquea** el cierre hasta corregir (como `fact-checker` `INCORRECTO`); un **AVISO**
-   se reconoce, no bloquea. Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
+   se reconoce, no bloquea. En modo `off` o `external`, **no corre**. Ver la skill `/sdd-lint`.
+3c. **Invocación del provider `phase=close`** (solo modo `external`): ocupa el **hueco de `sdd-lint`** — **tras**
+   `mutation`, **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub (así lo que genere el
+   provider entra en el commit de la tarea). Se invoca `contract=1 phase=close task=<ruta> plan=<ruta>` **antes**
+   de mover la tarea a `completed` (la ruta existe). **No se invoca si `mutation` falla**; se **reintenta** tras un
+   fallo posterior (el provider debe ser idempotente). Terminar sin error ni reporte = OK; **sin respuesta o sin
+   canal** para un provider interactivo = error del provider. Provider ausente o con error → **aviso que el owner
+   reconoce** (nota en el session log); lo que el provider reporta sobre sus artefactos se traslada como **aviso,
+   nunca ERROR** (el pipeline no valida su contenido). La línea de DoD «SDD gestionado con `<provider>`» queda sin
+   marcar hasta reconocerlo: el pipeline la señala y **no cierra en silencio**, pero el cambio de `status:` del
+   `.md` **no se bloquea**. Releer la tarea tras la invocación.
 4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
    `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
    resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
-   (incluida «el gate de mutation pasó» y, con SDD on, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
+   (incluida «el gate de mutation pasó» y, en modo nativo, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
    corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
    (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
    en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
@@ -345,8 +399,9 @@ particular:
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
 
-> **Flujo SDD (solo con `features.sdd` on — opcional).** Con el flag **off** (default) nada de esto aplica:
-> el Gherkin vive en el `## Scenarios` de la tarea, **byte-idéntico** a hoy. Con el flag **on**:
+> **Flujo SDD (solo modo nativo, `sdd: true` — opcional).** Con SDD `off` (default) o `external` nada de esto
+> aplica: el Gherkin vive en el `## Scenarios` de la tarea (salvo que ya enlace a un CU: ese enlace se sigue
+> siempre). Con el modo nativo:
 >
 > - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios (Gherkin)` de la tarea **enlaza** al/los
 >   CU (`.claude/specs/<pkg>/casos-de-uso/<id>.md`) en vez de copiar el bloque. Anti-duplicación: **ADR** =
@@ -444,7 +499,7 @@ Es el registro canónico; no lo dupliques.
 
 | Entidad | Estados | Notas |
 |---|---|---|
-| Plan | `pending → active → completed` | `cancelled` desde cualquier estado. |
+| Plan | `pending → active → completed` | `cancelled` desde cualquier estado. `completed → active` es la **reapertura** (antes de mergear la PR) y se registra en el Registro de cambios. |
 | Tarea | `pending → active → in-review → done` | `blocked` desde `active` (motivo en el session log) → vuelve a `active` al desbloquear. `cancelled` desde cualquier estado. |
 
 **Plan:**
@@ -455,6 +510,7 @@ stateDiagram-v2
     [*] --> pending
     pending --> active
     active --> completed
+    completed --> active
     completed --> [*]
     pending --> cancelled
     active --> cancelled

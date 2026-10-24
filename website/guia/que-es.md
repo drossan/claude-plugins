@@ -31,7 +31,7 @@ cerrar— y deja fluir el resto.
 El pipeline base funciona sin tocar nada. Además, el plugin trae **capas opcionales** que enciendes por flag
 en `.claude/task-pipeline.yml` — ninguna se activa sola y su ausencia no es "drift":
 
-- **[SDD nativo](../features/sdd.md)** — specs vivas: requisitos **EARS**, casos de uso **Gherkin**, decisiones **ADR/MADR**, con gate de validación `/sdd-lint`.
+- **[SDD (nativo o externo)](../features/sdd.md)** — specs vivas: requisitos **EARS**, casos de uso **Gherkin**, decisiones **ADR/MADR**, con gate de validación `/sdd-lint`.
 - **[Git automation](../features/git-automation.md)** — auto-commit al cerrar tarea, auto-PR al cerrar plan.
 - **[GitHub tracking](../features/github-tracking.md)** — proyecta el trabajo a GitHub Issues/Projects (one-way).
 - **[Modo caveman](../features/caveman.md)** — comprime el output del hilo principal para ahorrar tokens.

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/drossan/claude-plugins/task-pipeline.schema.json",
-  "x-task-pipeline-schema-version": "1.0.0",
+  "x-task-pipeline-schema-version": "1.1.0",
   "title": "task-pipeline.yml",
   "description": "Ayuda de editor (autocompletado/validación) para .claude/task-pipeline.yml del plugin task-pipeline. No es validación en runtime: las skills leen el YAML sin parser de schema. x-task-pipeline-schema-version (top-level, en este fichero de schema, no en el YAML de datos) es la clave-ancla que /doctor compara entre el schema materializado en un repo consumidor y el que trae la versión instalada del plugin para detectar drift.",
   "type": "object",
@@ -69,8 +69,20 @@
           ]
         },
         "sdd": {
-          "type": "boolean",
-          "description": "Capa SDD (spec EARS + CU Gherkin + ADR MADR). Fail-safe: solo true booleano activa."
+          "description": "Capa SDD opt-in. true = nativo (spec EARS + CU Gherkin + ADR MADR); bloque { enabled: true, provider } = delegado en un plugin externo. Ayuda de editor, no validación: la regla de resolución (fail-safe, ante la duda off) vive en docs/guides/task-lifecycle.md → Modo SDD.",
+          "oneOf": [
+            { "type": "boolean" },
+            {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "provider": {
+                  "type": "string",
+                  "description": "Skill del plugin SDD externo, p.ej. \"plugin:skill\". Un único identificador; el pipeline no lo valida."
+                }
+              }
+            }
+          ]
         },
         "caveman": {
           "type": "string",

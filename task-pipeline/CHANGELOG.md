@@ -4,6 +4,67 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.3] — 2026-10-24
+
+**Correcciones del 2.º code review** (coherencia de la regla de modos SDD; sin gate nuevo).
+
+### Fixed
+- Un `provider` sin `:` que coincide con una skill de `task-pipeline` (p.ej. `doctor`) se rechaza igual que
+  `task-pipeline:<skill>`; la regla vive solo en «Modo SDD» y `/task-init` y `/doctor` la aplican.
+- `/doctor` cat. 13: la señal es el **heading** «Modo SDD» (no cualquier mención) y el fix **añade solo la
+  sección** y los pasos 4b/3c en vez de reescribir el lifecycle; `enabled: false` es solo aviso.
+- README, portal, ambos schemas y la plantilla YAML dejan de repetir la regla de resolución y la enlazan.
+- DoD de `external`: `phase=close` se invoca siempre («sin cambios» solo describe lo que el provider reportó).
+- Textos «con `features.sdd` on» → modo nativo; CU con `contract=1` y orden de extensiones; diagrama de estados
+  del plan con la reapertura `completed → active`; diagrama de gates del portal; escape de comillas en `/doctor`.
+
+## [0.18.2] — 2026-10-24
+
+### Added
+- `/doctor` categoría 13: detecta un `docs/guides/task-lifecycle.md` anterior a 0.18.0 (sin la sección «Modo SDD»).
+  Con `features.sdd` en bloque con `provider` ofrece re-materializarlo con diff + aprobación; con SDD off o `true`
+  es solo un aviso informativo. Sin ancla de versión nueva: la señal es la presencia de la sección.
+
+## [0.18.1] — 2026-10-24
+
+**Correcciones del code review de 0.18.0** (coherencia de la regla única de modos SDD; sin comportamiento nuevo).
+
+### Fixed
+- Las 9 referencias a «Modo SDD» apuntaban a un ancla inexistente (`#modo-sdd-off-native-external`); el slug real
+  es `#modo-sdd-off--native--external` (comprobado con `github-slugger`).
+- `x-task-pipeline-schema-version` sube a `1.1.0` en ambos schemas, para que `/doctor` detecte el drift del
+  bloque `{ enabled, provider }`.
+- Contradicciones «solo `true` activa» en la fila `features.sdd` del lifecycle y su plantilla, y en el comentario
+  de `templates/task-pipeline.yml`; título del README corregido en la plantilla del lifecycle.
+- `phase=start` se invoca solo en `pending → active`: `blocked → active` y la reapertura `done → active` no lo
+  repiten (lifecycle, README y CU, RN-7/RN-9).
+- `/doctor` avisa de un `provider` que apunta a `task-pipeline` (modo efectivo `off`) y no lo escribe al activar.
+- Descripciones (`plugin.json`, `marketplace.json`, YAML, `templates/README.md`) alineadas con los tres modos.
+
+## [0.18.0] — 2026-10-24
+
+**SDD con proveedor externo.** `features.sdd` acepta un bloque `{ enabled: true, provider: "<plugin>:<skill>" }`
+para delegar el SDD en otro plugin. Release minor: el modo nativo (`sdd: true`) queda byte-idéntico.
+
+### Added
+- **Tres modos SDD `off`/`native`/`external`**, resueltos por una regla única y fail-safe (guía del lifecycle →
+  «Modo SDD»); schemas (`.claude/` y `templates/`) y template YAML con el ejemplo comentado.
+- **Invocación del provider** al arrancar (`phase=start`) y cerrar (`phase=close`, entre `mutation` y
+  `fact-checker`, antes del auto-commit y de la proyección a GitHub) la tarea, con el contrato
+  `contract=1 phase=… task=<ruta> plan=<ruta>` (**v1, experimental**). Provider ausente o con error = aviso que
+  el owner reconoce, nunca bloqueo; lo que reporta el provider se traslada como aviso, nunca ERROR.
+- **Activación y salud guiadas**: `/task-init` y `/doctor` ofrecen nativo vs externo con confirmación;
+  `/doctor` (categoría 12, solo-reporte) avisa de `{ enabled: true }` sin provider, de provider no instalado y
+  de artefactos nativos huérfanos.
+
+### Changed
+- En `external` lo nativo se apaga (sin scaffolding, sin `sdd-lint`, sin efecto de `models.sdd-lint`) y el Gherkin
+  vuelve a la tarea; si una tarea ya enlaza a un CU, ese enlace se sigue siempre. Los lectores nativos
+  (`mutation`, `scenario-coverage`, `sdd-lint`, `task.md`, `plan-task`) hablan de «modo nativo (`sdd: true`)».
+- README, `flujo-del-pipeline.md` y el portal describen los tres modos enlazando la regla única; el README
+  documenta el riesgo de que un repo clonado nombre cualquier skill instalada como provider y que el provider
+  debe ser idempotente. «SDD nativo» pasa a «SDD: nativo o externo» (ancla `#sdd-nativo-o-externo-opcional`).
+
 ## [0.17.1] — 2026-10-24
 
 **Portal de documentación rehecho (`website/`), sin cambios en el plugin.** Release patch: solo docs.

@@ -11,7 +11,7 @@ se duplica: vive en el README del plugin (canónico) y el portal la **resume + e
 | Config `task-pipeline.yml` (flags/presets/stack/models) | Portal → `guia/configuracion` | El README enlaza aquí; el portal es la referencia de config de cara al usuario. |
 | Resolución de `mutation` por-package (Stryker/mutmut/escape) | README → "Configuración por repo" | Portal: la idea + tabla resumida + link al README. |
 | GitHub tracking: límites, nombres exactos de Status del Project, recipe de estados | README → "GitHub tracking" | Portal: qué proyecta + activar + garantías; la **tabla de límites** y nombres exactos → link. |
-| SDD: garantías opt-in, EARS/MADR/Gherkin al detalle | README → "SDD nativo" | Portal: qué es + flujo con/sin SDD + activar; el detalle formal → link. |
+| SDD: garantías opt-in, EARS/MADR/Gherkin al detalle | README → "SDD: nativo o externo" | Portal: qué es + flujo con/sin SDD + activar; el detalle formal → link. |
 | Routing de modelo por fase (`models:`) | README → "Routing de modelo por fase" | Portal: qué fases se rutan + cómo; la limitación de plataforma → link. |
 | Trabajo en equipo / colisiones de id | README → "Trabajo en equipo y colisiones de id" | Portal (Conceptos): el modelo + el residual; el detalle → link. |
 | Frase canónica del salto trivial | Skill `plan-task` (definición) | Portal: el **string literal** en `guia/pipeline` (pinado). Alinear las 5 copias divergentes = cleanup aparte. |
