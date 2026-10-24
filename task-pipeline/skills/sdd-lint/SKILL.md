@@ -1,6 +1,6 @@
 ---
 name: sdd-lint
-description: Gate de validación de formato + completitud de los artefactos SDD (spec EARS · caso-de-uso Gherkin · ADR MADR) — comprueba que estén bien formados, completos y trazables antes de cerrar una tarea. Corre en el cierre con `features.sdd` on (tras `mutation`, antes de `fact-checker`), o a mano para auditar (`/sdd-lint [package]`). Solo aplica a la capa SDD opt-in; con `features.sdd` off es no-op.
+description: Gate de validación de formato + completitud de los artefactos SDD (spec EARS · caso-de-uso Gherkin · ADR MADR) — comprueba que estén bien formados, completos y trazables antes de cerrar una tarea. Corre en el cierre en modo nativo (`sdd: true`; tras `mutation`, antes de `fact-checker`), o a mano para auditar (`/sdd-lint [package]`). Solo aplica a la capa SDD nativa opt-in; el gate automático es no-op con SDD off o externo.
 ---
 
 Verificas que los artefactos SDD (spec/caso-de-uso/ADR) son **válidos y completos**, no solo que existen
@@ -12,16 +12,19 @@ modelo que `fact-checker` (`INCORRECTO`/`NO VERIFICABLE`).
 > **Frontera con `/doctor` y `fact-checker`**: `/doctor` valida **presencia/estructura** del scaffolding SDD
 > (¿existe `.claude/specs/adr/`?); `fact-checker` verifica **afirmaciones de la sesión**; **`sdd-lint`**
 > valida el **contenido** de los artefactos SDD (¿este ADR tiene un estado MADR válido?, ¿esta spec es EARS?).
-> No se solapan. El caso "`features.sdd` on pero **0 artefactos** aún" es de `/doctor` (scaffolding ausente),
+> No se solapan. El caso "modo nativo pero **0 artefactos** aún" es de `/doctor` (scaffolding ausente),
 > **no** de `sdd-lint` (que valida lo que existe) → aquí es **N/A**.
 
 ## Paso 0 — Config y alcance
 
 Lee `.claude/task-pipeline.yml` con **Read**.
 
-- **`features.sdd` off / ausente / no-canónico** (fail-safe) → **no-op**: informa "SDD off, nada que validar"
-  y sal. **Excepción**: en invocación **manual** (`/sdd-lint`) **audita igualmente** pero **avisa** que SDD
-  está off (útil para decidir si activarlo). El **gate automático** del cierre sí es no-op con off.
+- **Modo SDD** (regla única: «Modo SDD» de `docs/guides/task-lifecycle.md`): solo el modo **nativo** (`sdd: true`) ejecuta el gate. Con **`off`**
+  (incl. ausente/no-canónico, fail-safe) o **`external`** → **no-op**: informa "SDD off, nada que validar"
+  (o, en `external`, "el SDD lo gestiona el provider") y sal. **Excepción**: en invocación **manual**
+  (`/sdd-lint`) **audita igualmente** pero **avisa** que SDD está off (útil para decidir si activarlo) o que
+  lo gestiona el provider. El **gate automático** del cierre sí es no-op en esos modos; `models.sdd-lint`
+  no tiene efecto en `external` y no se señala como drift.
 - **Alcance**: `/sdd-lint <package>` → solo ese package; **sin argumento** → **todos** los packages con
   artefactos SDD, atribuyendo cada hallazgo a su package. `<package>` inexistente → **avísalo** (no falles en
   silencio).
@@ -36,8 +39,8 @@ Por cada package en alcance:
 - `spec.md` → `.claude/specs/<pkg>/spec.md`
 - Casos de uso → `.claude/specs/<pkg>/casos-de-uso/*.md`
 - ADR (globales del repo) → `.claude/specs/adr/NNNN-*.md` + `adr-index.md`
-- Enlaces al CU desde las tareas del package con `features.sdd` on → el `## Scenarios` de cada
-  `.claude/tasks/**/<pkg>/*.md` (con SDD on **enlaza** a un CU).
+- Enlaces al CU desde las tareas del package → el `## Scenarios` de cada
+  `.claude/tasks/**/<pkg>/*.md` (en modo nativo **enlaza** a un CU).
 
 ## Paso 2 — Checks MECÁNICOS (comandos deterministas)
 
@@ -58,7 +61,7 @@ misma salida. **Ante duda de parseo, demota a AVISO** (no bloquees por una regex
 - **Duplicados por-package**: `FR-001` puede repetirse en dos packages distintos; solo colisiona **dentro** de
   su `spec.md` / package.
 - **Convivencia inline↔CU**: si el `## Scenarios` de una tarea trae Gherkin **inline** (tarea materializada
-  **antes** de activar `features.sdd`), **no** es "enlace roto" por no tener enlace — solo se comprueba el
+  **antes** de activar el modo nativo), **no** es "enlace roto" por no tener enlace — solo se comprueba el
   enlace **si existe**. Respeta "no migrar a la fuerza".
 - **Enlace con `..` o ruta absoluta** que escapa el repo → **ERROR** (no lo sigas).
 - **Fichero ilegible / frontmatter roto** → **AVISO** "no parseable" y **sigue** con el resto (no abortes).
@@ -103,6 +106,6 @@ Junta lo mecánico (Paso 2) + lo semántico (Paso 3) en **un** informe:
   explícitamente. Sin hallazgos → **limpio**.
 - **Solo lectura**: `sdd-lint` **no edita** ningún artefacto; reporta para que el humano/sesión corrija.
 
-> **Cierre de tarea** (gate orquestado por la DoD, `features.sdd` on): un **ERROR bloquea** el cierre;
+> **Cierre de tarea** (gate orquestado por la DoD, modo nativo): un **ERROR bloquea** el cierre;
 > **AVISO** se reconoce; **limpio** pasa. Corre **tras `mutation`** y **antes de `fact-checker`** (que luego
-> atestigua "el gate `sdd-lint` pasó"). Con `features.sdd` off, este gate **no corre** (byte-idéntico a hoy).
+> atestigua "el gate `sdd-lint` pasó"). Con SDD `off` o `external`, este gate **no corre** (byte-idéntico a hoy en `off`).

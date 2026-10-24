@@ -66,12 +66,15 @@ Lista de bullets verificables, no prosa. Enlaza la(s) spec(s) del artefacto.>
      sustituye los escenarios por una nota que lo justifique y di cómo se verifica
      (p.ej. "verificación = compila / valida"). -->
 
-<!-- SDD (solo con `features.sdd` ON): esta sección NO copia el bloque Gherkin — ENLAZA los escenarios del
+<!-- SDD (solo en modo nativo, `sdd: true`): esta sección NO copia el bloque Gherkin — ENLAZA los escenarios del
      caso de uso, que es su ÚNICA fuente (anti-duplicación: ADR=por qué · Spec/EARS=qué · CU/Gherkin=cómo).
      Sustituye el bloque de abajo por el/los enlace(s):
        Criterios de aceptación (Gherkin) en el/los caso(s) de uso:
        - [.claude/specs/<pkg>/casos-de-uso/<id>.md](...)
-     Con `features.sdd` OFF (default): el Gherkin vive AQUÍ, como abajo (comportamiento actual, intacto). -->
+     Con SDD `off` o `external` (sin enlace a CU): el Gherkin vive AQUÍ, como abajo. Una tarea que ya enlaza a un CU
+     lo sigue enlazando en cualquier modo. Regla de modos: «Modo SDD» de `docs/guides/task-lifecycle.md`.
+     Las líneas de DoD de otro modo (p. ej. `sdd-lint` en una tarea creada en nativo y cerrada en `external`)
+     se tratan como no aplicables. -->
 
 ```gherkin
 Feature: <capacidad que aporta esta tarea>
@@ -125,10 +128,10 @@ nuevos disponibles. El estado que habilita, no el comportamiento.>
 - [ ] Spec cumplida; lo declarado en `Provides` queda realmente disponible para las tareas dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`) — sin survivors por debajo del umbral  · (flag `features.mutation-gate`)
-- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); corre **tras `mutation`, antes de `fact-checker`**  · solo si `features.sdd`
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); corre **tras `mutation`, antes de `fact-checker`**  · solo en modo nativo (`sdd: true`)
 - [ ] Gate de `fact-checker` superado — afirmaciones de la sesión verificadas (INCORRECTO bloquea; NO VERIFICABLE = aviso a reconocer), tras mutation y antes de commit/resumen  · no-negociable (sin flag)
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
-- [ ] **SDD** — spec (EARS) + caso de uso (Gherkin) creados/actualizados en esta tarea, **o** declarado **"sin cambios de spec/CU"** (aquí y en el session log). El Gherkin vive **solo en el CU**  · solo si `features.sdd`
+- [ ] **SDD** — spec (EARS) + caso de uso (Gherkin) creados/actualizados en esta tarea, **o** declarado **"sin cambios de spec/CU"** (aquí y en el session log). El Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
 - [ ] Documentación actualizada — tres capas (cada una según `features.closing-documentation.*`):
   - [ ] **TSDoc en el código** — todo símbolo público (funciones, clases, tipos, puertos, errores) documentado con TSDoc, al crearlo (no al final)  · (flag `tsdoc`)
   - [ ] **Doc técnica (contexto)** — README / `CLAUDE.md` del package / `.claude/specs/` / ADRs donde aplique  · (flag `technical-docs`)

@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-proveedor-externo-02
 package: task-pipeline
 plan: sdd-proveedor-externo
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-sdd-proveedor-externo-01]
 estimate: 2h
-actual:
+actual: 1h
 issue: 80
 created: 2026-10-24
 updated: 2026-10-24
@@ -47,12 +47,12 @@ Criterios de aceptación (Gherkin) en el caso de uso (fuente única); esta tarea
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. -->
-- [ ] Escenarios del CU cubiertos por esta tarea verificados (inspección / `grep`: ningún lector copia la regla de tres modos)
-- [ ] Spec cumplida
-- [ ] **Gate `sdd-lint` superado** — sin ERROR (AVISO se reconoce)
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · `features.github-tracking`
-- [ ] **SDD** — spec/CU actualizados, o declarado «sin cambios de spec/CU» aquí y en el session log
-- [ ] Doc técnica actualizada · `technical-docs`
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-02.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios del CU cubiertos por esta tarea verificados (inspección / `grep`: ningún lector copia la regla de tres modos)
+- [x] Spec cumplida
+- [x] **Gate `sdd-lint` superado** — sin ERROR (AVISO se reconoce)
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · `features.github-tracking`
+- [x] **SDD** — spec/CU actualizados, o declarado «sin cambios de spec/CU» aquí y en el session log (declarado)
+- [x] Doc técnica actualizada · `technical-docs`
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-02.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos
