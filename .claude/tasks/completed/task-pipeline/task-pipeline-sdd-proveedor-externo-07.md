@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-proveedor-externo-07
 package: task-pipeline
 plan: sdd-proveedor-externo
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-proveedor-externo-06]
 estimate: 2h
-actual:
+actual: 1h
 created: 2026-10-24
 updated: 2026-10-24
 ---
@@ -50,12 +50,12 @@ drift pasa sin aviso. Origen: hallazgo A1 del code review del plan.
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. -->
-- [ ] Escenarios verificados corriendo la lógica de la categoría sobre tres repos de prueba (lifecycle antiguo + bloque, al día, antiguo + SDD off)
-- [ ] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
-- [ ] Spec cumplida
-- [ ] **Gate `sdd-lint` superado** — sin ERROR
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] **SDD** — CU actualizado (escenarios añadidos al crear la tarea), o «sin cambios de spec/CU»
-- [ ] Doc técnica actualizada (README, CHANGELOG 0.18.2, `plugin.json`) · `technical-docs`
-- [ ] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-07.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)
+- [x] Escenarios verificados corriendo la lógica de la categoría sobre tres repos de prueba (lifecycle antiguo + bloque, al día, antiguo + SDD off)
+- [x] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
+- [x] Spec cumplida
+- [x] **Gate `sdd-lint` superado** — sin ERROR (sin cambios en artefactos SDD; ver session log)
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] **SDD** — CU actualizado (escenarios añadidos al crear la tarea), o «sin cambios de spec/CU»
+- [x] Doc técnica actualizada (README, CHANGELOG 0.18.2, `plugin.json`) · `technical-docs`
+- [x] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-07.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)

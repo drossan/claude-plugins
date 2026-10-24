@@ -256,6 +256,18 @@ artefacto del plugin — ver "Propiedad" abajo).
       `.claude/specs/`, **avisa** de que el provider ya no los gestiona. **No** migres, conviertas ni
       borres nada.
 
+13. **Lifecycle anterior a 0.18.0: falta «Modo SDD»** (drift de plantilla, repo-owned — análoga a la cat. 5) —
+    desde **0.18.0** `docs/guides/task-lifecycle.md` define la regla única off/native/external (sección
+    «Modo SDD») y los pasos de invocación del provider. El lifecycle no lleva ancla de versión: la señal es la
+    **presencia del heading «Modo SDD»** (`grep -n "Modo SDD"`). Si el fichero existe y **no lo contiene**, repórtalo
+    como lifecycle anterior a 0.18.0; si lo contiene, **no reportes nada**. Gravedad según `features.sdd`:
+    - **Bloque con `provider`** (intención de `external`): drift que importa — el lifecycle no define el modo
+      `external` ni invoca al provider. En Fase 2 ofrece re-materializar desde
+      `../plan-task/templates/task-lifecycle.md` con diff + aprobación (como la cat. 5).
+    - **Off o `true`**: solo **aviso informativo**, sin ofrecer cambios obligatorios.
+    No uses una ancla de versión nueva ni toques prosa personalizada sin enseñar el diff. Si el fichero no existe,
+    ya lo cubre la cat. 4/restauración del hook: no lo dupliques aquí.
+
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
 - El **CHANGELOG** y cualquier entrada de versión histórica (p.ej. ≤ 0.8.1) que narra el rename.

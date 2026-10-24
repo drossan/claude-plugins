@@ -4,6 +4,13 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.2] — 2026-10-24
+
+### Added
+- `/doctor` categoría 13: detecta un `docs/guides/task-lifecycle.md` anterior a 0.18.0 (sin la sección «Modo SDD»).
+  Con `features.sdd` en bloque con `provider` ofrece re-materializarlo con diff + aprobación; con SDD off o `true`
+  es solo un aviso informativo. Sin ancla de versión nueva: la señal es la presencia de la sección.
+
 ## [0.18.1] — 2026-10-24
 
 **Correcciones del code review de 0.18.0** (coherencia de la regla única de modos SDD; sin comportamiento nuevo).
