@@ -42,7 +42,13 @@ Antes de aplicar las fases OPCIONALES y de elegir comandos, lee `.claude/task-pi
 | `features.conventional-commits` | booleano; default **ON** | Formato `<task-id>: <conventional commit>`; `false` lo relaja. Ausencia = ON (histórico, no opt-in silencioso). |
 | `features.git-automation` | bloque; opt-in (default **off**) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea) · `auto-pr` (cierre de **plan**, requiere `auto-commit`) · `co-author` (default off). **Fuera de todo preset**; fail-safe; su **ausencia no es drift**. |
 
-**`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente** (`design-review` y `scenario-coverage`, cada una lo lee en su Paso 2): clave ausente/`inherit` = modelo de sesión; alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`) heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del plugin → "Routing de modelo por fase" (no la repito aquí).
+**`models:` (routing de modelo por fase)** — fija el modelo de las fases que lanzan **subagente**: **3
+siempre** (`design-review`, `scenario-coverage`, `fact-checker`, cada una lo lee en su Paso 2) **+
+`sdd-lint`**, que rutea **solo con `features.sdd` on**: clave ausente/`inherit` = modelo de sesión;
+alias/id válido = se pasa como `model` al subagente; valor inválido = **aviso + inherit**; clave para una
+fase inline = **se ignora**. Las fases **inline** (`grilling`, `mutation` y este propio `plan-task`)
+heredan la sesión y **no se rutan** — limitación de plataforma explicada **una sola vez** en el README del
+plugin → "Routing de modelo por fase" (no la repito aquí).
 
 > **Checkpoints — qué se puede saltar y qué no**: `grilling` y la aprobación del plan son **no negociables** (baratos y nucleares); ningún flag, preset ni "es que es pequeño" los desactiva. `design-review` (Paso 4.5) y `scenario-coverage` (Paso 5.5) corren **por defecto**, pero admiten un **salto proporcional** solo en planes triviales (regla abajo). El escape es proporcional al coste: solo las dos pasadas caras (subagente) lo tienen.
 
@@ -94,6 +100,14 @@ Al aprobar el usuario, escribe `.claude/plans/pending/<package>/<name-plan>.md` 
 ## Paso 4 — Refinar con grilling (checkpoint humano)
 
 Invoca la skill **`grilling`** sobre el plan. Itera hasta que sobreviva el interrogatorio; registra cada decisión en el **Plan change log**. No avances hasta que el usuario lo dé por bueno.
+
+**Filtro de preguntas — antes de formular CADA pregunta.** `grilling` interroga *decisiones del owner*, no rellena huecos que la sesión puede cerrar sola. Pasa cada pregunta por este filtro y **descártala** (resuélvela tú e incorpórala al plan como dato) si:
+
+- **Se responde leyendo el código, la config o los docs** → es un hecho: búscalo, no lo preguntes.
+- **La propia petición ya la resuelve o la implica** → el owner ya decidió; no se lo hagas repetir.
+- **Es una verificación de implementación**, es decir, trabajo de la tarea y no una decisión de diseño → se comprueba al ejecutar (y lo cubre el Gherkin), no se pregunta ahora.
+
+Test mecánico: **«si cualquier respuesta posible deja el plan igual, no la preguntes».** Ejemplo real de lo que NO se pregunta: ante «en los albaranes se deben permitir tres decimales», la pregunta «¿habría que comprobar que la generación del albarán admite decimales?» sobra — es la propia petición y se verifica al implementar. Sí se pregunta lo que el código no puede decidir y cambia el plan (p. ej. «¿los albaranes ya emitidos se recalculan o se quedan como están?»). Si tras el filtro no queda ninguna pregunta, dilo y pasa a aprobación en vez de inventar una.
 
 ## Paso 4.5 — Revisión de diseño holística (checkpoint humano)
 
@@ -170,9 +184,22 @@ Antes del handoff, aplica la regla de **salto en planes triviales** (ver arriba)
 
 > **Fuera de alcance de estos pasos**: la proyección del **estado** de una tarea (arranque/cierre) vive en `task-lifecycle`; el cierre de la issue **PADRE** al completar el plan y la disciplina de **concurrencia** en el "Ciclo de vida del plan"; la **reconciliación** md↔GitHub en `/doctor`.
 
-## Paso 6 — Handoff al flujo TDD
+## Paso 6 — Handoff al flujo TDD (con prompt de arranque automático)
 
 Cada tarea se ejecuta en su propia sesión siguiendo el `HOW-TO-START-A-TASK.md` del package (Red → Green → Refactor; tests derivados de los escenarios Gherkin). Reporta: el plan creado y su ruta, la lista de tareas con dependencias y la primera recomendada.
+
+**Y entrega SIEMPRE, sin que el usuario lo pida, el prompt para arrancar la primera tarea en una sesión nueva** (la primera sin `depends_on` pendientes; si hay varias, la primera por orden). Va en un bloque de código copiable y **autocontenido** — la sesión nueva no tiene tu contexto —, con las rutas reales ya sustituidas:
+
+```text
+Arranca la tarea <task-id> del plan <plan-id>.
+Lee, en este orden: docs/guides/task-lifecycle.md, .claude/specs/<package>/HOW-TO-START-A-TASK.md,
+el plan (.claude/plans/<estado>/<package>/<name-plan>.md) y la tarea (.claude/tasks/<estado>/<package>/<task-id>.md).
+Sigue "Arrancar un plan" (el plan está en pending: muévelo a active y abre la rama
+plan/<package>/<name-plan> desde <rama-de-integración>) y "Arrancar una tarea" del lifecycle.
+Implementa en TDD desde los escenarios Gherkin de la tarea y cierra con su Definition of Done.
+```
+
+Si el plan ya está `active` (re-plan in-place, Paso 0), quita la frase de "Arrancar un plan" y deja solo "Arrancar una tarea". El mismo formato de prompt se entrega al **cerrar cada tarea** (Paso 9).
 
 > **Con `features.git-automation` on (opcional):** el **cierre** de cada tarea puede **auto-commit** y el del **plan** (última tarea) **auto-PR** (`auto-pr` requiere `auto-commit`); el formato lo rige `features.conventional-commits` y el trailer de co-autor `git-automation.co-author` (default off). Detalle en `docs/guides/task-lifecycle.md` → "Cerrar una tarea"/"Cerrar un plan". Con off (default), commit y PR son **manuales**.
 
@@ -192,10 +219,18 @@ Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), 
 
 **Tras** el gate de mutation (y, con SDD on, `sdd-lint`) y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó» y «el gate `sdd-lint` pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
 
+## Paso 9 — Tras cerrar una tarea: siguiente prompt o code review del plan
+
+Es parte del **cierre de la tarea** (`task-lifecycle` → "Cerrar una tarea", pasos 9-10) y se hace **solo, sin que el usuario lo pida**, justo después del resumen final:
+
+- **Quedan tareas en el plan** → entrega el **prompt de arranque de la siguiente tarea** (formato del Paso 6, sin la frase de "Arrancar un plan"). La siguiente = la primera por orden cuyas `depends_on` estén todas `done`. Si ninguna está desbloqueada, dilo y di qué la bloquea en vez de inventar un prompt.
+- **Era la última tarea del plan** → no hay siguiente prompt: **pregunta con `AskUserQuestion` si el usuario quiere pasar el code review del plan y con qué modelo** (opciones: Opus · Sonnet · Haiku · no hacerlo; recomienda Opus para un review de plan completo, pero el default de la pregunta es el que elija el usuario, no lo fuerces). Si acepta, lanza **un subagente fresco** con ese `model` sobre el diff completo de la rama del plan contra la rama de integración (`git diff <integración>...plan/<package>/<name-plan>`), con el mismo criterio que `/code-review` (bugs de corrección primero; simplificación/reuso después). Presenta los hallazgos **sin filtrar**, decide con el usuario cuáles se arreglan (cada fix se commitea como `<task-id>: …` de la última tarea o se abre una tarea nueva si es material) y **hazlo antes de abrir la PR**. Sin canal para preguntar → **no lo ejecutes**: indica que el review está pendiente y cómo lanzarlo (`/code-review`). Es el único lugar donde se delega por decisión del usuario; no cuenta contra el techo de delegación discrecional.
+
 ## Reglas de la sesión
 
 - **Checkpoints humanos**: `grilling` y la aprobación del plan **no se saltan nunca**. `design-review` y `scenario-coverage` solo con el salto en planes triviales (criterios + confirmación + log).
 - **Gate de cierre `fact-checker` (no-negociable)**: cada tarea se cierra con la pasada de `fact-checker` (tras `mutation`, antes de commit/resumen); un `INCORRECTO` bloquea el cierre. Ningún flag lo desactiva.
 - **Commits deliberados**: `<task-id>: <conventional commit>` en la rama del plan.
 - **Una sola tarea `active` por plan** (comparten rama).
+- **Siempre un siguiente paso explícito**: al crear el plan entregas el prompt de la primera tarea; al cerrar una tarea, el de la siguiente o —si era la última— la pregunta del code review. Sin que lo pidan.
 - Si el package no tiene su `HOW-TO-START-A-TASK.md`, créalo desde `templates/HOW-TO-START-A-TASK.md` (junto a este skill; ábrela con Read y rellena los bloques `ESPECÍFICO DEL PACKAGE`) antes del handoff. Atajo: `/task-init <package>` hace exactamente eso.

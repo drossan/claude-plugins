@@ -28,11 +28,12 @@ flowchart TD
     AP --> P5["Paso 5: descomponer en tareas + Gherkin"]
     P5 --> SC["Paso 5.5: scenario-coverage"]
     SC --> P57["Paso 5.7: proyeccion a GitHub (opcional)"]
-    P57 --> HO["Paso 6: handoff TDD (Red - Green - Refactor)"]
+    P57 --> HO["Paso 6: handoff TDD + prompt de la 1a tarea"]
     HO --> M["Gate: mutation (break 80)"]
     M --> SL["Gate: sdd-lint (solo si features.sdd)"]
     SL --> FC["Gate: fact-checker (INCORRECTO bloquea)"]
-    FC --> DONE["tarea done + commit/PR; cierre del plan"]
+    FC --> DONE["tarea done + commit/PR"]
+    DONE --> P9["Paso 9: prompt de la siguiente tarea, o code review si era la ultima"]
 
     classDef human fill:#fde68a,stroke:#b45309,color:#111
     classDef agent fill:#bfdbfe,stroke:#1d4ed8,color:#111
@@ -115,9 +116,9 @@ que las skills elijan comandos reales en vez de asumir pnpm/Vitest/Stryker. En
 (herencia parcial), y `/mutation` elige la herramienta por package (Stryker verificado ·
 `mutmut` · escape `mutation-command`). Regla de resolución canónica en el README del plugin.
 
-`models:` fija el modelo de las fases con subagente (`design-review`,
-`scenario-coverage`, `fact-checker`). Ver [Routing de modelo por fase](../README.md#routing-de-modelo-por-fase-models)
-en el README del plugin.
+`models:` fija el modelo de las fases con subagente: **3 siempre** (`design-review`,
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on. Ver [Routing de
+modelo por fase](../README.md#routing-de-modelo-por-fase-models) en el README del plugin.
 
 ## Capas opt-in (default off, salvo que se diga)
 
@@ -215,9 +216,14 @@ descartan con su porqué.
 
 **Paso 6 — handoff TDD.** Cada tarea se ejecuta en su sesión siguiendo el
 `HOW-TO-START-A-TASK.md` de `auth`: Red (test desde el `Then`) → Green →
-Refactor. Commits `<task-id>: <conventional commit>` en la rama del plan.
+Refactor. Commits `<task-id>: <conventional commit>` en la rama del plan. Al crear el plan,
+`/plan-task` ya te ha dado, sin pedirlo, el **prompt de arranque de la primera tarea** para una sesión nueva.
 
 **Paso 7 — `/mutation` 🔒.** Antes de cerrar cada tarea, Stryker corre con
 `break: 80`. Un survivor revela que el test no distingue mayúsculas → se endurece
-el assert. Verde el gate → tarea a `completed` y aprobación final del plan.
+el assert. Verde el gate → tarea a `completed`.
+
+**Paso 9 — siguiente paso automático.** Al cerrar la tarea, el agente entrega el prompt para arrancar la
+siguiente en una sesión nueva. Si era la última del plan, pregunta si quieres **code review** y con qué
+modelo (Opus/Sonnet/Haiku) antes de abrir la PR.
 

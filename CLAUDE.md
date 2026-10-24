@@ -52,9 +52,10 @@ La versión vive en `task-pipeline/.claude-plugin/plugin.json` (es la que resuel
 ## Arquitectura
 
 - **Skills = playbooks model-driven, no scripts.** Cada skill es un `SKILL.md` con frontmatter
-  `name` + `description`; el cuerpo son **instrucciones que Claude sigue**, no código ejecutable. Una skill
-  no puede cambiar su propio modelo — solo las fases que lanzan **subagente** (`design-review`,
-  `scenario-coverage`, `fact-checker`) son ruteables vía la sección `models:` del YAML.
+  `name` + `description`; el cuerpo son **instrucciones que Claude sigue**, no código ejecutable. Un
+  `SKILL.md` sí admite `model:` en frontmatter, pero es por-turno + estático — el routing robusto y
+  per-repo vía `models:` del YAML sigue siendo **subagente-only**: **3 fases siempre ruteables**
+  (`design-review`, `scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on.
 - **Las 10 skills** (`task-init`, `plan-task`, `mutation`, `doctor`, `grilling`, `design-review`,
   `scenario-coverage`, `fact-checker`, `pipeline-usage`, `sdd-lint`): las 8 primeras orquestan/soportan un
   pipeline (`/plan-task` es el orquestador; el flujo canónico completo está en `docs/guides/task-lifecycle.md`);

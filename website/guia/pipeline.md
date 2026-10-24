@@ -13,13 +13,13 @@ flowchart TD
     DR --> AP("aprobación del plan"):::human
     AP --> T("descomponer en tareas + Gherkin"):::normal
     T --> SC("scenario-coverage"):::agent
-    SC --> HO("handoff TDD · Red → Green → Refactor"):::normal
+    SC --> HO("handoff TDD · prompt de la 1ª tarea"):::normal
     HO --> M
     subgraph cierre ["Gates de cierre · por tarea"]
       direction TB
       M("mutation · break 80"):::gate --> SL("sdd-lint · solo features.sdd"):::gate --> FC("fact-checker · INCORRECTO bloquea"):::gate
     end
-    FC --> D(["tarea done · commit / PR"]):::normal
+    FC --> D(["tarea done · prompt de la siguiente / code review si es la última"]):::normal
 
     classDef human  fill:#fde68a,stroke:#d97706,color:#1f2937
     classDef agent  fill:#bfdbfe,stroke:#2563eb,color:#1f2937
@@ -114,6 +114,13 @@ flowchart LR
   `scenario-coverage`, 1 tarea sin caminos de error reales). Lo confirma el owner **una vez por pasada**,
   se registra en el Plan change log y caduca si una re-planificación rompe los criterios. Los criterios
   completos, con su frontera resuelta por ejemplo, están en la skill `plan-task`.
+
+**Siempre hay un siguiente paso explícito, sin pedirlo.** Al crear el plan, `/plan-task` entrega el **prompt
+de arranque de la primera tarea** (bloque copiable y autocontenido, para una sesión nueva). Al cerrar cada
+tarea entrega el de la **siguiente**; si era la **última del plan**, en vez de prompt **pregunta si quieres
+el code review del plan y con qué modelo** (Opus · Sonnet · Haiku · no) y, si aceptas, lo lanza un subagente
+fresco sobre el diff de la rama del plan **antes de abrir la PR**. Durante `grilling` solo se preguntan
+**decisiones** que cambien el plan: nada que el código o la propia petición ya respondan.
 
 ## Alcance: el pipeline no lo expande solo
 

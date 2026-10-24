@@ -40,10 +40,22 @@ artefacto del plugin — ver "Propiedad" abajo).
    `docs/guides/task-lifecycle.md`, `.claude/task-pipeline.yml`, specs/HOW-TO).
 2. **Secciones de config esperadas ausentes** — en `.claude/task-pipeline.yml`: p.ej. falta la sección
    `models:` (routing de modelo por fase, ver README del plugin → "Routing de modelo por fase"). Su
-   ausencia no rompe nada (todo hereda la sesión), pero conviene ofrecer añadirla comentada. Al
-   proponer/actualizar `models:`, contempla las **fases con subagente ruteables** (`design-review`,
-   `scenario-coverage`, `fact-checker`) y su presencia en la cabecera de lectores. **Nota**: una clave de
-   fase concreta ausente (p.ej. `models.fact-checker`) **no** es drift — el default es inherit.
+   ausencia no rompe nada (todo hereda la sesión).
+   **Sección `models:` — tres estados, no un simple ausente/presente:**
+   - **Ausente del todo** (ni siquiera comentada): no es drift duro, pero **ofrece recrear el bloque
+     COMENTADO** (perfil de referencia, sin valores activos) — acción distinta de "ofrecer descomentar"
+     (ver Fase 2).
+   - **Presente y comentada por completo**: **ofrece, en una sola frase**, descomentarla con el perfil
+     recomendado (`design-review: opus` + resto `sonnet`, incl. `sdd-lint: sonnet`). **Sin** cuestionario
+     fase-a-fase — es una oferta única, no un wizard.
+   - **Activa** (alguna sub-clave con valor real, aunque sea una sola y el resto siga comentado — "a
+     medias" cuenta como **configurado**): no se ofrece nada, no dar la lata.
+   **Set ruteable reconocido**: **3 siempre** (`design-review`, `scenario-coverage`, `fact-checker`) **+
+   `sdd-lint`** (condicional, solo con `features.sdd` on) — ver README del plugin → "Routing de modelo por
+   fase". Una **clave de fase concreta ausente** (p.ej. `models.fact-checker`) **no** es drift — el
+   default es inherit. Una **clave espuria** — de una fase **inline** (`models.grilling`) o que **no
+   corresponde a ninguna fase conocida** (`models.qa-fase`) — se **señala como posible typo**, nunca se
+   borra en silencio.
    Igual con el flag opt-in **`features.caveman`** (`off`|`lite`|`full`, desde 0.11.0): su
    ausencia **no** es drift (default `off`, como cualquier comportamiento opt-in); doctor
    puede **ofrecer** añadirlo comentado como nicety, pero **nunca** lo reporta como problema
@@ -200,6 +212,28 @@ artefacto del plugin — ver "Propiedad" abajo).
     `stack.packages.apii`). Si `stack.packages` **no es un mapa** (o una entrada de package no lo es),
     repórtalo como **malformado legible** y **sigue** (es el hueco que el schema `stack.packages` declaró).
     **No auto-edites**: corregir un typo o el tipo es del owner (aviso, regla 4 de Fase 2).
+11. **JSON schema del `task-pipeline.yml`: materialización y drift** (repo-owned) — el schema vive en el
+    plugin en `../plan-task/templates/task-pipeline.schema.json`; el repo consumidor lo materializa en
+    `.claude/task-pipeline.schema.json` (junto al `.yml` que lo referencia por modeline). Como JSON no
+    admite comentarios (el truco `template-version` de `honesty-rules.md`, cat. 6b, no es trasladable), el
+    schema lleva una **clave-ancla top-level** `"x-task-pipeline-schema-version"`. El check es **comparar
+    esa clave**, no comparar el JSON entero:
+    - **Schema ausente** en un repo ya adoptado: repórtalo y **ofrece materializarlo** (diff del fichero
+      nuevo + aprobación).
+    - **Ancla igual** (comparación de **string exacta**) a la del schema del plugin: **no-op**, no hay drift.
+    - **Ancla del repo "más vieja"** que la del plugin: **drift** — repórtalo nombrando las dos versiones y
+      **ofrece actualizar** (diff + aprobación). **Regla de comparación**: solo es "más vieja" si **ambas
+      anclas son SemVer válido** (`MAJOR.MINOR.PATCH`, sin sufijo) y la del repo es estrictamente menor. El
+      plugin **nunca** emite sufijos (`-custom`, `-rc1`, …) en su propia ancla — si aparecen, son señal de
+      edición manual, no de versión antigua.
+    - **Ancla distinta que NO sea "más vieja" por la regla anterior** (no-SemVer, con sufijo, o mayor/igual
+      pero el contenido difiere) — trátalo como **editado a mano**: **reporta la divergencia y NO
+      sobrescribas** — misma regla que la prosa personalizada (cat. 6b / regla 4 de Fase 2); ofrece con
+      diff, decide el usuario. Ante la duda entre "más vieja" y "editada", **prefiere "editada"**: sobrescribir
+      un schema personalizado es el error más caro de los dos.
+    - **Modeline roto** (apunta a una ruta que no resuelve): no es un problema del plugin — es coste
+      documentado de la ruta relativa (ver README → "Autocompletado con JSON schema"); **no** lo reportes
+      como drift, el YAML sigue parseando con normalidad.
 
 **Allowlist — NO marcar nunca como drift** (son menciones históricas legítimas, no identificadores vivos):
 
@@ -231,8 +265,9 @@ Recorre **todos** los problemas accionables, **uno por uno**, sin saltarte ningu
 1. **Preparar el fix** sin escribir aún:
    - Si el problema admite **una sola** forma razonable de arreglarlo → prepárala.
    - Si admite **varias** (p.ej. editar el identificador in-place *o* re-materializar el doc desde la
-     plantilla actual; añadir `models:` comentada *o* con un valor) → **pregunta con `AskUserQuestion`**
-     qué opción quiere el usuario **antes** de tocar nada.
+     plantilla actual) → **pregunta con `AskUserQuestion`** qué opción quiere el usuario **antes** de
+     tocar nada. La sección `models:` **no** entra aquí: cada estado detectado (ausente/comentada/activa)
+     tiene **una única** acción — es la oferta descrita en la categoría 2, no una elección fase-a-fase.
 2. **Mostrar el diff ANTES de pedir aprobación**: enseña el cambio propuesto (antes → después, o un diff
    unificado) para que el usuario decida con la información delante.
 3. **Aplicar SOLO si aprueba**: si la respuesta es aprobar, escribe el fichero (Edit/Write). Si la
@@ -249,12 +284,21 @@ Recorre **todos** los problemas accionables, **uno por uno**, sin saltarte ningu
    siguiente problema. No dejes el fichero a medias.
 
 Fixes seguros típicos (repo-owned, mecánicos): actualizar un identificador desfasado al actual; añadir
-una carpeta que falta del esqueleto; añadir la sección `models:` **comentada** a `.claude/task-pipeline.yml`;
+una carpeta que falta del esqueleto; **recrear** la sección `models:` **comentada** cuando está del todo
+ausente, u **ofrecer descomentarla** con el perfil recomendado cuando ya está presente-comentada (cat. 2 —
+nunca cuando ya está activa); **materializar o actualizar** `.claude/task-pipeline.schema.json` (cat. 11);
 añadir la línea del gate de `fact-checker` a la DoD de cierre materializada (o re-materializar la sección
 desde la plantilla) **cuando el doc no esté personalizado** — si lo está, aplica la regla 4 (aviso, no
 auto-edición); materializar `.claude/honesty-rules.md` ausente desde la plantilla (el `@import` al
 `CLAUDE.md` **no** se aplica: solo se sugiere); materializar una **pieza SDD faltante** desde su semilla
 (solo con `features.sdd` on — cat. 9), con diff + aprobación (una segunda pasada ya no la reporta).
+
+**Drift del schema por ancla (cat. 11):** igual que `honesty-rules.md` (cat. 6b), el check es **comparar
+la clave `x-task-pipeline-schema-version`**, no diffear el JSON entero. Si el schema del repo **no** está
+editado a mano (su ancla es simplemente más vieja), el fix mecánico es **sobrescribirlo con el del
+plugin**, con diff + aprobación — el ancla viaja en la copia, así que una **segunda pasada ya no reporta
+drift**. Si el schema **difiere sin ser más vieja la ancla** (edición manual), aplica la regla 4: reporta
+la divergencia con diff y **no sobrescribas** sin decisión explícita.
 
 **Drift de `honesty-rules.md` por ancla (cat. 6b):** si el fichero **no** está personalizado, el fix
 mecánico es **re-materializarlo desde la plantilla actual**, con diff + aprobación. El ancla viaja en la
