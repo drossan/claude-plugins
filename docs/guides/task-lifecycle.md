@@ -62,7 +62,7 @@ son configurables** — son por diseño.
 > README del plugin → [GitHub tracking (opcional)](../../task-pipeline/README.md#github-tracking-opcional).
 
 La sección `models:` fija el modelo de las fases con subagente: **3 siempre** (`design-review`,
-`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional a `features.sdd` on. Ver [Routing de
+`scenario-coverage`, `fact-checker`) **+ `sdd-lint`**, condicional al modo nativo (`sdd: true`). Ver [Routing de
 modelo por fase](../../task-pipeline/README.md#routing-de-modelo-por-fase-models) en el README del plugin.
 
 ### Modo SDD: `off` / `native` / `external`
@@ -229,10 +229,11 @@ Feature: <capacidad bajo esta tarea>
 - [ ] Spec cumplida; lo declarado en `Provides` queda disponible para las dependientes
 - [ ] Lint / format / typecheck OK
 - [ ] Gate de mutation testing superado **con la herramienta del package** (`stack.mutation-tool`; Stryker verificado, `mutmut`/`mutation-command` como referencia)  · salvo `features.mutation-gate: false`
-- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo si `features.sdd`
+- [ ] **Gate `sdd-lint` superado** — artefactos SDD sin **ERROR** de formato/completitud (AVISO se reconoce); tras `mutation`, antes de `fact-checker`  · solo en modo nativo (`sdd: true`)
+- [ ] **SDD gestionado con `<provider>`** — provider invocado (`phase=close`) tras `mutation`, antes de `fact-checker`, o «sin cambios» en el session log; un aviso sin reconocer deja la línea sin marcar  · solo en modo `external`
 - [ ] Gate de `fact-checker`: afirmaciones de la sesión verificadas (INCORRECTO bloquea) — tras mutation, antes de commit/resumen  · no-negociable, sin flag
 - [ ] Proyección de estado a GitHub aplicada al cerrar (issue → `done`/close) — best-effort, no bloquea el `.md`  · solo si `features.github-tracking`
-- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo si `features.sdd`
+- [ ] **SDD**: spec (EARS) + caso de uso (Gherkin) creados/actualizados en la tarea, **o** declarado "sin cambios de spec/CU" (checkbox + session log); el Gherkin vive **solo en el CU**  · solo en modo nativo (`sdd: true`)
 - [ ] Documentación — tres capas (TSDoc + doc técnica + histórico)  · cada capa según `features.closing-documentation.*`
 - [ ] Docs de dev / usuario final + `pnpm changeset` donde aplique
 ````
@@ -306,6 +307,12 @@ La skill `/plan-task` copia estas plantillas (sus ficheros completos `plan.md` /
 2. Mueve la tarea a `.claude/tasks/active/<package>/`, `status: active`, bump `updated`.
 3. Abre el session log en `.claude/context/<package>/<task-id>.md` con la primera entrada.
 4. **Solo una tarea por plan puede estar `active`** — comparten rama.
+4b. **(Solo modo `external`)** invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>`
+   **tras** mover la tarea a `active` (las rutas son relativas a la raíz y existen). **Una vez por activación**
+   (cancelar o reabrir no invoca). El `provider` se pasa como **un único identificador**; `plan=` va vacío con
+   aviso si no hay plan legible. **Relee la tarea** al terminar: el provider puede haberla modificado. Si el
+   provider no está instalado, falla o no responde → **aviso que el owner reconoce** (nota en el session log); la
+   tarea arranca igualmente y la línea de DoD del SDD queda sin marcar. Contrato y semántica en [`sdd-proveedor-externo`](../../.claude/specs/task-pipeline/casos-de-uso/sdd-proveedor-externo.md).
 5. **(Opcional, `features.github-tracking`)** si la tarea tiene `issue:`, proyecta el arranque a su issue
    (best-effort): campo **Status del Project → `In progress`**, label **`status: in-progress`** (recipe
    add-then-remove) y **assignee** según la clave `assignee` (ver la tabla completa y el recipe en "Cerrar
@@ -335,14 +342,24 @@ particular:
    `false`. `features.mutation-gate` **no** es per-package (solo `stack.*` lo es). Survivors por
    debajo del umbral = tests/aserciones que faltan (a menudo un escenario Gherkin sin
    assert real) → refuerza los tests hasta matarlos. Ver la skill `/mutation`.
-3b. **Gate `sdd-lint`** (solo con `features.sdd` on): **entre** el gate de mutation y `fact-checker`, corre
+3b. **Gate `sdd-lint`** (solo en modo nativo, `sdd: true`): **entre** el gate de mutation y `fact-checker`, corre
    la skill `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de
    formato/completitud **bloquea** el cierre hasta corregir (como `fact-checker` `INCORRECTO`); un **AVISO**
-   se reconoce, no bloquea. Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
+   se reconoce, no bloquea. En modo `off` o `external`, **no corre**. Ver la skill `/sdd-lint`.
+3c. **Invocación del provider `phase=close`** (solo modo `external`): ocupa el **hueco de `sdd-lint`** — **tras**
+   `mutation`, **antes** de `fact-checker`, del auto-commit y de la proyección a GitHub (así lo que genere el
+   provider entra en el commit de la tarea). Se invoca `contract=1 phase=close task=<ruta> plan=<ruta>` **antes**
+   de mover la tarea a `completed` (la ruta existe). **No se invoca si `mutation` falla**; se **reintenta** tras un
+   fallo posterior (el provider debe ser idempotente). Terminar sin error ni reporte = OK; **sin respuesta o sin
+   canal** para un provider interactivo = error del provider. Provider ausente o con error → **aviso que el owner
+   reconoce** (nota en el session log); lo que el provider reporta sobre sus artefactos se traslada como **aviso,
+   nunca ERROR** (el pipeline no valida su contenido). La línea de DoD «SDD gestionado con `<provider>`» queda sin
+   marcar hasta reconocerlo: el pipeline la señala y **no cierra en silencio**, pero el cambio de `status:` del
+   `.md` **no se bloquea**. Releer la tarea tras la invocación.
 4. **Gate de `fact-checker`** (no-negociable — sin flag que lo desactive, como
    `grilling`/aprobación): **tras** el gate de mutation y **antes** de commit y del
    resumen final, corre `fact-checker` sobre las afirmaciones factuales de la sesión
-   (incluida «el gate de mutation pasó» y, con SDD on, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
+   (incluida «el gate de mutation pasó» y, en modo nativo, «el gate `sdd-lint` pasó»). `INCORRECTO` **bloquea** el cierre hasta
    corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente
    (frecuente en repos sin runner de tests), pero no bloquea; `VERIFICADO` pasa. Aplica
    en cualquier preset (`mode`/`features` no lo tocan). Ver la skill `/fact-checker`.
@@ -377,8 +394,9 @@ particular:
 El session log es append-only y vive solo en `.claude/context/<package>/<task-id>.md`.
 Es el registro canónico; no lo dupliques.
 
-> **Flujo SDD (solo con `features.sdd` on — opcional).** Con el flag **off** (default) nada de esto aplica:
-> el Gherkin vive en el `## Scenarios` de la tarea, **byte-idéntico** a hoy. Con el flag **on**:
+> **Flujo SDD (solo modo nativo, `sdd: true` — opcional).** Con SDD `off` (default) o `external` nada de esto
+> aplica: el Gherkin vive en el `## Scenarios` de la tarea (salvo que ya enlace a un CU: ese enlace se sigue
+> siempre). Con el modo nativo:
 >
 > - **Fuente única del Gherkin = el caso de uso.** El `## Scenarios (Gherkin)` de la tarea **enlaza** al/los
 >   CU (`.claude/specs/<pkg>/casos-de-uso/<id>.md`) en vez de copiar el bloque. Anti-duplicación: **ADR** =

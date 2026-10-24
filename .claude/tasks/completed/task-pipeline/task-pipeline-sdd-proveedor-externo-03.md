@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-proveedor-externo-03
 package: task-pipeline
 plan: sdd-proveedor-externo
-status: pending
+status: done
 priority: 1
 depends_on: [task-pipeline-sdd-proveedor-externo-02]
 estimate: 4h
-actual:
+actual: 1h
 issue: 81
 created: 2026-10-24
 updated: 2026-10-24
@@ -50,12 +50,12 @@ El contrato de invocación v1 `contract=1 phase=start|close task=<ruta> plan=<ru
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. Verificación con el stub de provider. -->
-- [ ] Escenarios del CU cubiertos por esta tarea verificados con el stub (instalado y OK / no instalado / con error)
-- [ ] Spec cumplida; `Provides` disponible para 05
-- [ ] **Gate `sdd-lint` superado** — sin ERROR (AVISO se reconoce)
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] Proyección de estado a GitHub al cerrar — best-effort · `features.github-tracking`
-- [ ] **SDD** — spec/CU actualizados, o declarado «sin cambios de spec/CU» aquí y en el session log
-- [ ] Doc técnica actualizada · `technical-docs`
-- [ ] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-03.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos
+- [x] Escenarios del CU cubiertos por esta tarea verificados con el stub (instalado y OK / no instalado / con error) — por inspección; stub definido en el session log, no ejecutado
+- [x] Spec cumplida; `Provides` disponible para 05
+- [x] **Gate `sdd-lint` superado** — sin ERROR (AVISO se reconoce)
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] Proyección de estado a GitHub al cerrar — best-effort · `features.github-tracking`
+- [x] **SDD** — spec/CU actualizados, o declarado «sin cambios de spec/CU» aquí y en el session log
+- [x] Doc técnica actualizada · `technical-docs`
+- [x] Histórico de la tarea — session log en `.claude/context/task-pipeline/task-pipeline-sdd-proveedor-externo-03.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos

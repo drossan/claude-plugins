@@ -211,13 +211,17 @@ Cada tarea documenta en tres capas, **cada una activable por flag** (default ON;
 
 Salvo que `features.mutation-gate` sea `false` (o `stack.mutation-tool: none`), cada tarea no se cierra hasta pasar el gate de **mutation testing** con el umbral configurado (`true` = `break:80`; `<int>` = ese umbral). Ver la skill `/mutation`, que lee el mismo `stack`/umbral del YAML.
 
-## Paso 7.5 — Gate de cierre por tarea: sdd-lint (solo con `features.sdd` on)
+## Paso 7.5 — Gate de cierre por tarea: SDD (según el modo)
 
-**Solo con `features.sdd` on**: **entre** el gate de mutation y `fact-checker`, cada tarea corre `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de formato/completitud **bloquea** el cierre; **AVISO** se reconoce. Es un **gate de cierre** (no una fase de `/plan-task`) e **intrínseco a `features.sdd`** (sin flag propio). Con `features.sdd` off, **no corre** (byte-idéntico a hoy). Ver la skill `/sdd-lint`.
+Regla de modos (`off`/`native`/`external`): «Modo SDD» de `docs/guides/task-lifecycle.md`. **Entre** el gate de mutation y `fact-checker`, y solo según el modo:
+
+- **Modo nativo (`sdd: true`)**: cada tarea corre `sdd-lint` sobre los artefactos SDD (spec EARS / CU Gherkin / ADR MADR). Un **ERROR** de formato/completitud **bloquea** el cierre; **AVISO** se reconoce. Es un **gate de cierre** (no una fase de `/plan-task`) e **intrínseco al modo nativo** (sin flag propio). Ver la skill `/sdd-lint`.
+- **Modo `external`**: en vez de `sdd-lint`, se invoca la skill del provider con `contract=1 phase=close task=<ruta> plan=<ruta>` (también `phase=start` al arrancar la tarea). Provider ausente o con error → **aviso que el owner reconoce**; lo que reporta → aviso, **nunca ERROR**. No se invoca si `mutation` falla. Detalle en «Cerrar una tarea» (paso 3c) y «Arrancar una tarea» (paso 4b) del lifecycle.
+- **Modo `off`**: no corre nada.
 
 ## Paso 8 — Gate de cierre por tarea: fact-checker (no-negociable)
 
-**Tras** el gate de mutation (y, con SDD on, `sdd-lint`) y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó» y «el gate `sdd-lint` pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
+**Tras** el gate de mutation (y, según el modo SDD, `sdd-lint` o el provider `phase=close`) y **antes** de commit y del resumen final, cada tarea corre `fact-checker` sobre las afirmaciones factuales de la sesión (incluida «el gate de mutation pasó» y, en modo nativo, «el gate `sdd-lint` pasó»). No es configurable —barato + nuclear, como `grilling`/aprobación—: **no existe `features.fact-check`** ni ningún flag que lo desactive; aplica en cualquier `mode`/preset. Al cierre: `INCORRECTO` **bloquea** hasta corregir la afirmación; `NO VERIFICABLE` es un **aviso a reconocer** explícitamente (frecuente en stack sin runner), pero no bloquea; `VERIFICADO` pasa. Ver la skill `/fact-checker`.
 
 ## Paso 9 — Tras cerrar una tarea: siguiente prompt o code review del plan
 
