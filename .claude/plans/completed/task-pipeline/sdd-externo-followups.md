@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-externo-followups
 package: task-pipeline
-status: active
+status: completed
 branch: plan/task-pipeline/sdd-externo-followups
 issue: 92
 created: 2026-10-24
@@ -88,3 +88,10 @@ La PR #91 (0.18.4) cerró el seguimiento del SDD externo y dejó follow-ups expl
 - 2026-10-24: refinado con `grilling` (3 preguntas, 3 decisiones del owner): (1) B11 el build **falla** ante un enlace roto; (2) B11 valida **ruta y ancla**; (3) B12 la vía principal es **skills visibles en la sesión** y `installed_plugins.json` solo respaldo. Resueltas sin preguntar: enlace a fichero nuevo en la misma PR = vale el árbol local (la red está fuera de alcance); qué entradas del JSON aplican se deduce de `scope`/`projectPath`.
 - 2026-10-24: `design-review` (Opus, subagente fresco) → 9 hallazgos. Aceptados 1–5, 8 y 9 sin discusión (respaldo de B12 solo diagnóstico, sin deducir entrada por `projectPath`, formato mínimo, slug fijado con fences/backticks/Unicode y fixtures, 02 sin depender de 01, `Outline` fusionado conserva la unión de `Then`); el 4 sin el workflow de PR (follow-up). Decisiones del owner: (6) **se quita el soporte del sufijo `-N`** (revierte la parte «con sufijo -N» de la decisión del grilling); (7) **CU mínimo para B11 sin FR nuevo** (una línea en SC-004), porque en modo nativo el Gherkin vive solo en un CU.
 - 2026-10-24: `scenario-coverage` (Sonnet, subagente fresco) → huecos dentro del alcance en las 3 tareas y 6 fuera. Decisiones del owner: (1) **se quita del plan la simplificación de la reapertura en 3c** (el CU con RN-7 no llega a los consumidores; quitarla sería perder comportamiento); (2) los huecos de (A) se incorporan **todos** a los CU (agrupados en `Scenario Outline`) con semántica fijada: se ignoran `#L10-L20` y la query, ancla decodificada y en minúsculas, ruta sensible a mayúsculas, 0 enlaces = fallo, URLs dentro de fences ignoradas, `srcExclude` leído como texto de `config.mts` con error explícito si no se parsea, `provider` con componentes de ruta rechazado, línea de DoD del check solo en el lifecycle del repo, RN-11 en el CU; (3) los 6 huecos de (B) **quedan fuera**: fichero local no presente aún en `main` (aceptado), sin CI en PRs (follow-up), enlaces `raw/`/otras ramas/`index.md`/`config.mts`, provider desactivado en `enabledPlugins` indistinguible de «no cargado», plugin instalado solo para otro proyecto (falso positivo asumido), providers sin `:`. Corrección de dato: el portal tiene 8 anclas distintas (12 enlaces con ancla), no 9.
+- 2026-10-24: code review del plan (Opus) → 1 bug real (guarda del script con symlink) y 8 menores; arreglados #1, #7, #8 y #9; #2–#6 y #10 quedan como follow-ups. Plan → `completed`.
+
+## Retro
+
+- Estimado ~1–2 sesiones; real ~1 sesión larga (01 ~1.5h est., 02 ~1h, 03 ~0.5h + correcciones del review). Sin dependencias no vistas.
+- Sorpresa: el check de enlaces tenía una guarda de entrada que lo dejaba en verde sin ejecutarse por ruta con symlink; lo encontró el review, no la verificación por inspección. Lección: probar un script también lanzado desde otra ruta.
+- Follow-ups: workflow de CI en PRs para el check; endurecer el parser de enlaces/slug (review #2–#6); escenario del provider sin `:` ya cubierto en el Outline.
