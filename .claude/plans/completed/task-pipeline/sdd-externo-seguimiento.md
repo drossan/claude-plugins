@@ -1,7 +1,7 @@
 ---
 id: task-pipeline-sdd-externo-seguimiento
 package: task-pipeline
-status: active
+status: completed
 branch: plan/task-pipeline/sdd-externo-seguimiento
 issue: 88
 created: 2026-10-24
@@ -69,3 +69,7 @@ invocación del provider (B6), un caso sin definir (B7) y un HOW-TO que ignora `
 - 2026-10-24: refinado con `grilling` (2 decisiones del owner): (1) B7 → `phase=close` se invoca **siempre** en su hueco (donde estaría `mutation`), solo un `mutation` fallido lo impide; (2) M5 → documentar los 4 riesgos (inyección vía `phase=start` como hipótesis) **y** recomendar no usar `auto-commit`/`auto-pr` con providers no confiables, sin cambio de comportamiento. `design-review` no se ofrece omitir: B7 fija semántica del lifecycle (2 ejes de decisión).
 - 2026-10-24: `design-review` (Opus, subagente fresco) → 7 hallazgos, **los 7 aceptados**: (1) B7 reformulado: se invoca al llegar al hueco, no si falla un paso previo; (2) M5: el consejo es revisar todo el `task-pipeline.yml` de un repo ajeno (provider y automatización los fija el mismo fichero); (3) los 4 riesgos se escriben en el plan; (4) B6 con línea en el session log (decisión del owner; entra `fact-checker/SKILL.md`); (5) B3 ampliado a todo «idéntic» incl. el nativo; (6) hueco aceptado de lifecycles 0.18.0–0.18.3, avisado en el CHANGELOG; (7) el portal no copia los riesgos, enlaza al README.
 - 2026-10-24: `scenario-coverage` (Sonnet, subagente fresco) → 28 huecos dentro del alcance y 6 fuera. Incorporados al CU `sdd-proveedor-externo.md` (fuente única). Decisiones del owner: (1) externo→nativo se **cubre con comportamiento** (regla bidireccional de líneas de DoD; estrecha el «fuera de alcance» sobre el modo nativo); (2) falta de la línea de rastro de `phase=close` → `fact-checker` da **NO VERIFICABLE**, no INCORRECTO; (3) se añade un **FR EARS** a `spec.md` para el contrato de cierre; (4) resto de (A) incorporado salvo check de enlaces del portal (= B11) y truncado adversario del resultado del provider. Sección (B): los 6 siguen fuera (B11, B12, mitigaciones de M5, detección 0.18.0–0.18.3, validar el provider; el 6.º queda resuelto por la decisión (1)).
+- 2026-10-24: tarea 02 cerrada y plan `completed`. Code review del plan (Opus): sin hallazgos graves; 10 hallazgos, aceptados 1–10 salvo las 3 simplificaciones opcionales (riesgo 4 duplicado, reapertura en 3c, fusión de escenarios de reintento), que quedan como follow-up. Release 0.18.4.
+
+## Retro
+- Estimación 2 tareas / ~1–2 sesiones; real ~2 sesiones (01 ≈1h, 02 ≈1h + fixes del review). Sorpresa: la regla de cierre estaba copiada a medias en README, portal y `plan-task` (la detectó el review, no el grep del plan); conviene que un cambio de semántica del lifecycle liste desde el principio todos los sitios que la repiten. Dependencia no vista: la tarea 01 quedó sin commitear y entró en el commit de la 02.
