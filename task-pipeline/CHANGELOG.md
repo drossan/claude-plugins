@@ -4,6 +4,18 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.17.1] — 2026-10-24
+
+**Portal de documentación rehecho (`website/`), sin cambios en el plugin.** Release patch: solo docs.
+
+### Changed
+- **Portal VitePress autocontenido** (plan `portal-redesign`, #58, PR #66): IA de 5 secciones (Empezar ·
+  Conceptos · El pipeline paso a paso · Capas opcionales · Referencia) con buscador local, en vez de un
+  cascarón sobre el README.
+- **Diagramas Mermaid con tema por rol** (ámbar = humano · azul = subagente · rojo = gate · gris = paso),
+  legibles en claro y oscuro.
+- Nueva página `tu-primer-plan`: walkthrough de un caso real cerrado.
+
 ## [0.17.0] — 2026-10-11
 
 **Continuidad entre sesiones y preguntas con criterio.** El agente deja de esperar a que le pidan el
