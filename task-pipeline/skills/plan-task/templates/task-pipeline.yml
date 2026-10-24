@@ -104,6 +104,14 @@ features:
   # vive en la tarea, como hoy (comportamiento idéntico). Detalle en el README del plugin → "SDD nativo".
   # Comentado a propósito: el TEMPLATE no impone comportamiento a repos consumidores.
   # sdd: false
+  #
+  # SDD EXTERNO (alternativa al nativo): delega en un plugin SDD que ya uses. Forma de bloque; SOLO
+  # `enabled: true` booleano + `provider` string no vacío activa (sin provider → off). Con él, lo nativo
+  # se apaga (sin plantillas ni `sdd-lint`) y el pipeline invoca la skill del provider al arrancar y al
+  # cerrar la tarea (contrato experimental). La regla off/nativo/externo vive en docs/guides/task-lifecycle.md.
+  # sdd:
+  #   enabled: true
+  #   provider: "plugin:skill"   # un único identificador; el pipeline no lo valida ni lo interpreta
 
   # Conventional commits (default ON). Exige el formato `<task-id>: <conventional commit>` en commits/DoD.
   # Es el comportamiento HISTÓRICO, ahora configurable: `false` lo relaja a `<task-id>: <mensaje libre>`.

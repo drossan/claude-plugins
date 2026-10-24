@@ -69,8 +69,20 @@
           ]
         },
         "sdd": {
-          "type": "boolean",
-          "description": "Capa SDD (spec EARS + CU Gherkin + ADR MADR). Fail-safe: solo true booleano activa."
+          "description": "Capa SDD opt-in. true = nativo (spec EARS + CU Gherkin + ADR MADR); bloque { enabled: true, provider } = delegado en un plugin externo. Ayuda de editor: en runtime solo true booleano o enabled:true con provider string no vacío activan; el resto es off (fail-safe).",
+          "oneOf": [
+            { "type": "boolean" },
+            {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "provider": {
+                  "type": "string",
+                  "description": "Skill del plugin SDD externo, p.ej. \"plugin:skill\". Un único identificador; el pipeline no lo valida."
+                }
+              }
+            }
+          ]
         },
         "caveman": {
           "type": "string",

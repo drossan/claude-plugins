@@ -28,8 +28,8 @@ de `/pipeline-usage`.
 
 - **FR-001** — El sistema DEBERÁ rutar el modelo de las **3 fases con subagente siempre ruteables**
   (`design-review`, `scenario-coverage`, `fact-checker`) leyendo `models.<fase>` de `.claude/task-pipeline.yml`.
-- **FR-002** — **Donde** `features.sdd` esté **on**, el sistema DEBERÁ rutar además el subagente semántico
-  de `sdd-lint` vía `models.sdd-lint` (con `features.sdd` off, esa clave no tiene efecto).
+- **FR-002** — **Donde** `features.sdd` esté en **modo nativo** (`sdd: true`), el sistema DEBERÁ rutar además
+  el subagente semántico de `sdd-lint` vía `models.sdd-lint` (en modo `off` o `external`, esa clave no tiene efecto).
 - **FR-003** — **Cuando** `models.<fase>` esté ausente o valga `inherit`, el sistema DEBERÁ heredar el
   modelo de la sesión (no pasar `model` al subagente).
 - **FR-004** — **Si** `models.<fase>` trae un valor inválido (typo / id inexistente), **entonces** el
@@ -50,6 +50,11 @@ de `/pipeline-usage`.
   materializado en el repo está desincronizado con el del plugin.
 - **FR-011** — **Si** `.claude/task-pipeline.yml` es **ilegible** (YAML malformado), **entonces** la fase
   DEBERÁ reportarlo y caer a `inherit` (no abortar).
+
+- **FR-012** — El sistema DEBERÁ resolver `features.sdd` a un único modo `off` | `native` | `external` con la
+  regla fail-safe del lifecycle («Modo SDD»): `true` booleano → `native`; bloque con `enabled: true` booleano y
+  `provider` string no vacío → `external`; cualquier otra cosa → `off`. **Si** el `provider` apunta a una skill
+  del propio `task-pipeline` o el YAML es ilegible, **entonces** el modo efectivo DEBERÁ ser `off` con aviso.
 
 ## Requisitos no funcionales
 
@@ -73,6 +78,7 @@ de `/pipeline-usage`.
 - [CU-json-schema: Autocompletado del `task-pipeline.yml` vía JSON schema](./casos-de-uso/json-schema.md)
 - [CU-configurador-doctor: Ofrecer `models:` y mantener el schema (`/task-init`, `/doctor`)](./casos-de-uso/configurador-doctor.md)
 - [CU-frontmatter-inline: Modelo por frontmatter en `/pipeline-usage`](./casos-de-uso/frontmatter-inline.md)
+- [CU-sdd-proveedor-externo: Activar SDD delegado en un plugin externo](./casos-de-uso/sdd-proveedor-externo.md)
 
 ## Fuera de alcance
 

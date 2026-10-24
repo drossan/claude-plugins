@@ -41,13 +41,48 @@ las claves que declara); la **regla de resolución canónica** vive en el README
 | `features.mutation-gate` | `false`/`true`(=80)/`<int>` | Gate de mutation y su umbral `break`. |
 | `features.caveman` | `off`(default)/`lite`/`full` | **Comportamiento** opt-in (no gate de DoD): comprime el output del hilo principal (hook `UserPromptSubmit`), con backoff en checkpoints. No forma parte de ningún preset; valor no-canónico → `off`. |
 | `features.github-tracking` | bloque; opt-in (default `off`) | **Comportamiento** opt-in (no gate de DoD): proyección one-way md→GitHub (plan→issue padre, tarea→sub-issue). **No** forma parte de ningún preset; su **ausencia no es drift** para `/doctor`. Solo `enabled: true` activa; valor no-canónico → off. |
-| `features.sdd` | `false`(default)/`true` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**. |
+| `features.sdd` | `false`(default)/`true`/bloque `{ enabled, provider }` | **Comportamiento** opt-in (no gate de DoD salvo con el flag on): capa **SDD** (spec EARS + CU Gherkin + ADR MADR). **Fuera de todo preset**; fail-safe (solo `true` booleano activa; no-canónico → off); **ausencia ≠ drift**.  Modos `off`/`native`/`external`: ver [Modo SDD](#modo-sdd-off-native-external). |
 | `features.conventional-commits` | `true`(default)/`false` | Formato `<task-id>: <conventional commit>`. Comportamiento histórico, configurable; `false` lo relaja. **Ausencia = ON**. |
 | `features.git-automation` | bloque; opt-in (default `off`) | **Comportamiento** opt-in: `auto-commit` (cierre de tarea), `auto-pr` (cierre de **plan**; requiere `auto-commit`), `co-author` (default off). **Fuera de todo preset**; fail-safe; **ausencia ≠ drift**. |
 
 Una capa/gate desactivada deja de ser obligatoria: no entra en la DoD ni bloquea
 el cierre. **Los dos checkpoints humanos (`grilling` y la aprobación del plan) NO
 son configurables** — son por diseño.
+
+### Modo SDD: `off` / `native` / `external`
+
+> **Regla única.** Esta sección es la **única** definición de cómo se resuelve `features.sdd`; el resto del
+> plugin (skills, `doctor`, `task-init`, README, portal) la **enlaza**, no la repite.
+
+`features.sdd` se resuelve a uno de tres modos. **Fail-safe**: ante la duda, `off`.
+
+| Valor de `features.sdd` | Modo |
+|---|---|
+| `true` (booleano) | `native` |
+| bloque con `enabled: true` (booleano) **y** `provider` string **no vacío** (tras trim) | `external` |
+| cualquier otra cosa | `off` |
+
+«Cualquier otra cosa» incluye: `false`, ausente, `null`/vacío, `"true"` (string), `yes`, `[true]`; bloque sin
+`enabled` o sin `provider`; `enabled` no booleano (`"true"`) o `false`; `provider` vacío, solo espacios, `null`,
+número o lista. Las **claves extra** dentro del bloque se toleran (`/doctor` las señala como posible typo).
+**YAML ilegible** → `off` con aviso de config ilegible, sin invocar a ningún provider. Un `provider` que
+resuelve a una skill del propio `task-pipeline` (p.ej. `task-pipeline:plan-task`) se **rechaza** con aviso →
+modo efectivo `off`. El `provider` se trata como **un único identificador**, nunca como argumentos
+(`"spec:run phase=close"` es un solo nombre, no dos).
+
+- **`native`** — la capa SDD descrita en «Flujo SDD» (spec EARS + CU Gherkin + ADR MADR, gate `sdd-lint`).
+  Byte-idéntico al comportamiento previo a `external`.
+- **`external`** — el SDD lo gestiona un plugin externo (`provider: "<plugin>:<skill>"`). Lo **nativo se
+  apaga**: sin plantillas ni scaffolding SDD, sin gate `sdd-lint` ni efecto de `models.sdd-lint`, y el Gherkin
+  vuelve a vivir en la tarea. Lo único que sobrevive: **si una tarea ya enlaza a un CU, ese enlace se sigue
+  siempre**, sea cual sea el modo. El pipeline **invoca la skill del provider** al arrancar la tarea y al
+  cerrarla; el contrato (versión 1, **experimental**) y la semántica de avisos están en el README del
+  plugin → «SDD con proveedor externo».
+- **`off`** — sin capa SDD; el Gherkin vive en la tarea.
+
+> **Los schemas son ayuda de editor, no validación.** `task-pipeline.schema.json` acepta `provider: ""` y
+> `{ enabled: true }` (sin provider) por ser válidos como tipos, pero en runtime ambos resuelven a `off`. No
+> hay parser: el modelo interpreta el YAML con esta tabla.
 
 ## Layout de directorios
 
