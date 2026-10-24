@@ -4,6 +4,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.5] — 2026-10-24
+
+**Follow-ups del SDD externo** (diagnóstico de `doctor` y simplificaciones de redacción; sin gate ni modo nuevos).
+
+### Changed
+- `/doctor` cat. 12 (B12): el diagnóstico del provider instalado usa como vía principal las skills visibles en la sesión
+  y, como respaldo, `~/.claude/plugins/installed_plugins.json` (formato observado y no soportado: clave
+  `<plugin>@<marketplace>`, lista de entradas, `installPath`). El respaldo solo afina el diagnóstico (ausente ·
+  instalado sin esa skill · instalado pero no cargado); si no puede leerse informa «no verificado», nunca «ausente».
+  Nuevo FR-014 en la spec del package.
+- README: el riesgo 4 del provider externo deja de repetir la frase que lo precede y conserva su etiqueta.
+
+### Notes
+- Portal (`website/`, no forma parte del plugin; B11): `pnpm docs:build` falla si un enlace a `github.com/drossan/claude-plugins`
+  apunta a una ruta o ancla que no existe en el árbol local (B11).
+
 ## [0.18.4] — 2026-10-24
 
 **Seguimiento del SDD externo** (documentación y redacción de instrucciones; sin gate ni modo nuevos).

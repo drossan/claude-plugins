@@ -60,6 +60,10 @@ de `/pipeline-usage`.
   session log una línea `provider phase=close: <resultado>` que `fact-checker` pueda comprobar. **Si** un paso
   previo de la DoD falla, **entonces** NO DEBERÁ invocarlo; si el provider está ausente o falla, DEBERÁ
   registrarlo como aviso a reconocer y no bloquear el cambio de `status:` del `.md`.
+- **FR-014** — **Cuando** `/doctor` corre en un repo en modo `external`, el sistema DEBERÁ diagnosticar si el
+  provider está instalado (instalado · instalado pero no cargado · instalado sin esa skill · plugin ausente · no
+  verificado) sin escribir nada. **Si** solo puede apoyarse en el respaldo `installed_plugins.json`, **entonces**
+  NO DEBERÁ declarar el provider como activo y, si no puede comprobarlo, DEBERÁ decir «no verificado», nunca «ausente».
 
 ## Requisitos no funcionales
 
@@ -75,7 +79,8 @@ de `/pipeline-usage`.
 - **SC-002** — El schema es **JSON válido** (`python3 -m json.tool`) y ambos YAML **parsean** con el modeline.
 - **SC-003** — Correr `/doctor` o `/task-init` sobre un repo **sin** `models:` **ofrece** descomentar y **no**
   escribe nada sin aprobación; con schema viejo, `/doctor` **marca drift**.
-- **SC-004** — `pnpm docs:build` (website) en **verde** con la doc de `configuracion.md` actualizada.
+- **SC-004** — `pnpm docs:build` (website) en **verde** con la doc de `configuracion.md` actualizada; incluye el
+  check de enlaces del portal a GitHub (`website/scripts/check-github-links.mjs`, ver CU-portal-enlaces-github).
 
 ## Casos de uso
 
@@ -84,6 +89,7 @@ de `/pipeline-usage`.
 - [CU-configurador-doctor: Ofrecer `models:` y mantener el schema (`/task-init`, `/doctor`)](./casos-de-uso/configurador-doctor.md)
 - [CU-frontmatter-inline: Modelo por frontmatter en `/pipeline-usage`](./casos-de-uso/frontmatter-inline.md)
 - [CU-sdd-proveedor-externo: Activar SDD delegado en un plugin externo](./casos-de-uso/sdd-proveedor-externo.md)
+- [CU-portal-enlaces-github: Que un enlace roto del portal a GitHub rompa el build](./casos-de-uso/portal-enlaces-github.md)
 
 ## Fuera de alcance
 

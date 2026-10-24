@@ -6,7 +6,8 @@
   "description": "Portal de documentación (VitePress) del plugin task-pipeline.",
   "scripts": {
     "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
+    "docs:check-links": "node scripts/check-github-links.mjs",
+    "docs:build": "node scripts/check-github-links.mjs && vitepress build",
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
