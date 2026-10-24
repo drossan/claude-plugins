@@ -73,6 +73,7 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
 - [x] `task-pipeline-sdd-proveedor-externo-03` (P1) — Invocación del provider (arranque/cierre, contrato `phase/task/plan`), degradación y stub de verificación  · depends_on: task-pipeline-sdd-proveedor-externo-02
 - [x] `task-pipeline-sdd-proveedor-externo-04` (P2) — Activación y salud en `/task-init` y `/doctor`  · depends_on: task-pipeline-sdd-proveedor-externo-02
 - [x] `task-pipeline-sdd-proveedor-externo-05` (P3) — Docs, portal y release  · depends_on: task-pipeline-sdd-proveedor-externo-03, task-pipeline-sdd-proveedor-externo-04
+- [ ] `task-pipeline-sdd-proveedor-externo-06` (P3) — Correcciones del code review: ancla de la regla única, versión de schema, contradicciones lifecycle/template/YAML  · depends_on: task-pipeline-sdd-proveedor-externo-05
 
 ## Registro de cambios del plan
 
@@ -98,3 +99,4 @@ poder activar SDD apuntando a un plugin externo nombrado en `.claude/task-pipeli
   3. Reentrada y resultado: propuesta de la sesión aceptada (RN-7); sin timeout propio (RN-8).
   4. **B2 incorporado al alcance**: `phase=close` va antes del auto-commit y de la proyección a GitHub (RN-6). **B1 incorporado**: `/doctor` avisa de artefactos nativos huérfanos, sin migrar ni borrar. B3, B4 y B5 descartados (B5 pasa a «Fuera de alcance» del plan).
   Decididas por la sesión por ser rutinarias: concurrencia N/A (una tarea `active` por plan) y cancelar/reabrir no invoca al provider (RN-9); cambio de nativo a externo manual, sin reofrecer (RN-10); `/sdd-lint` manual en `external` audita y avisa, como con SDD off (RN-4).
+- 2026-10-24: code review del plan (Opus, subagente fresco, a petición del owner) → 5 altos, 6 medios, 12 bajos. Decisión del owner: **tarea 06** con A2–A5, M1, M3, M4 y B9. A1 (repos ya adoptados con lifecycle antiguo), M5 (riesgos de seguridad adicionales) y el resto (M2, M6, B1–B8, B10–B12) quedan como follow-ups. Se omiten `design-review`/`scenario-coverage` para la 06: correcciones de coherencia sin contrato ni comportamiento nuevo.
