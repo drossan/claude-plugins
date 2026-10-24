@@ -2,11 +2,11 @@
 id: task-pipeline-sdd-externo-followups-03
 package: task-pipeline
 plan: sdd-externo-followups
-status: pending
+status: done
 priority: 3
 depends_on: [task-pipeline-sdd-externo-followups-01, task-pipeline-sdd-externo-followups-02]
 estimate: 1.5h
-actual:
+actual: 0.5h
 issue: 94
 created: 2026-10-24
 updated: 2026-10-24
@@ -43,12 +43,12 @@ Tres simplificaciones del code review de la PR #91 y release 0.18.5. Plan: `.cla
 ## Definition of Done
 
 <!-- Stack none: TDD y gate de mutation N/A. -->
-- [ ] Escenarios verificados por `grep`/inspección
-- [ ] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
-- [ ] Spec cumplida
-- [ ] **Gate `sdd-lint` superado** — sin ERROR
-- [ ] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
-- [ ] **SDD** — CU actualizado al crear la tarea, o «sin cambios de spec/CU»
-- [ ] Doc técnica actualizada · `technical-docs`
-- [ ] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-externo-followups-03.md` · `context-log`
-- [ ] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)
+- [x] Escenarios verificados por `grep`/inspección
+- [x] `claude plugin validate .` y `pnpm docs:build` en verde (ejecutados en esta sesión)
+- [x] Spec cumplida
+- [x] **Gate `sdd-lint` superado** — sin ERROR
+- [x] Gate de `fact-checker` superado (INCORRECTO bloquea) · no-negociable
+- [x] **SDD** — CU actualizado al crear la tarea, o «sin cambios de spec/CU»
+- [x] Doc técnica actualizada · `technical-docs`
+- [x] Histórico — `.claude/context/task-pipeline/task-pipeline-sdd-externo-followups-03.md` · `context-log`
+- [x] Barrido `grep` reforzado: sin identificadores muertos (allowlist del `CLAUDE.md`)

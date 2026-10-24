@@ -377,7 +377,7 @@ cuenta como OK. No hay timeout propio.
   3. **Garantías que dependen del modelo, no de un parser**: que el `provider` se trate como un único
      identificador y que se rechace una skill del propio `task-pipeline` lo aplica el modelo siguiendo el
      lifecycle; no hay código que lo imponga.
-  4. **Sin confirmación en toda invocación**: el pipeline no pregunta nunca antes de invocar al provider, ni en `start` ni en `close`.
+  4. **Sin confirmación en toda invocación**: rige igual para `start` que para `close`.
 
   **Consejo.** El mismo `task-pipeline.yml` de un repo ajeno fija el provider **y** la automatización: revisa el
   fichero entero (`features.sdd` **y** `features.git-automation`) antes de trabajar en él, y **no uses

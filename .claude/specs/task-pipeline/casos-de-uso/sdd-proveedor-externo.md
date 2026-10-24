@@ -206,11 +206,6 @@ Feature: SDD delegado en un plugin externo
     When se invoca al provider
     Then el valor completo se trata como un identificador y no como argumentos adicionales
 
-  Scenario: Cierre repetido tras un fallo
-    Given una tarea en modo external cuyo cierre falló en fact-checker
-    When se reintenta el cierre
-    Then phase=close se invoca de nuevo
-
   Scenario: Provider sin respuesta
     Given una sesión sin canal y un provider que necesita input del usuario
     When se invoca al provider
@@ -359,11 +354,6 @@ Feature: SDD delegado en un plugin externo
       | mutation-gate false, tests y lint en verde      | se invoca    |
       | stack.mutation-tool none, tests y lint en verde | se invoca    |
 
-  Scenario: Cierre tras una reapertura
-    Given una tarea en modo external cerrada y reabierta (done → active)
-    When llega de nuevo al hueco de cierre
-    Then phase=close se invoca otra vez y el session log añade una línea nueva
-
   Scenario: La invocación de phase=close deja rastro verificable
     Given un repo en modo external y una tarea que va a cerrarse
     When se invoca phase=close
@@ -380,11 +370,6 @@ Feature: SDD delegado en un plugin externo
     Given una tarea en modo external que llega a fact-checker sin la línea "provider phase=close:"
     When corre fact-checker
     Then la afirmación "el provider se invocó" es NO VERIFICABLE, no INCORRECTO
-
-  Scenario: Reintento de phase=close
-    Given una tarea en modo external cuyo cierre falló después de invocar al provider
-    When se reintenta el cierre y se invoca phase=close de nuevo
-    Then el session log (append-only) tiene una línea nueva y fact-checker toma la última
 
   Scenario: Tarea creada en external y cerrada en nativo
     Given una tarea creada en modo external con el Gherkin inline y el repo ya en features.sdd: true
