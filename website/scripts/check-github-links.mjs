@@ -6,7 +6,7 @@
 // publicados de `website/` apunta a una ruta y a un ancla que existen en el árbol LOCAL.
 // Sin red, sin dependencias, solo lectura. Corre solo (`node website/scripts/check-github-links.mjs`)
 // y encadenado en `pnpm docs:build`.
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -212,6 +212,6 @@ function main() {
   return 0
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
   process.exit(main())
 }

@@ -439,6 +439,7 @@ Feature: SDD delegado en un plugin externo
       | no visible  | valor de la clave que no es una lista                          | no verificado                            |
       | no visible  | SKILL.md ilegible o es un directorio                           | no verificado                            |
       | no visible  | HOME sin definir o ruta del fichero no resoluble               | no verificado                            |
+      | no visible  | provider sin ":" (sin prefijo "<plugin>@")                      | no verificado                            |
 
   Scenario: Seguridad de la ruta al buscar la skill
     Given un provider cuyo componente de skill o plugin contiene "..", "/" o "\"

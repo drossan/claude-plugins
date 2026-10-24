@@ -15,3 +15,10 @@
 - **fact-checker**: 9/9 VERIFICADO (la comprobación de que el check de enlaces corre dentro de `docs:build` se apoya en el CHANGELOG/log de la 01, no se vio en la salida).
 - Ficheros: `task-pipeline/README.md`, `task-pipeline/CHANGELOG.md`, `task-pipeline/.claude-plugin/plugin.json`, `.claude/specs/task-pipeline/casos-de-uso/sdd-proveedor-externo.md`.
 - Tiempo real: ~0.5h (estimado, sin cronómetro). Follow-ups: workflow de CI en PRs para el check de enlaces; escenario del provider sin `:` (de la 02).
+
+## 2026-10-24 — Code review del plan (Opus) y correcciones
+- Review sobre `main...plan/...`: 1 bug real + 8 menores. Decisión del owner: arreglar #1, #9, #7 y #8; el resto, follow-ups.
+- #1 (`check-github-links.mjs`): la guarda de entrada comparaba `argv[1]` con la ruta real, así que por ruta absoluta con symlink el script salía 0 sin ejecutar. Ahora compara con `realpathSync` en ambos lados; verificado: por un symlink ahora imprime `OK — 25 enlaces…`.
+- #9: el CHANGELOG 0.18.5 cita B12 (y B11 en la nota del portal). #7: `doctor` cat. 12 ignora entradas sin `installPath` string (solo «no verificado» si no queda otra), provider sin `:` → «no verificado» (fila nueva en el Outline del CU). #8: «drift» es etiqueta de gravedad; cat. 12 no ofrece fix en la Fase 2.
+- Re-verificado: `claude plugin validate .` passed; `pnpm docs:build` → check OK (25 enlaces) + build complete.
+- Follow-ups abiertos (review #2–#6, #10): slug con `<…>` dentro de backticks, fence con info string con backticks, URLs con énfasis o `#user-content-`, parseo de `srcExclude`/globs, validación contra disco y no contra git, aviso Node < 12.

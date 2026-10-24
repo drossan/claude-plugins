@@ -262,9 +262,12 @@ artefacto del plugin — ver "Propiedad" abajo).
         lista vacía → «**plugin ausente**». El respaldo **solo afina el diagnóstico y nunca declara el
         provider como activo ni «OK»** (registra instalación, no activación).
       - **«No verificado», nunca «ausente»**: fichero inexistente, ilegible, vacío o que no parsea; raíz que
-        no es objeto o `plugins` ausente/nulo/array; valor de una clave que no es lista; entradas sin
-        `installPath` string; `SKILL.md` ilegible o directorio; `HOME` sin definir.
-      - **Gravedad**: «plugin ausente» e «instalado sin esa skill» → **drift**; «no verificado» e «instalado
+        no es objeto o `plugins` ausente/nulo/array; valor de una clave que no es lista; `SKILL.md` ilegible
+        o directorio; `HOME` sin definir o ruta del fichero no resoluble; un provider **sin `:`** (no hay
+        prefijo `<plugin>@` por el que buscar). Una entrada sin `installPath` string **se ignora**: solo
+        da «no verificado» si no queda otra entrada que decida (una entrada con la skill gana).
+      - **Gravedad**: «plugin ausente» e «instalado sin esa skill» → **drift** (etiqueta de gravedad: la
+        categoría es solo-reporte, **no ofrezcas ningún fix en la Fase 2**); «no verificado» e «instalado
         pero no cargado» → **aviso**. El mensaje nombra qué falta (la skill, no el plugin, si el plugin
         está instalado). Solo-reporte e idempotente: dos ejecuciones dan el mismo reporte.
     - **Provider que apunta a `task-pipeline`** (`task-pipeline:<skill>` **o** un nombre sin `:` que coincide
