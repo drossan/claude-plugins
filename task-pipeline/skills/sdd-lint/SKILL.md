@@ -108,4 +108,4 @@ Junta lo mecánico (Paso 2) + lo semántico (Paso 3) en **un** informe:
 
 > **Cierre de tarea** (gate orquestado por la DoD, modo nativo): un **ERROR bloquea** el cierre;
 > **AVISO** se reconoce; **limpio** pasa. Corre **tras `mutation`** y **antes de `fact-checker`** (que luego
-> atestigua "el gate `sdd-lint` pasó"). Con SDD `off` o `external`, este gate **no corre** (byte-idéntico a hoy en `off`).
+> atestigua "el gate `sdd-lint` pasó"). Con SDD `off` o `external`, este gate **no corre** (en `off`, equivalente en comportamiento al previo a `external`).

@@ -87,8 +87,9 @@ flowchart TD
 - **Fuera de todo preset**: `mode: full` **no** lo enciende; es una decisión explícita.
 - **Ausencia ≠ drift**: `/doctor` no reporta la falta del flag ni de las plantillas SDD salvo que el flag
   esté **on en modo nativo** (en `external` no hay plantillas SDD que reportar) (mismo criterio que `caveman`/`github-tracking`).
-- **Off = comportamiento idéntico al de hoy**: sin el flag, el Gherkin vive en la tarea (`task.md`). El modo
-  nativo es también byte-idéntico al de antes de existir `external`.
+- **Off = equivalente en comportamiento al de antes de existir `external`**: sin el flag, el Gherkin vive en la
+  tarea (`task.md`), salvo que la tarea ya enlace a un CU (ese enlace se sigue siempre). El modo nativo es
+  equivalente con dos salvedades más: la línea de DoD de `external` no aplica y la cat. 13 de `/doctor` detecta el lifecycle anterior a la regla de modos.
 
 ## Gate de validación (`/sdd-lint`)
 
@@ -145,9 +146,10 @@ flowchart LR
 - **Avisar, no bloquear**: provider no instalado, con error o sin respuesta → **aviso que el owner reconoce**
   (nota en el session log); lo que el provider reporta se traslada como aviso, **nunca ERROR** — el pipeline
   no valida su contenido.
-- **Idempotencia**: `close` se reintenta tras un fallo posterior, así que el provider debe ser idempotente.
-- **Riesgo conocido**: como la config viaja con el repo, **un repo clonado puede nombrar como provider
-  cualquier skill que tengas instalada**. Revisa el `provider` de repos ajenos.
+- **Idempotencia**: `close` se reintenta tras un fallo posterior o una reapertura, así que el provider debe ser idempotente.
+- **Riesgos conocidos**: la config viaja con el repo y el provider se invoca sin confirmación; revisa el
+  `task-pipeline.yml` entero de un repo ajeno. Lista completa en el
+  [README del plugin](https://github.com/drossan/claude-plugins/blob/main/task-pipeline/README.md#sdd-nativo-o-externo-opcional).
 - `/task-init` y `/doctor` ofrecen nativo vs externo con confirmación explícita; el cambio de nativo a
   externo es manual y no migra ni borra artefactos nativos.
 

@@ -78,6 +78,11 @@
 >    explícitamente** (frecuente en stack sin runner), pero no bloquea; **VERIFICADO**
 >    pasa. Aplica en cualquier preset — `mode`/`features` no lo desactivan.
 >
+> **(Solo modo SDD `external`, `features.sdd: { enabled: true, provider }`)** Al arrancar la tarea (`pending → active`) se
+> invoca la skill del provider con `contract=1 phase=start task=<ruta> plan=<ruta>` y se **relee la tarea**; al cerrar,
+> `phase=close` ocupa el hueco de `sdd-lint` y deja la línea `provider phase=close: <resultado>` en el session log.
+> Detalle en `docs/guides/task-lifecycle.md` → «Modo SDD» y pasos 4b/3c.
+>
 > Marcar un step de tests como hecho sin haber corrido la suite, o saltarse el
 > Red→Green→Refactor, es engañoso y está prohibido. Si la sesión no puede completar
 > la tarea, queda en `status: blocked` (o se documenta el progreso parcial en el
@@ -122,6 +127,8 @@ REGLAS ESTRICTAS DE LA SESIÓN:
   y histórico de la tarea.
 - Lint + format + typecheck en verde ANTES de cerrar (`pnpm --filter <pkg> lint`).
 - Cero secretos en logs.
+- Modo SDD `external` (si el repo lo usa): `phase=start` al arrancar la tarea y `phase=close` en el hueco de cierre,
+  con la línea `provider phase=close: <resultado>` en el session log (ver el lifecycle, pasos 4b y 3c).
 
 Al terminar:
 - Verifica `pnpm lint` y `pnpm test` repo-wide en verde, sin regresiones.

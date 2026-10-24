@@ -5,7 +5,7 @@
 - **Actor primario**: mantenedor de un repo que ya usa un plugin SDD distinto del nativo
 - **Interesados e intereses**:
   - Mantenedor — que el pipeline delegue en su plugin SDD sin imponer los artefactos nativos.
-  - Repos con SDD nativo — que `sdd: true` siga comportándose exactamente igual.
+  - Repos con SDD nativo — que `sdd: true` siga comportándose de forma equivalente (con las salvedades del escenario «El modo nativo no cambia»).
   - Autor del plugin externo — un contrato de invocación estable y versionado.
 
 ## Precondiciones
@@ -36,7 +36,7 @@
 
 ## Extensiones (flujos alternativos y de error)
 
-- **1a.** `features.sdd: true` (booleano): modo `native`, comportamiento actual intacto.
+- **1a.** `features.sdd: true` (booleano): modo `native`, comportamiento actual equivalente (ver «El modo nativo no cambia»).
 - **1b.** Bloque sin `provider`, con `provider` vacío o no-string, o con `enabled` no booleano: modo `off`.
 - **2a.** La skill del provider no está instalada: aviso que el owner reconoce; no se bloquea el `.md`.
 - **2b.** La skill del provider falla al ejecutarse: aviso que el owner reconoce; no se bloquea el `.md`.
@@ -50,8 +50,8 @@
 - **RN-3** — Contrato de invocación v1 (experimental): `contract=1 phase=start|close task=<ruta> plan=<ruta>`. Las rutas son relativas a la raíz del repo y **existen** en el instante de la invocación: `start` tras mover la tarea a `active`; `close` antes de moverla a `completed`. Si la tarea no tiene plan legible, `plan=` va vacío con aviso, sin bloquear.
 - **RN-4** — Con `external`, el **gate automático** de `sdd-lint` y `models.sdd-lint` no tienen efecto y `/doctor` no exige scaffolding SDD nativo. La invocación **manual** de `/sdd-lint` audita igualmente y avisa de que el SDD lo gestiona el provider (como con SDD off).
 - **RN-5** — El valor de `provider` se pasa como **un único identificador**, nunca interpolado como argumentos. Un provider que resuelve a una skill del propio `task-pipeline` (con prefijo `task-pipeline:` o un nombre sin `:` que coincide con una de sus skills) se rechaza con aviso (modo efectivo `off`). Que un repo clonado pueda nombrar cualquier skill instalada es un riesgo conocido y documentado en el README.
-- **RN-6** — Orden de cierre: `phase=close` se invoca tras `mutation`, antes de `fact-checker`, del auto-commit y de la proyección a GitHub, de modo que lo que genere el provider entra en el commit.
-- **RN-7** — Reentrada: `start` se invoca solo en la activación `pending → active` (ni `blocked → active` ni la reapertura `done → active` lo repiten); `close` se reintenta tras un fallo (el provider debe ser idempotente, documentado) y no se invoca si `mutation` falla. Terminar sin error ni reporte cuenta como OK. Reconocer un aviso es dejar una nota en el session log; el pipeline lo señala y no cierra en silencio.
+- **RN-6** — Orden de cierre: `phase=close` se invoca al llegar al hueco de cierre —tras `mutation` si está activo, o tras lint/tests si no hay gate de mutation—, antes de `fact-checker`, del auto-commit y de la proyección a GitHub, de modo que lo que genere el provider entra en el commit. Al invocarlo se anota en el session log `provider phase=close: <resultado>` (`ok`, `aviso`, `ausente` o `error`).
+- **RN-7** — Reentrada: `start` se invoca solo en la activación `pending → active` (ni `blocked → active` ni la reapertura `done → active` lo repiten); `close` se reintenta tras un fallo y se repite tras una reapertura `done → active` (el provider debe ser idempotente, documentado); no se invoca si falla un paso previo de la DoD (tests, lint/typecheck o `mutation` si está activo), y cada invocación añade una línea nueva al session log (append-only). Terminar sin error ni reporte cuenta como OK. Reconocer un aviso es dejar una nota en el session log; el pipeline lo señala y no cierra en silencio.
 - **RN-8** — Sin respuesta, o sin canal para un provider interactivo, se trata como error del provider (aviso). No hay timeout propio.
 - **RN-9** — Cancelar, desbloquear (`blocked → active`) o reabrir (`done → active`) una tarea no invoca `start` al provider. Solo hay una tarea `active` por plan, así que el pipeline no añade exclusión entre tareas.
 - **RN-10** — El cambio de nativo a externo es manual (editar `features.sdd`); `/doctor` no reofrece la activación si ya hay modo `external`.
@@ -91,7 +91,8 @@ Feature: SDD delegado en un plugin externo
   Scenario: El modo nativo no cambia
     Given un repo con features.sdd: true
     When se arranca y se cierra una tarea
-    Then el flujo es idéntico al anterior a este cambio, incluido el gate sdd-lint
+    Then el flujo es equivalente en comportamiento al anterior a este cambio, incluido el gate sdd-lint
+    And las salvedades son: una tarea que ya enlaza a un CU sigue ese enlace en cualquier modo, la línea de DoD de external es no aplicable en nativo y la cat. 13 de /doctor detecta el lifecycle anterior a la regla de modos
 
   Scenario: El provider se invoca al arrancar la tarea
     Given un repo en modo external con provider "spec:run"
@@ -209,11 +210,6 @@ Feature: SDD delegado en un plugin externo
     When se reintenta el cierre
     Then phase=close se invoca de nuevo
 
-  Scenario: Mutation fallida no invoca al provider
-    Given una tarea en modo external con el gate de mutation sin superar
-    When se intenta cerrar la tarea
-    Then no se invoca al provider con phase=close
-
   Scenario: Provider sin respuesta
     Given una sesión sin canal y un provider que necesita input del usuario
     When se invoca al provider
@@ -307,7 +303,7 @@ Feature: SDD delegado en un plugin externo
     Given un repo con features.sdd en bloque con provider y docs/guides/task-lifecycle.md sin la sección "Modo SDD"
     When corre /doctor
     Then reporta que el lifecycle es anterior a 0.18.0 y no define el modo external
-    And ofrece re-materializarlo desde la plantilla actual con diff y aprobación
+    And ofrece añadir la sección "Modo SDD" y los pasos 4b/3c desde la plantilla actual con diff y aprobación
     And no escribe nada sin aprobación
 
   Scenario: Lifecycle al día no se reporta
@@ -319,4 +315,116 @@ Feature: SDD delegado en un plugin externo
     Given un repo con features.sdd off y un lifecycle sin la sección "Modo SDD"
     When corre /doctor
     Then lo menciona como aviso informativo sin ofrecer cambios obligatorios
+
+  Scenario: Los cuatro riesgos están nombrados
+    Given el README del plugin
+    When se lee la lista de riesgos del provider
+    Then aparecen cuatro: automatización sin revisión, reescritura de la tarea en phase=start (hipótesis), identificador único y rechazo de skills propias respetados por el modelo, y ausencia de confirmación en toda invocación
+    And "primera invocación" no sugiere que las siguientes la piden
+
+  Scenario: El README recomienda revisar el task-pipeline.yml de un repo ajeno
+    Given el README del plugin
+    When un mantenedor lee la sección del provider externo
+    Then encuentra el consejo de revisar features.sdd y features.git-automation antes de trabajar en un repo ajeno
+    And la recomendación de no usar auto-commit ni auto-pr con providers no confiables
+
+  Scenario: El portal no copia los riesgos
+    Given website/features/sdd.md
+    When se lee la sección del provider externo
+    Then hay un resumen de una línea y un enlace al README, sin la lista de riesgos
+
+  Scenario: Ninguna mención presenta la inyección como confirmada
+    Given el README, el portal y el lifecycle
+    When se busca "inyección" o "reescribe la tarea"
+    Then toda mención la califica como hipótesis
+
+  Scenario: El barrido de identidad se limita a SDD
+    Given las apariciones de "idéntic", "exactamente igual", "intacto" y "byte-" fuera de CHANGELOG (entradas anteriores a 0.18.4), dist/ y node_modules/
+    When se clasifican
+    Then las que afirman equivalencia del modo off o nativo de SDD llevan la salvedad (enlace a un CU; en nativo, línea de DoD de external y cat. 13 de /doctor)
+    And las ajenas a SDD (git-automation, honestidad) se dejan sin tocar y la tarea lo registra
+    And el escenario "El modo nativo no cambia" de este CU lleva la salvedad
+
+  Scenario Outline: phase=close según el paso previo del cierre
+    Given un repo en modo external y un paso previo en estado <estado>
+    When la tarea llega al cierre
+    Then phase=close <invocacion>
+
+    Examples:
+      | estado                                          | invocacion   |
+      | tests en rojo                                   | no se invoca |
+      | lint o typecheck en rojo                        | no se invoca |
+      | mutation activo y sin superar                   | no se invoca |
+      | mutation-gate false, tests y lint en verde      | se invoca    |
+      | stack.mutation-tool none, tests y lint en verde | se invoca    |
+
+  Scenario: Cierre tras una reapertura
+    Given una tarea en modo external cerrada y reabierta (done → active)
+    When llega de nuevo al hueco de cierre
+    Then phase=close se invoca otra vez y el session log añade una línea nueva
+
+  Scenario: La invocación de phase=close deja rastro verificable
+    Given un repo en modo external y una tarea que va a cerrarse
+    When se invoca phase=close
+    Then el session log recoge una línea "provider phase=close: <resultado>"
+    And fact-checker comprueba que esa línea existe y la declara autodeclarada
+
+  Scenario: Rastro cuando el provider falla o está ausente
+    Given un repo en modo external con un provider ausente o con error
+    When se intenta invocar phase=close
+    Then el session log recoge la línea con el resultado "ausente" o "error"
+    And fact-checker lo trata como aviso a reconocer, no como INCORRECTO
+
+  Scenario: Falta la línea de rastro
+    Given una tarea en modo external que llega a fact-checker sin la línea "provider phase=close:"
+    When corre fact-checker
+    Then la afirmación "el provider se invocó" es NO VERIFICABLE, no INCORRECTO
+
+  Scenario: Reintento de phase=close
+    Given una tarea en modo external cuyo cierre falló después de invocar al provider
+    When se reintenta el cierre y se invoca phase=close de nuevo
+    Then el session log (append-only) tiene una línea nueva y fact-checker toma la última
+
+  Scenario: Tarea creada en external y cerrada en nativo
+    Given una tarea creada en modo external con el Gherkin inline y el repo ya en features.sdd: true
+    When se evalúa su DoD
+    Then la línea "SDD gestionado con <provider>" se trata como no aplicable
+    And aplican las líneas del modo nativo (spec/CU o "sin cambios de spec/CU", y el gate sdd-lint)
+    And el Gherkin inline de la tarea no se migra a la fuerza al CU
+
+  Scenario: La regla de líneas de DoD de otro modo es visible
+    Given docs/guides/task-lifecycle.md y su plantilla
+    When se lee la sección de DoD
+    Then hay una nota visible, no un comentario HTML, que dice que las líneas de otro modo no aplican en ambos sentidos
+
+  Scenario: El HOW-TO menciona phase=start y el modo external
+    Given los dos HOW-TO-START-A-TASK.md (repo y plantilla)
+    When se buscan "phase=start" y "external"
+    Then ambos los mencionan
+
+  Scenario: Los tres sitios de B6 dicen lo mismo
+    Given fact-checker/SKILL.md, el paso 4 del lifecycle y el Paso 8 de plan-task
+    When se lee qué afirmación sobre el provider se verifica
+    Then los tres hablan de la línea "provider phase=close:" y de su carácter autodeclarado
+
+  Scenario: Lifecycle del repo y plantilla sincronizados
+    Given docs/guides/task-lifecycle.md y su plantilla
+    When se comparan los pasos 4b y 3c, la DoD de external y la nota de otro modo
+    Then dicen lo mismo, salvo lo propio de este repo
+
+  Scenario: Release 0.18.4 coherente
+    Given plugin.json y CHANGELOG.md
+    When se lee la versión
+    Then ambos dicen 0.18.4
+    And el CHANGELOG avisa de que los lifecycles materializados en 0.18.0-0.18.3 no se detectan y hay que re-sincronizar 4b, 3c y la DoD a mano
+
+  Scenario: La spec recoge el requisito del cierre en external
+    Given .claude/specs/task-pipeline/spec.md
+    When se buscan los requisitos de phase=close
+    Then existe un FR que fija cuándo se invoca y el rastro verificable
+
+  Scenario: El barrido final no reintroduce identidad sin salvedad
+    Given el CHANGELOG 0.18.4 ya escrito
+    When se repite el grep de "idéntic"
+    Then ninguna aparición nueva afirma identidad de SDD sin salvedad
 ```

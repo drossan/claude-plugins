@@ -4,6 +4,33 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/);
 versionado [SemVer](https://semver.org/lang/es/). La versión vive en
 `.claude-plugin/plugin.json` (es la que resuelve el marketplace).
 
+## [0.18.4] — 2026-10-24
+
+**Seguimiento del SDD externo** (documentación y redacción de instrucciones; sin gate ni modo nuevos).
+
+### Changed
+- README: los 4 riesgos del provider externo (automatización sin revisión, reescritura de la tarea en
+  `phase=start` como **hipótesis** no reproducida, identificador único y rechazo de skills propias que respeta el
+  modelo y no un parser, y ausencia de confirmación en toda invocación) y el consejo de revisar `features.sdd` y
+  `features.git-automation` de un `task-pipeline.yml` ajeno. El portal solo enlaza al README.
+- Las frases de SDD que afirmaban equivalencia exacta del modo off o nativo pasan a «equivalente en
+  comportamiento», con la salvedad del enlace a un CU y, en nativo, de la línea de DoD de `external` y la cat. 13
+  de `/doctor`.
+- Modo `external`: `phase=close` se invoca al llegar al hueco de cierre (tras `mutation`, o tras lint/tests sin gate
+  de mutation) y no si falla un paso previo; la reapertura `done → active` lo repite.
+- La DoD deja una **nota visible** (antes un comentario HTML de la plantilla de tarea) de que las líneas de DoD del
+  otro modo no aplican, en ambos sentidos (nativo → `external` y `external` → nativo).
+- `external` deja la línea `provider phase=close: <resultado>` en el session log y `fact-checker` la comprueba
+  (autodeclarada; sin ella `NO VERIFICABLE`, nunca `INCORRECTO`). Lifecycle, Paso 8 de `plan-task` y
+  `fact-checker/SKILL.md` dicen lo mismo.
+- Los `HOW-TO-START-A-TASK.md` (repo y plantilla) mencionan `phase=start`/`phase=close` y el modo `external`.
+
+### Known gaps
+- Los lifecycles materializados en 0.18.0–0.18.3 **no se detectan**: la cat. 13 de `/doctor` solo mira el heading
+  «Modo SDD». Re-sincroniza a mano los pasos 4b, 3c y 4, la DoD (incluida la nota de líneas de otro modo) y el bullet nativo
+  de «Modo SDD» desde la plantilla actual; los `HOW-TO-START-A-TASK.md` ya materializados tampoco se actualizan
+  solos. Hueco aceptado, sin detección nueva.
+
 ## [0.18.3] — 2026-10-24
 
 **Correcciones del 2.º code review** (coherencia de la regla de modos SDD; sin gate nuevo).

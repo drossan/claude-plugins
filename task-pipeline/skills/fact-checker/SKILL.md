@@ -21,6 +21,9 @@ Identifica **cada afirmación factual** de la conversación reciente. Ejemplos: 
 tests pasan», «la biblioteca Z soporta W», «este import es correcto», «el gate de mutation pasó». Si no
 hay ninguna afirmación factual verificable, dilo y termina — no inventes ninguna.
 
+En modo SDD `external`, incluye «el provider se invocó con `phase=close`» y pasa al verificador la ruta del session log
+de la tarea (su evidencia es la **última** línea `provider phase=close: <resultado>`).
+
 ## Paso 2 — Lanzar el subagente verificador (Agent tool)
 
 **Modelo del subagente (config-driven).** Antes de lanzarlo, lee `models.fact-checker` en
@@ -44,6 +47,10 @@ Para cada afirmación que se te pase, verifícala de forma INDEPENDIENTE:
   ejecutarlo, la salida correcta es NO VERIFICABLE (por falta de stack) — nunca VERIFICADO.
 - Afirmaciones de bibliotecas → revisa el paquete real o su documentación.
 - Afirmaciones de imports → confirma que el paquete está en el manifiesto de dependencias.
+- «El provider se invocó con phase=close» → lee el session log que se te indica: la evidencia es la ÚLTIMA línea
+  `provider phase=close: <resultado>`. Es AUTODECLARADA (prueba que se anotó, no que el provider corriera): dilo
+  en el veredicto. Si la línea falta → NO VERIFICABLE, nunca INCORRECTO. Resultado `ausente` o `error` → aviso a
+  reconocer, no INCORRECTO.
 
 Nunca aceptes afirmaciones de «confía en mí». Nunca hagas afirmaciones propias: solo emites veredictos
 sobre las afirmaciones que se te dan. No modifiques ningún fichero. Si no puedes verificar algo, la
@@ -60,6 +67,12 @@ SALIDA (por cada afirmación):
 Traslada el informe del subagente **tal cual**, con cada afirmación en su categoría
 (VERIFICADO / INCORRECTO / NO VERIFICABLE) y su evidencia. No suavices un INCORRECTO ni escondas un
 NO VERIFICABLE. En una pasada mixta, la presencia de un INCORRECTO no oculta el resto de entradas.
+
+> **Provider SDD en modo `external`**: si el repo está en modo `external`, una de las afirmaciones a verificar es
+> «el provider se invocó con `phase=close`». La evidencia es la **última** línea `provider phase=close: <resultado>`
+> del session log de la tarea, y es **autodeclarada**: prueba que se anotó, no que el provider corriera (dilo así en
+> el informe). Sin esa línea → `NO VERIFICABLE`, nunca `INCORRECTO`. Un resultado `ausente` o `error` es un aviso a
+> reconocer, no `INCORRECTO`. Un reintento añade una línea nueva (append-only): se toma la última.
 
 > **En el cierre de una tarea** (gate orquestado por la DoD): `INCORRECTO` **bloquea** el cierre hasta
 > corregir la afirmación; `NO VERIFICABLE` es un **aviso que hay que reconocer** explícitamente (frecuente
